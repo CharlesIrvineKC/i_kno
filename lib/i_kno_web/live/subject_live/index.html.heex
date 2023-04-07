@@ -1,5 +1,5 @@
 <.header>
-  Listing Subjects
+  IKno Subjects
   <:actions>
     <.link patch={~p"/subjects/new"}>
       <.button>New Subject</.button>
@@ -14,7 +14,6 @@
 >
   <:col :let={{_id, subject}} label="Name"><%= subject.name %></:col>
   <:col :let={{_id, subject}} label="Summary"><%= subject.summary %></:col>
-  <:col :let={{_id, subject}} label="Description"><%= subject.description %></:col>
   <:action :let={{_id, subject}}>
     <div class="sr-only">
       <.link navigate={~p"/subjects/#{subject}"}>Show</.link>

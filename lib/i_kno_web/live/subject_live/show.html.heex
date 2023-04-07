@@ -15,7 +15,7 @@
   <:item title="Description"><%= @subject.description %></:item>
 </.list>
 
-<.back navigate={~p"/subjects"}>Back to subjects</.back>
+<.back navigate={~p"/subjects"}>Subject Catalog</.back>
 
 <.modal :if={@live_action == :edit} id="subject-modal" show on_cancel={JS.patch(~p"/subjects/#{@subject}")}>
   <.live_component
