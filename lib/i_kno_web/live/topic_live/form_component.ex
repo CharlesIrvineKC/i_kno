@@ -20,7 +20,7 @@ defmodule IKnoWeb.TopicLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:description]} type="text" label="Description" />
+        <.input field={@form[:description]} type="textarea" label="Description" rows="20" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Topic</.button>
         </:actions>
