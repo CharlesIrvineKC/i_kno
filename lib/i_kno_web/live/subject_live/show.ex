@@ -2,6 +2,7 @@ defmodule IKnoWeb.SubjectLive.Show do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
+  import IKnoWeb.IKnoComponents
 
   @impl true
   def mount(_params, _session, socket) do
