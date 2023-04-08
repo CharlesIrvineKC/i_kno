@@ -35,6 +35,8 @@ defmodule IKnoWeb.Router do
 
     live "/topics/:id", TopicLive.Show, :show
     live "/topics/:id/show/edit", TopicLive.Show, :edit
+
+    live "/daisy", Daisy
   end
 
   # Other scopes may use custom stacks.
