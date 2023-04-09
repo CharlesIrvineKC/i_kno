@@ -7,52 +7,27 @@ defmodule IKnoWeb.Daisy do
 
   def render(assigns) do
     ~H"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    .flex-container {
-    display: flex;
-    height: 200px;
-    flex-wrap: wrap;
-    align-content: space-between;
-    overflow: scroll;
-    background-color: DodgerBlue;
-    }
-
-    .flex-container > div {
-    background-color: #f1f1f1;
-    width: 100px;
-    margin: 10px;
-    text-align: center;
-    line-height: 75px;
-    font-size: 30px;
-    }
-    </style>
-    </head>
-    <body>
-
-    <h1>The align-content Property</h1>
-
-    <p>The "align-content: space-between;" displays the flex lines with equal space between them:</p>
-
-    <div class="flex-container">
-    <div>1</div>
-    <div>2</div>
-    <div>3</div>
-    <div>4</div>
-    <div>5</div>
-    <div>6</div>
-    <div>7</div>
-    <div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
+    <div class="navbar bg-base-100">
+    <div class="flex-1">
+      <a class="btn btn-ghost normal-case text-xl">daisyUI</a>
     </div>
-
-    </body>
-    </html>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><a>Item 1</a></li>
+        <li tabindex="0">
+          <a>
+            Parent
+            <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>
+          </a>
+          <ul class="p-2 bg-base-100">
+            <li><a>Submenu 1</a></li>
+            <li><a>Submenu 2</a></li>
+          </ul>
+        </li>
+        <li><a>Item 3</a></li>
+      </ul>
+    </div>
+    </div>
     """
   end
 end
