@@ -20,7 +20,7 @@
       <ul class="menu menu-horizontal px-1">
         <%= if @current_user do %>
           <li>
-            <%= @current_user.email %>
+            <a><%= @current_user.email %></a>
           </li>
           <li><a href={~p"/users/settings"}>Settings</a></li>
 

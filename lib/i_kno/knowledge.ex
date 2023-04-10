@@ -11,8 +11,10 @@ defmodule IKno.Knowledge do
   def list_topics do
     Repo.all(Topic)
   end
-  def list_subject_topics do
-    Repo.all(Topic)
+
+  def list_subject_topics(subject_id) do
+    query = from Topic, where: [subject_id: ^subject_id]
+    Repo.all(query)
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)
