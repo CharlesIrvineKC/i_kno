@@ -20,18 +20,12 @@
       <ul class="menu menu-horizontal px-1">
         <%= if @current_user do %>
           <li>
-            <a>
-              <%= @current_user.email %>
-            </a>
+            <%= @current_user.email %>
           </li>
           <li><a href={~p"/users/settings"}>Settings</a></li>
 
           <li>
-            <.link
-              href={~p"/users/log_out"}
-              method="delete"
-              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-            >
+            <.link href={~p"/users/log_out"} method="delete">
               Log out
             </.link>
           </li>
