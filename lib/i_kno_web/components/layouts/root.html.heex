@@ -25,7 +25,16 @@
             </a>
           </li>
           <li><a href={~p"/users/settings"}>Settings</a></li>
-          <li><a href={~p"/users/register"}>Logout</a></li>
+
+          <li>
+            <.link
+              href={~p"/users/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              Log out
+            </.link>
+          </li>
         <% else %>
           <li><a href={~p"/users/register"}>Register</a></li>
           <li><a href={~p"/users/log_in"}>Login</a></li>
