@@ -20,23 +20,20 @@ defmodule IKnoWeb.Router do
   scope "/", IKnoWeb do
     pipe_through :browser
 
-    live "/", SubjectLive.Index, :index
+    live "/subjects", SubjectLive.Catalog, :catalog
 
-    live "/subjects", SubjectLive.Index, :index
+    # Archive
+    # live "/subjects", SubjectLive.Index, :index
     live "/subjects/new", SubjectLive.Index, :new
     live "/subjects/:id/edit", SubjectLive.Index, :edit
-
     live "/subjects/:id", SubjectLive.Show, :show
     live "/subjects/:id/show/edit", SubjectLive.Show, :edit
-
     live "/topics", TopicLive.Index, :index
     live "/topics/new", TopicLive.Index, :new
     live "/topics/:id/edit", TopicLive.Index, :edit
-
     live "/topics/:id", TopicLive.Show, :show
     live "/topics/:id/show/edit", TopicLive.Show, :edit
-
-    live "/daisy", Daisy
+    # End of Archive
   end
 
   # Other scopes may use custom stacks.
