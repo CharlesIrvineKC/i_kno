@@ -1,4 +1,4 @@
-defmodule IKnoWeb.SubjectLive.Show do
+defmodule IKnoWeb.ArchiveSubjectLive.Show do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge

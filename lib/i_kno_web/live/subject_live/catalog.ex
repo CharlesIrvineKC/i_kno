@@ -61,7 +61,7 @@ defmodule IKnoWeb.SubjectLive.Catalog do
               <%= subject.summary %>
             </td>
             <td class="px-6 py-4">
-              <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View</a>
+              <a href={~p"/subjects/1"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View</a>
               <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Learn</a>
               <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
             </td>
