@@ -25,17 +25,17 @@ defmodule IKnoWeb.Router do
     live "/catalog", SubjectLive.Catalog, :catalog
     live "/subjects/:id", SubjectLive.Show
     live "/subjects/:id/edit", SubjectLive.Edit
-    
+
     # Archive
-    live "/subjects", SubjectLive.Index, :index
-    live "/subjects/new", SubjectLive.Index, :new
-    live "/subjects/:id/edit", SubjectLive.Index, :edit
-    live "/subjects/:id/show/edit", SubjectLive.Show, :edit
-    live "/topics", TopicLive.Index, :index
-    live "/topics/new", TopicLive.Index, :new
-    live "/topics/:id/edit", TopicLive.Index, :edit
-    live "/topics/:id", TopicLive.Show, :show
-    live "/topics/:id/show/edit", TopicLive.Show, :edit
+    # live "/subjects", SubjectLive.Index, :index
+    # live "/subjects/new", SubjectLive.Index, :new
+    # live "/subjects/:id/edit", SubjectLive.Index, :edit
+    # live "/subjects/:id/show/edit", SubjectLive.Show, :edit
+    # live "/topics", TopicLive.Index, :index
+    # live "/topics/new", TopicLive.Index, :new
+    # live "/topics/:id/edit", TopicLive.Index, :edit
+    # live "/topics/:id", TopicLive.Show, :show
+    # live "/topics/:id/show/edit", TopicLive.Show, :edit
     # End of Archive
   end
 

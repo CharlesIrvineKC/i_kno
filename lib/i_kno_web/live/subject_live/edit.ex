@@ -4,35 +4,100 @@ defmodule IKnoWeb.SubjectLive.Edit do
   alias IKno.Knowledge
 
   def mount(%{"id" => id}, _session, socket) do
-    {:ok, assign(socket, subject: Knowledge.get_subject!(id))}
+    socket =
+      assign(socket,
+        subject: Knowledge.get_subject!(id)
+      )
+
+    {:ok, socket}
+  end
+
+  def handle_event("cancel", _, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("save", subject_params, socket) do
+    save_subject(socket, subject_params)
+  end
+
+  defp save_subject(socket, subject_params) do
+    IO.inspect(Knowledge.update_subject(socket.assigns.subject, subject_params),
+      label: "*****************"
+    )
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div class="px-12">
-      <label for="message" class="block mb-4 text-lg font-medium text-gray-900 dark:text-white">
-        <%= @subject.name %>
-      </label>
-      <div>
-        <article>
-          <%= Earmark.as_html!(@subject.description, escape: false, inner_html: true, compact_output: true)
-          |> Phoenix.HTML.raw() %>
-        </article>
-      </div>
-      <button
-        type="button"
-        phx-click="edit"
-        class="mt-6 focus:outline-none text-white bg-green-700 hover:bg-green-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 "
-      >
-        Save
-      </button>
-      <button
-        type="button"
-        phx-click="edit"
-        class="mt-6 focus:outline-none text-white bg-orange-700 hover:bg-orange-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-orange-600 dark:hover:bg-orange-700 "
-      >
-        Cancel
-      </button>
+    <div>
+      <form phx-submit="save">
+        <div class="mb-6">
+          <label
+            for="name"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={@subject.name}
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+        </div>
+        <div class="mb-6">
+          <label
+            for="summary"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Summary
+          </label>
+          <input
+            type="text"
+            id="summary"
+            name="summary"
+            value={@subject.summary}
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+        </div>
+        <div class="mb-6">
+          <label
+            for="description"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows="25"
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Write your thoughts here..."
+          >
+            <%= @subject.description %>
+          </textarea>
+        </div>
+        <button
+          type="submit"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Save
+        </button>
+        <button
+          type="submit"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Preview
+        </button>
+      </form>
     </div>
     """
   end

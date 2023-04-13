@@ -8,6 +8,8 @@
             "type": "mix_task",
             "name": "phx.server",
             "request": "launch",
+            "debugAutoInterpretAllModules": false,
+            "debugInterpretModulesPatterns": ["IKnoWeb.*", "IKnow.*"],
             "task": "phx.server",
             "projectDir": "${workspaceRoot}"
         },

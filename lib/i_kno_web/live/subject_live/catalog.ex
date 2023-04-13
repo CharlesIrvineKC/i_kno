@@ -2,10 +2,9 @@ defmodule IKnoWeb.SubjectLive.Catalog do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
-  alias IKno.Knowledge.Subject
 
   def mount(_parameters, _session, socket) do
-    {:ok, assign(socket, :subjects, Knowledge.list_subjects())}
+    {:ok, assign(socket, :subjects, IO.inspect(Knowledge.list_subjects()))}
   end
 
   def render(assigns) do
