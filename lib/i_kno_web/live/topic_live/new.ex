@@ -5,13 +5,16 @@ defmodule IKnoWeb.TopicLive.New do
   alias IKno.Knowledge.Topic
 
   def mount(%{"subject_id" => subject_id}, _session, socket) do
-    socket = assign(socket, topic: %Topic{}, subject_id: subject_id)
+    socket = assign(socket, topic: %Topic{}, subject: Knowledge.get_subject!(subject_id))
     {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
     <div>
+      <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-3xl dark:text-white">
+        <%= @subject.name %>
+      </h1>
       <form phx-submit="save">
         <div class="mb-6">
           <label
