@@ -49,7 +49,7 @@ defmodule IKnoWeb.TopicLive.Topics do
                   Learn
                 </a>
                 <a
-                  href={~p"/subjects/:subject_id/topics/#{topic.id}/edit"}
+                  href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Edit
