@@ -1,25 +1,24 @@
-defmodule IKnoWeb.SubjectLive.Edit do
+defmodule IKnoWeb.SubjectLive.New do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
+  alias IKno.Knowledge.Subject
 
-  def mount(%{"id" => id}, _session, socket) do
-    socket =
-      assign(socket,
-        subject: Knowledge.get_subject!(id)
-      )
-
-    {:ok, socket}
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, subject: %Subject{})}
   end
 
   def handle_event("cancel", _, socket) do
-    {:noreply, redirect(socket, to: ~p"/subjects")}
+    {:noreply, socket}
   end
 
   def handle_event("save", subject_params, socket) do
-    subject = Knowledge.update_subject(socket.assigns.subject, subject_params)
-    socket = assign(socket, subject: subject)
+    save_subject(subject_params)
     {:noreply, redirect(socket, to: ~p"/subjects")}
+  end
+
+  defp save_subject(subject_params) do
+    Knowledge.create_subject(subject_params)
   end
 
   def render(assigns) do
@@ -67,8 +66,10 @@ defmodule IKnoWeb.SubjectLive.Edit do
             id="description"
             name="description"
             rows="25"
-            class="w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          ><%= @subject.description %>
+            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Write your thoughts here..."
+          >
+            <%= @subject.description %>
           </textarea>
         </div>
         <button
@@ -78,13 +79,13 @@ defmodule IKnoWeb.SubjectLive.Edit do
           Save
         </button>
         <button
-          phx-click="cancel"
+          type="submit"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Cancel
         </button>
         <button
-          phx-click="preview"
+          type="submit"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Preview

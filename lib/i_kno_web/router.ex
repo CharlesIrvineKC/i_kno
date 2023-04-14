@@ -22,7 +22,8 @@ defmodule IKnoWeb.Router do
 
     live "/", WelcomeLive
 
-    live "/catalog", SubjectLive.Catalog, :catalog
+    live "/subjects", SubjectLive.Subjects
+    live "/subjects/new", SubjectLive.New
     live "/subjects/:id", SubjectLive.Show
     live "/subjects/:id/edit", SubjectLive.Edit
 
