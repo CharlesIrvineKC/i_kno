@@ -24,20 +24,14 @@ defmodule IKnoWeb.Router do
 
     live "/subjects", SubjectLive.Subjects
     live "/subjects/new", SubjectLive.New
-    live "/subjects/:id", SubjectLive.Show
-    live "/subjects/:id/edit", SubjectLive.Edit
+    live "/subjects/:subject_id", SubjectLive.Show
+    live "/subjects/:subject_id/edit", SubjectLive.Edit
 
-    # Archive
-    # live "/subjects", SubjectLive.Index, :index
-    # live "/subjects/new", SubjectLive.Index, :new
-    # live "/subjects/:id/edit", SubjectLive.Index, :edit
-    # live "/subjects/:id/show/edit", SubjectLive.Show, :edit
-    # live "/topics", TopicLive.Index, :index
-    # live "/topics/new", TopicLive.Index, :new
-    # live "/topics/:id/edit", TopicLive.Index, :edit
-    # live "/topics/:id", TopicLive.Show, :show
-    # live "/topics/:id/show/edit", TopicLive.Show, :edit
-    # End of Archive
+    live "/subjects/:subject_id/topics", TopicLive.Topics
+    live "/subjects/:subject_id/topics/new", TopicLive.New
+    live "/subjects/:subject_id/topics/:topic_id", TopicLive.Show
+    live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit
+
   end
 
   # Other scopes may use custom stacks.
