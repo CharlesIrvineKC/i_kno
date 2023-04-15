@@ -11,16 +11,16 @@ defmodule IKnoWeb.TopicLive.Edit do
   end
 
   def handle_event("save", topic_params, socket) do
-    IO.inspect(topic_params, label: "************* topic_params *************")
     topic = Knowledge.update_topic(socket.assigns.topic, topic_params)
     socket = assign(socket, topic: topic)
     subject_id = socket.assigns.subject.id
-    {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics")}
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics/#{topic.id}")}
   end
 
   def handle_event("cancel", _, socket) do
     subject_id = socket.assigns.subject.id
-    {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics")}
+    topic_id = socket.assigns.topic.id
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics/#{topic_id}")}
   end
 
   def render(assigns) do

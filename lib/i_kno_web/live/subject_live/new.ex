@@ -13,12 +13,8 @@ defmodule IKnoWeb.SubjectLive.New do
   end
 
   def handle_event("save", subject_params, socket) do
-    save_subject(subject_params)
-    {:noreply, redirect(socket, to: ~p"/subjects")}
-  end
-
-  defp save_subject(subject_params) do
-    Knowledge.create_subject(subject_params)
+    {:ok, subject} = Knowledge.create_subject(subject_params)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}")}
   end
 
   def render(assigns) do
