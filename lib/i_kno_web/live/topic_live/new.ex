@@ -9,11 +9,22 @@ defmodule IKnoWeb.TopicLive.New do
     {:ok, socket}
   end
 
+  def handle_event("save", topic_params, socket) do
+    subject = socket.assigns.subject
+    topic_params = Map.put(topic_params, "subject_id", subject.id)
+    {:ok, topic} = Knowledge.create_topic(topic_params)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics/#{topic.id}")}
+  end
+
+  def handle_event("cancel", _, socket) do
+  {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}")}
+  end
+
   def render(assigns) do
     ~H"""
     <div>
       <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-3xl dark:text-white">
-        <%= @subject.name %>
+        New <%= @subject.name %> Topic
       </h1>
       <form phx-submit="save">
         <div class="mb-6">

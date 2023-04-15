@@ -3,7 +3,7 @@ defmodule IKnoWeb.SubjectLive.Edit do
 
   alias IKno.Knowledge
 
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"subject_id" => id}, _session, socket) do
     socket =
       assign(socket,
         subject: Knowledge.get_subject!(id)

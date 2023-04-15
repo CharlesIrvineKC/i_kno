@@ -9,7 +9,7 @@ defmodule IKnoWeb.SubjectLive.New do
   end
 
   def handle_event("cancel", _, socket) do
-    {:noreply, socket}
+    {:noreply, redirect(socket, to: ~p"/subjects")}
   end
 
   def handle_event("save", subject_params, socket) do
