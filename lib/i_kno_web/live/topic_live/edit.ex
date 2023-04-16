@@ -11,7 +11,7 @@ defmodule IKnoWeb.TopicLive.Edit do
   end
 
   def handle_event("save", topic_params, socket) do
-    topic = Knowledge.update_topic(socket.assigns.topic, topic_params)
+    {:ok, topic} = Knowledge.update_topic(socket.assigns.topic, topic_params)
     socket = assign(socket, topic: topic)
     subject_id = socket.assigns.subject.id
     {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics/#{topic.id}")}
