@@ -7,6 +7,7 @@ defmodule IKno.Knowledge do
   alias IKno.Repo
 
   alias IKno.Knowledge.Topic
+  alias IKno.Knowledge.KnownTopic
 
   def list_topics do
     Repo.all(Topic)
@@ -15,6 +16,22 @@ defmodule IKno.Knowledge do
   def list_subject_topics(subject_id) do
     query = from Topic, where: [subject_id: ^subject_id]
     Repo.all(query)
+  end
+
+  def get_known(topic_id, user_id) do
+    IO.inspect([topic_id, user_id], label: "********** topic user *********")
+    query =
+      from "known_topics",
+      where: [topic_id: ^topic_id, user_id: ^user_id],
+      select: [:topic_id, :user_id]
+    length(Repo.all(query)) == 1
+  end
+
+  def set_known(topic_id, user_id) do
+    attrs = %{"topic_id" => topic_id, "user_id" => user_id}
+    %KnownTopic{}
+    |> KnownTopic.changeset(attrs)
+    |> Repo.insert()
   end
 
   def get_topic!(id), do: Repo.get!(Topic, id)

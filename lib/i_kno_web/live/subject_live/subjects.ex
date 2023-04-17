@@ -76,7 +76,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
               >
                 View
               </a>
-              <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+              <a href={~p"/subjects/#{subject.id}/topics"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                 Learn
               </a>
               <a href={~p"/subjects/#{subject.id}/edit"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
