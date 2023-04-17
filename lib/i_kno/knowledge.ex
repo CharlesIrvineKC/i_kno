@@ -8,6 +8,7 @@ defmodule IKno.Knowledge do
 
   alias IKno.Knowledge.Topic
   alias IKno.Knowledge.KnownTopic
+  alias IKno.Knowledge.LearningGoal
 
   def list_topics do
     Repo.all(Topic)
@@ -31,6 +32,13 @@ defmodule IKno.Knowledge do
     attrs = %{"topic_id" => topic_id, "user_id" => user_id}
     %KnownTopic{}
     |> KnownTopic.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def set_learning(topic_id, user_id) do
+    attrs = %{"topic_id" => topic_id, "user_id" => user_id}
+    %LearningGoal{}
+    |> LearningGoal.changeset(attrs)
     |> Repo.insert()
   end
 

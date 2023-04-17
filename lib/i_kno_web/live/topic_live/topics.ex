@@ -2,12 +2,19 @@ defmodule IKnoWeb.TopicLive.Topics do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
+  alias IKno.Accounts
 
-  def mount(%{"subject_id" => subject_id}, _session, socket) do
+  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     topics = Knowledge.list_subject_topics(subject_id)
+    user = Accounts.get_user_by_session_token(user_token)
     subject = Knowledge.get_subject!(subject_id)
-    socket = assign(socket, topics: topics, subject: subject)
+    socket = assign(socket, topics: topics, subject: subject, user: user)
     {:ok, socket}
+  end
+
+  def handle_event("learn", %{"topic_id" => topic_id}, socket) do
+    Knowledge.set_learning(topic_id, socket.assigns.user.id)
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -47,7 +54,9 @@ defmodule IKnoWeb.TopicLive.Topics do
                   View
                 </a>
                 <a
-                  href="#"
+                phx-click="learn"
+                phx-value-topic_id={topic.id}
+                href="#"
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Learn

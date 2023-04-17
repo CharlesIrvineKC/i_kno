@@ -9,7 +9,6 @@ defmodule IKnoWeb.TopicLive.Show do
     user = Accounts.get_user_by_session_token(user_token)
     topic = Knowledge.get_topic!(topic_id)
     is_known = Knowledge.get_known(topic_id, user.id)
-    IO.inspect(is_known, label: "*********** is known ************")
     socket = assign(socket, topic: topic, is_known: is_known, user: user)
     {:ok, socket}
   end
