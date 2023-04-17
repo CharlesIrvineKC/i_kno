@@ -26,21 +26,23 @@ defmodule IKnoWeb.TopicLive.Show do
       <%= @topic.name %>
     </h1>
     <p class="text-black dark:text-gray-400">
-      <%= Earmark.as_html!(@topic.description,
-        escape: false,
-        inner_html: true,
-        compact_output: true
-      )
-      |> Phoenix.HTML.raw() %>
+      <section class="markdown">
+        <%= Earmark.as_html!(@topic.description,
+          escape: false,
+          inner_html: true,
+          compact_output: true
+        )
+        |> Phoenix.HTML.raw() %>
+      </section>
     </p>
     <%= if @is_known do %>
     <% else %>
-    <button
-      phx-click="understood"
-      class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    >
-      Understood
-    </button>
+      <button
+        phx-click="understood"
+        class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Understood
+      </button>
     <% end %>
     """
   end
