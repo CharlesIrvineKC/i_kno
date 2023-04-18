@@ -9,13 +9,20 @@ defmodule IKnoWeb.TopicLive.Show do
     user = Accounts.get_user_by_session_token(user_token)
     topic = Knowledge.get_topic!(topic_id)
     is_known = Knowledge.get_known(topic_id, user.id)
-    socket = assign(socket, topic: topic, is_known: is_known, user: user)
+    is_learning = Knowledge.get_learning(topic_id, user.id)
+    socket = assign(socket, topic: topic, is_known: is_known, user: user, is_learning: is_learning)
     {:ok, socket}
   end
 
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
     socket = assign(socket, is_known: true)
+    {:noreply, socket}
+  end
+
+  def handle_event("learn", _, socket) do
+    Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user.id)
+    socket = assign(socket, is_learning: true)
     {:noreply, socket}
   end
 
@@ -34,15 +41,20 @@ defmodule IKnoWeb.TopicLive.Show do
         |> Phoenix.HTML.raw() %>
       </section>
     </p>
-    <%= if @is_known do %>
-    <% else %>
-      <button
-        phx-click="understood"
-        class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Understood
-      </button>
-    <% end %>
+    <button
+      :if={!@is_known}
+      phx-click="understood"
+      class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    >
+      Understood
+    </button>
+    <button
+      :if={!@is_learning}
+      phx-click="learn"
+      class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    >
+      Learn
+    </button>
     """
   end
 end

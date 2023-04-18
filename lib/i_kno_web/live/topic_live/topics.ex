@@ -12,11 +12,6 @@ defmodule IKnoWeb.TopicLive.Topics do
     {:ok, socket}
   end
 
-  def handle_event("learn", %{"topic_id" => topic_id}, socket) do
-    Knowledge.set_learning(topic_id, socket.assigns.user.id)
-    {:noreply, socket}
-  end
-
   def render(assigns) do
     ~H"""
     <div>
@@ -49,14 +44,6 @@ defmodule IKnoWeb.TopicLive.Topics do
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   View
-                </a>
-                <a
-                  phx-click="learn"
-                  phx-value-topic_id={topic.id}
-                  href="#"
-                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                >
-                  Learn
                 </a>
                 <a
                   href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}

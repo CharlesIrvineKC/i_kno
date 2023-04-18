@@ -35,6 +35,14 @@ defmodule IKno.Knowledge do
     |> Repo.insert()
   end
 
+  def get_learning(topic_id, user_id) do
+    query =
+      from LearningGoal,
+      where: [topic_id: ^topic_id, user_id: ^user_id],
+      select: [:topic_id, :user_id]
+    length(Repo.all(query)) == 1
+  end
+
   def set_learning(topic_id, user_id) do
     attrs = %{"topic_id" => topic_id, "user_id" => user_id}
     %LearningGoal{}
