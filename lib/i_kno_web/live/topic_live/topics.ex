@@ -20,9 +20,9 @@ defmodule IKnoWeb.TopicLive.Topics do
   def render(assigns) do
     ~H"""
     <div>
-    <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
-      <%= @subject.name %>
-    </h1>
+      <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
+        <%= @subject.name %>
+      </h1>
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -40,10 +40,7 @@ defmodule IKnoWeb.TopicLive.Topics do
               :for={topic <- @topics}
               class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
-              <th
-                scope="row"
-                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <%= topic.name %>
               </th>
               <td class="px-6 py-4">
@@ -54,9 +51,9 @@ defmodule IKnoWeb.TopicLive.Topics do
                   View
                 </a>
                 <a
-                phx-click="learn"
-                phx-value-topic_id={topic.id}
-                href="#"
+                  phx-click="learn"
+                  phx-value-topic_id={topic.id}
+                  href="#"
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Learn
