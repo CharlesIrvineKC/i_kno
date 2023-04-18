@@ -26,6 +26,7 @@ defmodule IKnoWeb.Router do
     live "/subjects/new", SubjectLive.New
     live "/subjects/:subject_id", SubjectLive.Show
     live "/subjects/:subject_id/edit", SubjectLive.Edit
+    live "/subjects/:subject_id/learn", SubjectLive.Learn
 
     live "/subjects/:subject_id/topics", TopicLive.Topics
     live "/subjects/:subject_id/topics/new", TopicLive.New
