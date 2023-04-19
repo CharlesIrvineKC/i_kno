@@ -21,7 +21,7 @@ config :i_kno, IKnoWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [
     ip: {127, 0, 0, 1},
-    port: 4000,
+    port: 4050,
     protocol_options: [
       request_timeout: 100_000_000,
       shutdown_timeout: 100_000_000,
