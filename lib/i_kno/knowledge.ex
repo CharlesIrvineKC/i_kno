@@ -67,6 +67,13 @@ defmodule IKno.Knowledge do
     end
   end
 
+  def reset_subject_progress(subject_id, user_id) do
+    query = "delete from known_topics
+             where topic_id in (select id from topics where subject_id = $1)
+             and user_id = $2"
+    SQL.query(Repo, query, [subject_id, user_id])
+  end
+
   def create_topic(attrs \\ %{}) do
     %Topic{}
     |> Topic.changeset(attrs)
