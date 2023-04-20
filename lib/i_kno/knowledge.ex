@@ -121,4 +121,11 @@ defmodule IKno.Knowledge do
   def change_subject(%Subject{} = subject, attrs \\ %{}) do
     Subject.changeset(subject, attrs)
   end
+
+  def suggest_prereqs(prefix, subject_id) do
+    query = "select id, name from topics where subject_id = $1 and name like $2"
+    prefix = "%" <> prefix <> "%"
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, prefix])
+    Enum.map(rows, fn ([topic_id, name]) -> {name, topic_id} end) |> Map.new()
+  end
 end
