@@ -10,6 +10,7 @@ defmodule IKnoWeb.TopicLive.Show do
     topic = Knowledge.get_topic!(topic_id)
     is_known = Knowledge.get_known(topic_id, user.id)
     is_learning = Knowledge.get_learning(topic_id, user.id)
+    prereqs = Knowledge.get_prereqs(topic.id)
 
     socket =
       assign(socket,
@@ -19,6 +20,7 @@ defmodule IKnoWeb.TopicLive.Show do
         is_learning: is_learning,
         matches: [],
         keys: [],
+        prereqs: prereqs,
         prefix: "")
 
     {:ok, socket}
@@ -43,8 +45,11 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("add-prerequisite", %{"prefix" => topic_name}, socket) do
-    topic_id = socket.assigns.matches[topic_name]
-    {:noreply, socket}
+    prereq_topic_id = socket.assigns.matches[topic_name]
+    topic_id = socket.assigns.topic.id
+    Knowledge.create_prereq(%{topic_id: topic_id, prereq_id: prereq_topic_id})
+    prereqs = Knowledge.get_prereqs(topic_id)
+    {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
   end
 
   def render(assigns) do
@@ -83,17 +88,9 @@ defmodule IKnoWeb.TopicLive.Show do
       <div class="relative overflow-x-auto">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <tbody>
-            <tr class="bg-white dark:bg-gray-800">
+            <tr :for={prereq <- @prereqs} class="bg-white dark:bg-gray-800">
               <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Apple MacBook Pro 17
-              </td>
-              <td class="px-6 py-4">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
-              </td>
-            </tr>
-            <tr class="bg-white dark:bg-gray-800">
-              <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Apple MacBook Pro 17
+                <%= prereq.name %>
               </td>
               <td class="px-6 py-4">
                 <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
@@ -131,6 +128,7 @@ defmodule IKnoWeb.TopicLive.Show do
             name="prefix"
             value={@prefix}
             list="matches"
+            phx-debounce="1000"
             required
             placeholder="Search for New Prerequisite Topics"
             class="mt-10 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

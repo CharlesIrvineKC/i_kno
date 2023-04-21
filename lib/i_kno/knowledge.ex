@@ -9,7 +9,10 @@ defmodule IKno.Knowledge do
   alias IKno.Knowledge.Topic
   alias IKno.Knowledge.KnownTopic
   alias IKno.Knowledge.LearningGoal
+  alias IKno.Knowledge.PrereqTopic
   alias Ecto.Adapters.SQL
+
+  # Topics
 
   def list_topics do
     Repo.all(Topic)
@@ -94,6 +97,8 @@ defmodule IKno.Knowledge do
     Topic.changeset(topic, attrs)
   end
 
+  # Subjects
+
   alias IKno.Knowledge.Subject
 
   def list_subjects do
@@ -122,10 +127,25 @@ defmodule IKno.Knowledge do
     Subject.changeset(subject, attrs)
   end
 
-  def suggest_prereqs(prefix, subject_id) do
+  # Prerequisties
+
+  def create_prereq(attrs) do
+    %PrereqTopic{}
+    |> PrereqTopic.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def suggest_prereqs(substring, subject_id) do
     query = "select id, name from topics where subject_id = $1 and name like $2"
-    prefix = "%" <> prefix <> "%"
-    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, prefix])
+    pattern = "%" <> substring <> "%"
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, pattern])
     Enum.map(rows, fn ([topic_id, name]) -> {name, topic_id} end) |> Map.new()
+  end
+
+  def get_prereqs(topic_id) do
+    query = "select id, name from topics
+            where id in (select prereq_id from prereq_topics where topic_id = $1)"
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
+    Enum.map(rows, fn ([topic_id, name]) -> %{topic_id: topic_id, name: name} end)
   end
 end
