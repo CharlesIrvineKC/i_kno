@@ -26,6 +26,13 @@ defmodule IKnoWeb.TopicLive.Show do
     {:ok, socket}
   end
 
+  def handle_event("delete-prereq", %{"prereq-topic-id" => prereq_topic_id}, socket) do
+    Knowledge.delete_prereq(socket.assigns.topic.id, prereq_topic_id)
+    prereqs = Knowledge.get_prereqs(socket.assigns.topic.id, prereq_topic_id)
+    socket = assign(socket, prereqs: prereqs)
+    {:noreply, socket}
+  end
+
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
     socket = assign(socket, is_known: true)
@@ -93,7 +100,7 @@ defmodule IKnoWeb.TopicLive.Show do
                 <%= prereq.name %>
               </td>
               <td class="px-6 py-4">
-                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
+                <a href="#" phx-click="delete-prereq" phx-value-prereq-topic-id={prereq.topic_id} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
               </td>
             </tr>
           </tbody>

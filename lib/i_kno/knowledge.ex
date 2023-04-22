@@ -179,4 +179,10 @@ defmodule IKno.Knowledge do
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
     Enum.map(rows, fn ([topic_id, name]) -> %{topic_id: topic_id, name: name} end)
   end
+
+  def delete_prereq(topic_id, prereq_topic_id) do
+    prereq_topic_id = String.to_integer(prereq_topic_id)
+    query = "delete from prereq_topics where topic_id = $1 and prereq_id = $2"
+    {:ok, _result} = SQL.query(Repo, query, [topic_id, prereq_topic_id])
+  end
 end
