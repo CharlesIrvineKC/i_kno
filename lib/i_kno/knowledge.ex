@@ -64,9 +64,12 @@ defmodule IKno.Knowledge do
              and id not in (select topic_id from known_topics where user_id = $2)"
     {:ok, %{:rows => rows}} = SQL.query(Repo, query, [subject_id, user_id])
 
-    if length(rows) > 0 do
-      [[topic_id] | _rest] = rows
-      get_topic!(topic_id)
+    if length(rows) == 0 do
+      nil
+    else
+      topic_ids = Enum.map(rows, &(hd(&1)))
+      unknown_prereq_id = Enum.find(topic_ids, fn topic_id -> get_unknown_prereqs(topic_id, user_id) end)
+      get_topic!(unknown_prereq_id)
     end
   end
 
@@ -133,6 +136,25 @@ defmodule IKno.Knowledge do
     %PrereqTopic{}
     |> PrereqTopic.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def get_unknown_prereqs(topic_id, user_id) do
+    query =
+      "select pt.prereq_id
+       from topics as t, prereq_topics as pt, topics as prt
+       where t.id = $1
+       and pt.topic_id = t.id
+       and prt.id = pt.prereq_id
+       and prt.id not in
+       (
+           select kt.topic_id
+           from users as u, known_topics as kt, topics as t
+           where u.id = kt.user_id
+           and t.id = kt.topic_id
+           and u.id = $2
+       )"
+       {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id, user_id])
+       rows
   end
 
   def suggest_prereqs(substring, subject_id) do
