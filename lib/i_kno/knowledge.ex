@@ -157,6 +157,15 @@ defmodule IKno.Knowledge do
        rows
   end
 
+  def get_next_unknown_prereqs(topic_id, user_id) do
+    get_unknowns(get_unknown_prereqs(topic_id, user_id), user_id)
+  end
+
+  def get_unknowns([], _user_id), do: []
+  def get_unknowns([topic_id | topic_ids], user_id) do
+    Enum.concat(get_unknown_prereqs(topic_id, user_id), get_unknowns(topic_ids, user_id))
+  end
+
   def suggest_prereqs(substring, subject_id) do
     query = "select id, name from topics where subject_id = $1 and name like $2"
     pattern = "%" <> substring <> "%"
