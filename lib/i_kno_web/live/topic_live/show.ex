@@ -5,7 +5,6 @@ defmodule IKnoWeb.TopicLive.Show do
   alias IKno.Accounts
 
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
-    IO.inspect(socket, label: "************* socket *************")
     subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
@@ -22,7 +21,6 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_params(params, _url, socket) do
-    IO.inspect([params, socket.assigns.live_action], label: "******** params action *********")
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
@@ -46,7 +44,7 @@ defmodule IKnoWeb.TopicLive.Show do
     user = socket.assigns.user
     topic = Knowledge.get_topic!(topic_id)
     prereqs = Knowledge.get_prereqs(topic.id)
-    is_known = IO.inspect(Knowledge.get_known(topic.id, user.id), label: "*********** is_known *********")
+    is_known = Knowledge.get_known(topic.id, user.id)
 
     assign(
       socket,
