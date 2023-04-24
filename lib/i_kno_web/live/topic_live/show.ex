@@ -71,14 +71,17 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
-    topic =
+    {topic, is_known} =
       if socket.assigns.is_learning do
-        Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id)
+        {
+          Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id),
+          false
+        }
       else
-        socket.assigns.topic
+        {socket.assigns.topic, true}
       end
 
-    socket = assign(socket, topic: topic)
+    socket = assign(socket, topic: topic, is_known: is_known)
     {:noreply, socket}
   end
 
