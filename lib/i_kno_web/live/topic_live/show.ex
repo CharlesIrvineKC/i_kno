@@ -28,7 +28,7 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def handle_event("delete-prereq", %{"prereq-topic-id" => prereq_topic_id}, socket) do
     Knowledge.delete_prereq(socket.assigns.topic.id, prereq_topic_id)
-    prereqs = Knowledge.get_prereqs(socket.assigns.topic.id, prereq_topic_id)
+    prereqs = Knowledge.get_prereqs(socket.assigns.topic.id)
     socket = assign(socket, prereqs: prereqs)
     {:noreply, socket}
   end
