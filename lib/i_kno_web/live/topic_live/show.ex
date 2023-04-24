@@ -29,8 +29,20 @@ defmodule IKnoWeb.TopicLive.Show do
     subject_id = socket.assigns.subject.id
     user = socket.assigns.user
     topic = Knowledge.get_unknown_topic(subject_id, user.id)
-    prereqs = if topic do Knowledge.get_prereqs(topic.id) else [] end
-    is_known = if topic do Knowledge.get_known(topic.id, user.id) else nil end
+
+    prereqs =
+      if topic do
+        Knowledge.get_prereqs(topic.id)
+      else
+        []
+      end
+
+    is_known =
+      if topic do
+        Knowledge.get_known(topic.id, user.id)
+      else
+        nil
+      end
 
     assign(
       socket,
@@ -72,6 +84,7 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
+
     {topic, is_known} =
       if socket.assigns.is_learning do
         {
@@ -82,7 +95,9 @@ defmodule IKnoWeb.TopicLive.Show do
         {socket.assigns.topic, true}
       end
 
-    socket = assign(socket, topic: topic, is_known: is_known)
+    prereqs = if topic do Knowledge.get_prereqs(topic.id) else [] end
+
+    socket = assign(socket, topic: topic, is_known: is_known, prereqs: prereqs)
     {:noreply, socket}
   end
 
