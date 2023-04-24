@@ -1,6 +1,8 @@
 defmodule IKnoWeb.Components.PrereqDisplay do
   use IKnoWeb, :live_component
 
+  alias IKno.Knowledge
+
   def handle_event("suggest", %{"prefix" => prefix}, socket) do
     matches = Knowledge.suggest_prereqs(prefix, socket.assigns.topic.subject_id)
     keys = Map.keys(matches)

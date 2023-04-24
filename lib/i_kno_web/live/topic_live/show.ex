@@ -4,26 +4,64 @@ defmodule IKnoWeb.TopicLive.Show do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  def mount(%{"topic_id" => topic_id}, %{"user_token" => user_token}, socket) do
-    topic_id = String.to_integer(topic_id)
+  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
+    IO.inspect(socket, label: "************* socket *************")
+    subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
-    topic = Knowledge.get_topic!(topic_id)
-    is_known = Knowledge.get_known(topic_id, user.id)
-    is_learning = Knowledge.get_learning(topic_id, user.id)
-    prereqs = Knowledge.get_prereqs(topic.id)
 
     socket =
       assign(socket,
-        topic: topic,
-        is_known: is_known,
+        subject_id: subject_id,
         user: user,
-        is_learning: is_learning,
         matches: [],
         keys: [],
-        prereqs: prereqs,
-        prefix: "")
+        prefix: ""
+      )
 
     {:ok, socket}
+  end
+
+  def handle_params(params, _url, socket) do
+    IO.inspect([params, socket.assigns.live_action], label: "******** params action *********")
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :learn, _params) do
+    subject_id = socket.assigns.subject_id
+    user = socket.assigns.user
+    topic = Knowledge.get_unknown_topic(subject_id, user.id)
+    prereqs = if topic do Knowledge.get_prereqs(topic.id) else [] end
+    is_known = if topic do Knowledge.get_known(topic.id, user.id) else nil end
+
+    assign(
+      socket,
+      topic: topic,
+      is_known: is_known,
+      prereqs: prereqs,
+      is_learning: true
+    )
+  end
+
+  defp apply_action(socket, :show, %{"topic_id" => topic_id}) do
+    user = socket.assigns.user
+    topic = Knowledge.get_topic!(topic_id)
+    prereqs = Knowledge.get_prereqs(topic.id)
+    is_known = IO.inspect(Knowledge.get_known(topic.id, user.id), label: "*********** is_known *********")
+
+    assign(
+      socket,
+      topic: topic,
+      is_known: is_known,
+      prereqs: prereqs,
+      is_learning: false
+    )
+  end
+
+  def handle_event("review", _, socket) do
+    Knowledge.reset_subject_progress(socket.assigns.subject_id, socket.assigns.user.id)
+    topic = Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id)
+    socket = assign(socket, topic: topic)
+    {:noreply, socket}
   end
 
   def handle_event("delete-prereq", %{"prereq-topic-id" => prereq_topic_id}, socket) do
@@ -35,7 +73,14 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
-    socket = assign(socket, is_known: true)
+    topic =
+      if socket.assigns.is_learning do
+        Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id)
+      else
+        socket.assigns.topic
+      end
+
+    socket = assign(socket, topic: topic)
     {:noreply, socket}
   end
 
@@ -61,99 +106,114 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def render(assigns) do
     ~H"""
-    <div>
-      <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
-        <%= @topic.name %>
+    <%= if @topic == nil do %>
+      <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+        Congradulations!
       </h1>
-      <p class="text-black dark:text-gray-400">
-        <section class="markdown">
-          <%= Earmark.as_html!(@topic.description,
-            escape: false,
-            inner_html: true,
-            compact_output: true
-          )
-          |> Phoenix.HTML.raw() %>
-        </section>
+      <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
+        You have completed your review of this subject. Click the button below if you would like to review the subject again.
       </p>
-      <button
-        :if={!@is_known}
-        phx-click="understood"
-        class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      <a
+        phx-click="review"
+        href="#"
+        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
       >
-        Understood
-      </button>
-      <button
-        :if={!@is_learning}
-        phx-click="learn"
-        class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Learn
-      </button>
-    </div>
-    <div class="mt-20">
-      <h2 class="mb-6 text-2xl font-extrabold dark:text-white">Prerequisite Topics</h2>
-      <div class="relative overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <tbody>
-            <tr :for={prereq <- @prereqs} class="bg-white dark:bg-gray-800">
-              <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <%= prereq.name %>
-              </td>
-              <td class="px-6 py-4">
-                <a href="#" phx-click="delete-prereq" phx-value-prereq-topic-id={prereq.topic_id} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        Review
+      </a>
+    <% else %>
+      <div>
+        <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
+          <%= @topic.name %>
+        </h1>
+        <p class="text-black dark:text-gray-400">
+          <section class="markdown">
+            <%= Earmark.as_html!(@topic.description,
+              escape: false,
+              inner_html: true,
+              compact_output: true
+            )
+            |> Phoenix.HTML.raw() %>
+          </section>
+        </p>
+        <button
+          :if={!@is_known}
+          phx-click="understood"
+          class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Understood
+        </button>
       </div>
-
-      <form phx-change="suggest" phx-submit="add-prerequisite">
-        <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
-          Search
-        </label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              aria-hidden="true"
-              class="w-5 h-5 text-gray-500 dark:text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              >
-              </path>
-            </svg>
-          </div>
-          <input
-            type="search"
-            name="prefix"
-            value={@prefix}
-            list="matches"
-            phx-debounce="1000"
-            required
-            placeholder="Search for New Prerequisite Topics"
-            class="mt-10 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          />
-          <button
-            type="submit"
-            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Add Prerequisite
-          </button>
+      <div class="mt-20">
+        <h2 class="mb-6 text-2xl font-extrabold dark:text-white">Prerequisite Topics</h2>
+        <div class="relative overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <tbody>
+              <tr :for={prereq <- @prereqs} class="bg-white dark:bg-gray-800">
+                <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <%= prereq.name %>
+                </td>
+                <td class="px-6 py-4">
+                  <a
+                    href="#"
+                    phx-click="delete-prereq"
+                    phx-value-prereq-topic-id={prereq.topic_id}
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >
+                    Delete
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
 
-      <datalist id="matches">
-        <option :for={key <- @keys} value={key}>
-        </option>
-      </datalist>
-    </div>
+        <form phx-change="suggest" phx-submit="add-prerequisite">
+          <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
+            Search
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                >
+                </path>
+              </svg>
+            </div>
+            <input
+              type="search"
+              name="prefix"
+              value={@prefix}
+              list="matches"
+              phx-debounce="1000"
+              required
+              placeholder="Search for New Prerequisite Topics"
+              class="mt-10 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Add Prerequisite
+            </button>
+          </div>
+        </form>
+
+        <datalist id="matches">
+          <option :for={key <- @keys} value={key}></option>
+        </datalist>
+      </div>
+    <% end %>
     """
   end
 end
