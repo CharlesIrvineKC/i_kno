@@ -6,11 +6,12 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
+    subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
     socket =
       assign(socket,
-        subject_id: subject_id,
+        subject: subject,
         user: user,
         matches: [],
         keys: [],
@@ -25,7 +26,7 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   defp apply_action(socket, :learn, _params) do
-    subject_id = socket.assigns.subject_id
+    subject_id = socket.assigns.subject.id
     user = socket.assigns.user
     topic = Knowledge.get_unknown_topic(subject_id, user.id)
     prereqs = if topic do Knowledge.get_prereqs(topic.id) else [] end
@@ -56,8 +57,8 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("review", _, socket) do
-    Knowledge.reset_subject_progress(socket.assigns.subject_id, socket.assigns.user.id)
-    topic = Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id)
+    Knowledge.reset_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
+    topic = Knowledge.get_unknown_topic(socket.assigns.subject.id, socket.assigns.user.id)
     socket = assign(socket, topic: topic)
     {:noreply, socket}
   end
@@ -74,7 +75,7 @@ defmodule IKnoWeb.TopicLive.Show do
     {topic, is_known} =
       if socket.assigns.is_learning do
         {
-          Knowledge.get_unknown_topic(socket.assigns.subject_id, socket.assigns.user.id),
+          Knowledge.get_unknown_topic(socket.assigns.subject.id, socket.assigns.user.id),
           false
         }
       else
@@ -92,7 +93,7 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("suggest", %{"prefix" => prefix}, socket) do
-    matches = Knowledge.suggest_prereqs(prefix, socket.assigns.topic.subject_id)
+    matches = Knowledge.suggest_prereqs(prefix, socket.assigns.subject.id)
     keys = Map.keys(matches)
     {:noreply, assign(socket, matches: matches, keys: keys)}
   end
@@ -112,7 +113,7 @@ defmodule IKnoWeb.TopicLive.Show do
         Congradulations!
       </h1>
       <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-        You have completed your review of this subject. Click the button below if you would like to review the subject again.
+        You have completed your review of <i><b><%= @subject.name %></b></i>. Click the button below if you would like to review this subject again.
       </p>
       <a
         phx-click="review"
