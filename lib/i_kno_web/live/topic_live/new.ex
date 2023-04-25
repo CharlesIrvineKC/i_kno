@@ -12,8 +12,8 @@ defmodule IKnoWeb.TopicLive.New do
   def handle_event("save", topic_params, socket) do
     subject = socket.assigns.subject
     topic_params = Map.put(topic_params, "subject_id", subject.id)
-    {:ok, topic} = Knowledge.create_topic(topic_params)
-    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics/#{topic.id}")}
+    Knowledge.create_topic(topic_params)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics")}
   end
 
   def handle_event("cancel", _, socket) do
@@ -38,7 +38,6 @@ defmodule IKnoWeb.TopicLive.New do
             type="text"
             id="name"
             name="name"
-            value={@topic.name}
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
         </div>
@@ -54,8 +53,7 @@ defmodule IKnoWeb.TopicLive.New do
             name="description"
             rows="25"
             class="w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          ><%= @topic.description %>
-          </textarea>
+          />
         </div>
         <button
           type="submit"

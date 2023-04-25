@@ -101,6 +101,11 @@ defmodule IKnoWeb.TopicLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("edit", _, socket) do
+    topic = socket.assigns.topic
+    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit")}
+  end
+
   def handle_event("learn", _, socket) do
     Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user.id)
     socket = assign(socket, is_learning: true)
@@ -144,12 +149,7 @@ defmodule IKnoWeb.TopicLive.Show do
         </h1>
         <p class="text-black dark:text-gray-400">
           <section class="markdown">
-            <%= Earmark.as_html!(@topic.description,
-              escape: false,
-              inner_html: true,
-              compact_output: true
-            )
-            |> Phoenix.HTML.raw() %>
+            <%= Earmark.as_html!(@topic.description) |> Phoenix.HTML.raw() %>
           </section>
         </p>
         <button
@@ -158,6 +158,12 @@ defmodule IKnoWeb.TopicLive.Show do
           class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Understood
+        </button>
+        <button
+          phx-click="edit"
+          class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Edit
         </button>
       </div>
       <div class="mt-20">

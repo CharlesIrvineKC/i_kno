@@ -22,12 +22,7 @@ defmodule IKnoWeb.SubjectLive.Show do
     </p>
     <p class="text-black dark:text-gray-400">
       <section class="markdown">
-        <%= Earmark.as_html!(@subject.description,
-          escape: false,
-          inner_html: true,
-          compact_output: true
-        )
-        |> Phoenix.HTML.raw() %>
+        <%= Earmark.as_html!(@subject.description) |> Phoenix.HTML.raw() %>
       </section>
     </p>
     <button

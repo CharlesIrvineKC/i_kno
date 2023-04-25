@@ -11,7 +11,7 @@ defmodule IKnoWeb.IKnoComponents do
         "prose dark:prose-invert prose-a:text-blue-600 descendant:dark:text-white",
         @class
       ]}>
-        <%= Earmark.as_html!(@input, escape: false, inner_html: true, compact_output: true)
+        <%= Earmark.as_html!(@input, escape: false, inner_html: true, compact_output: false)
         |> Phoenix.HTML.raw() %>
       </article>
     </div>

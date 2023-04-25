@@ -67,8 +67,11 @@ defmodule IKno.Knowledge do
     if length(rows) == 0 do
       nil
     else
-      topic_ids = Enum.map(rows, &(hd(&1)))
-      unknown_prereq_id = Enum.find(topic_ids, fn topic_id -> get_unknown_prereqs(topic_id, user_id) end)
+      topic_ids = Enum.map(rows, &hd(&1))
+
+      unknown_prereq_id =
+        Enum.find(topic_ids, fn topic_id -> get_immediate_unknown_prereqs(topic_id, user_id) end)
+
       get_topic!(unknown_prereq_id)
     end
   end
@@ -138,9 +141,8 @@ defmodule IKno.Knowledge do
     |> Repo.insert()
   end
 
-  def get_unknown_prereqs(topic_id, user_id) do
-    query =
-      "select pt.prereq_id
+  def get_immediate_unknown_prereqs(topic_id, user_id) do
+    query = "select pt.prereq_id
        from topics as t, prereq_topics as pt, topics as prt
        where t.id = $1
        and pt.topic_id = t.id
@@ -153,36 +155,47 @@ defmodule IKno.Knowledge do
            and t.id = kt.topic_id
            and u.id = $2
        )"
-       {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id, user_id])
-       rows
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id, user_id])
+    rows
   end
 
   def get_next_unknown_prereqs(topic_id, user_id) do
-    get_unknowns(get_unknown_prereqs(topic_id, user_id), user_id)
+    get_unknowns(get_immediate_unknown_prereqs(topic_id, user_id), user_id)
   end
 
   def get_unknowns([], _user_id), do: []
+
   def get_unknowns([topic_id | topic_ids], user_id) do
-    Enum.concat(get_unknown_prereqs(topic_id, user_id), get_unknowns(topic_ids, user_id))
+    Enum.concat(get_immediate_unknown_prereqs(topic_id, user_id), get_unknowns(topic_ids, user_id))
   end
 
   def suggest_prereqs(substring, subject_id) do
     query = "select id, name from topics where subject_id = $1 and name like $2"
     pattern = "%" <> substring <> "%"
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, pattern])
-    Enum.map(rows, fn ([topic_id, name]) -> {name, topic_id} end) |> Map.new()
+    Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
   end
 
   def get_prereqs(topic_id) do
     query = "select id, name from topics
             where id in (select prereq_id from prereq_topics where topic_id = $1)"
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
-    Enum.map(rows, fn ([topic_id, name]) -> %{topic_id: topic_id, name: name} end)
+    Enum.map(rows, fn [topic_id, name] -> %{topic_id: topic_id, name: name} end)
   end
 
   def delete_prereq(topic_id, prereq_topic_id) do
     prereq_topic_id = String.to_integer(prereq_topic_id)
     query = "delete from prereq_topics where topic_id = $1 and prereq_id = $2"
     {:ok, _result} = SQL.query(Repo, query, [topic_id, prereq_topic_id])
+  end
+
+  def all_prereqs(subject_id) do
+    query = "select t.id, pt.prereq_id
+             from topics as t
+             left join prereq_topics as pt
+             on pt.topic_id = t.id
+             where t.subject_id = $1"
+    {:ok, result} = SQL.query(Repo, query, [subject_id])
+    result
   end
 end
