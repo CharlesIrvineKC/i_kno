@@ -11,6 +11,12 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     {:noreply, redirect(socket, to: ~p"/subjects/new")}
   end
 
+  def handle_event("delete-subject", %{"subject-id" => subject_id}, socket) do
+    subject_id = String.to_integer(subject_id)
+    Knowledge.delete_subject_by_id(subject_id)
+    {:noreply, assign(socket, :subjects, Knowledge.list_subjects())}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="mb-10 pb-4 bg-white dark:bg-gray-900">
@@ -78,6 +84,9 @@ defmodule IKnoWeb.SubjectLive.Subjects do
               </a>
               <a href={~p"/subjects/#{subject.id}/edit"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                 Edit
+              </a>
+              <a phx-click="delete-subject" phx-value-subject-id={subject.id} href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                Delete
               </a>
             </td>
           </tr>

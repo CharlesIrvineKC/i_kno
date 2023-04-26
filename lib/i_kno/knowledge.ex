@@ -152,6 +152,11 @@ defmodule IKno.Knowledge do
     Repo.delete(subject)
   end
 
+  def delete_subject_by_id(subject_id) do
+    query = "delete from subjects where id = $1"
+    {:ok, _result} = SQL.query(Repo, query, [subject_id])
+  end
+
   def change_subject(%Subject{} = subject, attrs \\ %{}) do
     Subject.changeset(subject, attrs)
   end
