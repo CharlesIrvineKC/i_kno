@@ -68,10 +68,15 @@ defmodule IKnoWeb.TopicLive.Show do
     )
   end
 
+  def handle_event("new", _, socket) do
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/new")}
+  end
+
   def handle_event("review", _, socket) do
     Knowledge.reset_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
     topic = Knowledge.get_unknown_topic(socket.assigns.subject.id, socket.assigns.user.id)
-    socket = assign(socket, topic: topic)
+    prereqs = Knowledge.get_prereqs(topic.id)
+    socket = assign(socket, topic: topic, prereqs: prereqs)
     {:noreply, socket}
   end
 
@@ -164,6 +169,12 @@ defmodule IKnoWeb.TopicLive.Show do
           class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Edit
+        </button>
+        <button
+          phx-click="new"
+          class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          New
         </button>
       </div>
       <div class="mt-20">

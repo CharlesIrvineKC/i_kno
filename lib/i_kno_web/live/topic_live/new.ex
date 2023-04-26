@@ -12,8 +12,8 @@ defmodule IKnoWeb.TopicLive.New do
   def handle_event("save", topic_params, socket) do
     subject = socket.assigns.subject
     topic_params = Map.put(topic_params, "subject_id", subject.id)
-    Knowledge.create_topic(topic_params)
-    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics")}
+    {:ok, topic} = Knowledge.create_topic(topic_params)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics/#{topic.id}")}
   end
 
   def handle_event("cancel", _, socket) do
