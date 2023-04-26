@@ -58,21 +58,44 @@ defmodule IKno.Knowledge do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
-  def get_unknown_topic(subject_id, user_id) do
-    query = "select id from topics
-             where subject_id = $1
-             and id not in (select topic_id from known_topics where user_id = $2)"
-    {:ok, %{:rows => rows}} = SQL.query(Repo, query, [subject_id, user_id])
+  def get_next_unknown_topics(_subject_id, user_id) do
+    query = "select t.id
+    from topics as t
+    left join prereq_topics as pt
+    on t.id = pt.topic_id
+    where t.id not in
+    (
+        select t.id
+        from topics as t
+        left join prereq_topics as pt
+        on t.id = pt.topic_id
+        where pt.prereq_id = any
+        (
+            select t.id
+            from topics t
+            where t.id not in
+            (
+                select kt.topic_id
+                from known_topics as kt
+                where kt.user_id = $1
+            )
+        )
+    )
+    and t.id not in
+    (
+        select kt.topic_id
+        from known_topics as kt, topics as t
+        where kt.user_id = 2
+        and kt.topic_id = t.id
+    )
+    group by t.id"
 
-    if length(rows) == 0 do
-      nil
+    {:ok, result} = SQL.query(Repo, query, [user_id])
+
+    if length(result.rows) > 0 do
+      Enum.map(result.rows, &hd(&1))
     else
-      topic_ids = Enum.map(rows, &hd(&1))
-
-      unknown_prereq_id =
-        Enum.find(topic_ids, fn topic_id -> get_immediate_unknown_prereqs(topic_id, user_id) end)
-
-      get_topic!(unknown_prereq_id)
+      []
     end
   end
 
@@ -157,16 +180,6 @@ defmodule IKno.Knowledge do
        )"
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id, user_id])
     rows
-  end
-
-  def get_next_unknown_prereqs(topic_id, user_id) do
-    get_unknowns(get_immediate_unknown_prereqs(topic_id, user_id), user_id)
-  end
-
-  def get_unknowns([], _user_id), do: []
-
-  def get_unknowns([topic_id | topic_ids], user_id) do
-    Enum.concat(get_immediate_unknown_prereqs(topic_id, user_id), get_unknowns(topic_ids, user_id))
   end
 
   def suggest_prereqs(substring, subject_id) do

@@ -28,25 +28,15 @@ defmodule IKnoWeb.TopicLive.Show do
   defp apply_action(socket, :learn, _params) do
     subject_id = socket.assigns.subject.id
     user = socket.assigns.user
-    topic = Knowledge.get_unknown_topic(subject_id, user.id)
-
-    prereqs =
-      if topic do
-        Knowledge.get_prereqs(topic.id)
-      else
-        []
-      end
-
-    is_known =
-      if topic do
-        Knowledge.get_known(topic.id, user.id)
-      else
-        nil
-      end
+    topic_ids = Knowledge.get_next_unknown_topics(subject_id, user.id)
+    topic = if topic_ids != [], do: Knowledge.get_topic!(hd(topic_ids)), else: nil
+    prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
+    is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
 
     assign(
       socket,
       topic: topic,
+      next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
       is_known: is_known,
       prereqs: prereqs,
       is_learning: true
@@ -74,9 +64,11 @@ defmodule IKnoWeb.TopicLive.Show do
 
   def handle_event("review", _, socket) do
     Knowledge.reset_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
-    topic = Knowledge.get_unknown_topic(socket.assigns.subject.id, socket.assigns.user.id)
+    topic_ids = Knowledge.get_next_unknown_topics(socket.assigns.subject.id, socket.assigns.user.id)
+    topic = Knowledge.get_topic!(hd(topic_ids))
+    next_topic_ids = tl(topic_ids)
     prereqs = Knowledge.get_prereqs(topic.id)
-    socket = assign(socket, topic: topic, prereqs: prereqs)
+    socket = assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs)
     {:noreply, socket}
   end
 
@@ -87,22 +79,20 @@ defmodule IKnoWeb.TopicLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("view", %{"prereq-topic-id" => prereq_topic_id}, socket) do
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{prereq_topic_id}")}
+  end
+
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
 
-    {topic, is_known} =
-      if socket.assigns.is_learning do
-        {
-          Knowledge.get_unknown_topic(socket.assigns.subject.id, socket.assigns.user.id),
-          false
-        }
-      else
-        {socket.assigns.topic, true}
-      end
+    next_topic_ids = get_next_topics(socket)
+    topic = if length(next_topic_ids) > 0, do: Knowledge.get_topic!(hd(next_topic_ids)), else: nil
+    next_topic_ids = if topic, do: tl(next_topic_ids), else: []
+    prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
 
-    prereqs = if topic do Knowledge.get_prereqs(topic.id) else [] end
+    socket = assign(socket, topic: topic, is_known: false, prereqs: prereqs, next_topic_ids: next_topic_ids)
 
-    socket = assign(socket, topic: topic, is_known: is_known, prereqs: prereqs)
     {:noreply, socket}
   end
 
@@ -129,6 +119,18 @@ defmodule IKnoWeb.TopicLive.Show do
     Knowledge.create_prereq(%{topic_id: topic_id, prereq_id: prereq_topic_id})
     prereqs = Knowledge.get_prereqs(topic_id)
     {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
+  end
+
+  defp get_next_topics(socket) do
+    if socket.assigns.is_learning do
+      if length(socket.assigns.next_topic_ids) > 0 do
+        socket.assigns.next_topic_ids
+      else
+        Knowledge.get_next_unknown_topics(socket.assigns.subject.id, socket.assigns.user.id)
+      end
+    else
+      socket.assigns.next_topic_ids
+    end
   end
 
   def render(assigns) do
@@ -194,6 +196,14 @@ defmodule IKnoWeb.TopicLive.Show do
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
+                  </a>
+                  <a
+                    href="#"
+                    phx-click="view"
+                    phx-value-prereq-topic-id={prereq.topic_id}
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >
+                    View
                   </a>
                 </td>
               </tr>
