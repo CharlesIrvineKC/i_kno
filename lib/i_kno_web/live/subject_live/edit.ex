@@ -13,13 +13,13 @@ defmodule IKnoWeb.SubjectLive.Edit do
   end
 
   def handle_event("cancel", _, socket) do
-    {:noreply, redirect(socket, to: ~p"/subjects")}
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}")}
   end
 
   def handle_event("save", subject_params, socket) do
-    subject = Knowledge.update_subject(socket.assigns.subject, subject_params)
+    {:ok, subject} = Knowledge.update_subject(socket.assigns.subject, subject_params)
     socket = assign(socket, subject: subject)
-    {:noreply, redirect(socket, to: ~p"/subjects")}
+    {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}")}
   end
 
   def render(assigns) do
