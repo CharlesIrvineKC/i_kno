@@ -87,7 +87,10 @@ defmodule IKnoWeb.TopicLive.Show do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
 
     next_topic_ids = get_next_topics(socket)
-    topic = if length(next_topic_ids) > 0, do: Knowledge.get_topic!(hd(next_topic_ids)), else: nil
+
+    topic =
+      if next_topic_ids && length(next_topic_ids) > 0, do: Knowledge.get_topic!(hd(next_topic_ids)), else: nil
+
     next_topic_ids = if topic, do: tl(next_topic_ids), else: []
     prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
 
@@ -129,7 +132,7 @@ defmodule IKnoWeb.TopicLive.Show do
         Knowledge.get_next_unknown_topics(socket.assigns.subject.id, socket.assigns.user.id)
       end
     else
-      socket.assigns.next_topic_ids
+      nil
     end
   end
 
@@ -242,7 +245,7 @@ defmodule IKnoWeb.TopicLive.Show do
               phx-debounce="1000"
               required
               placeholder="Search for New Prerequisite Topics"
-              class="mt-10 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="my-10 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
             <button
               type="submit"
