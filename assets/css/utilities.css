@@ -2,7 +2,7 @@
   /* A set of reusable classes */
 
   .bg-editor {
-    background-color: #282c34;
+    background-color: #f5efe9;
   }
 
   body[data-editor-theme="light"] .bg-editor {
@@ -10,7 +10,7 @@
   }
 
   .text-editor {
-    color: #c4cad6;
+    color: black;
   }
 
   .font-editor {
