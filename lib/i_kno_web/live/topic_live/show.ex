@@ -10,8 +10,7 @@ defmodule IKnoWeb.TopicLive.Show do
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
-    socket =
-      assign(socket, subject: subject, user: user)
+    socket = assign(socket, subject: subject, user: user)
 
     {:ok, socket}
   end
@@ -20,10 +19,31 @@ defmodule IKnoWeb.TopicLive.Show do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :learn, _params) do
+  defp apply_action(socket, :learn_topic, %{"topic_id" => topic_id}) do
+    subject_id = socket.assigns.subject.id
+    learning_topic_id = String.to_integer(topic_id)
+    user = socket.assigns.user
+    topic_ids = Knowledge.get_next_unknown_topic_topics(subject_id, learning_topic_id, user.id)
+    topic = if topic_ids != [], do: Knowledge.get_topic!(hd(topic_ids)), else: nil
+    prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
+    is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
+
+    assign(
+      socket,
+      learning_topic_id: learning_topic_id,
+      topic: topic,
+      next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: []),
+      is_known: is_known,
+      prereqs: prereqs,
+      mode: :learn_topic,
+      learn_topic_complete: false
+    )
+  end
+
+  defp apply_action(socket, :learn_subject, _params) do
     subject_id = socket.assigns.subject.id
     user = socket.assigns.user
-    topic_ids = Knowledge.get_next_unknown_topics(subject_id, user.id)
+    topic_ids = Knowledge.get_next_unknown_subject_topics(subject_id, user.id)
     topic = if topic_ids != [], do: Knowledge.get_topic!(hd(topic_ids)), else: nil
     prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
     is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
@@ -34,7 +54,7 @@ defmodule IKnoWeb.TopicLive.Show do
       next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
       is_known: is_known,
       prereqs: prereqs,
-      is_learning: true
+      mode: :learn_subject
     )
   end
 
@@ -49,7 +69,7 @@ defmodule IKnoWeb.TopicLive.Show do
       topic: topic,
       is_known: is_known,
       prereqs: prereqs,
-      is_learning: false
+      mode: :show
     )
   end
 
@@ -58,8 +78,8 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("review", _, socket) do
-    Knowledge.reset_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
-    topic_ids = Knowledge.get_next_unknown_topics(socket.assigns.subject.id, socket.assigns.user.id)
+    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
+    topic_ids = Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
     topic = Knowledge.get_topic!(hd(topic_ids))
     next_topic_ids = tl(topic_ids)
     prereqs = Knowledge.get_prereqs(topic.id)
@@ -70,17 +90,53 @@ defmodule IKnoWeb.TopicLive.Show do
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
 
-    next_topic_ids = get_next_topics(socket)
+    case socket.assigns.mode do
+      :show ->
+        {:noreply, socket}
 
-    topic =
-      if next_topic_ids && length(next_topic_ids) > 0, do: Knowledge.get_topic!(hd(next_topic_ids)), else: nil
+      :learn_subject ->
+        next_topic_ids = get_next_topics(socket)
+        next_topic_id = List.first(next_topic_ids)
 
-    next_topic_ids = if topic, do: tl(next_topic_ids), else: []
-    prereqs = if topic, do: Knowledge.get_prereqs(topic.id), else: []
+        if next_topic_id do
+          topic = Knowledge.get_topic!(next_topic_id)
+          next_topic_ids = tl(next_topic_ids)
+          prereqs = Knowledge.get_prereqs(topic.id)
+          {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
+        else
+          topic = nil
+          next_topic_ids = []
+          prereqs = []
+          {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
+        end
 
-    socket = assign(socket, topic: topic, is_known: false, prereqs: prereqs, next_topic_ids: next_topic_ids)
+      :learn_topic ->
+        if !socket.assigns.learn_topic_complete do
+          next_topic_ids = get_next_topics(socket)
+          next_topic_id = List.first(next_topic_ids)
 
-    {:noreply, socket}
+          if next_topic_id do
+            topic = Knowledge.get_topic!(next_topic_id)
+            next_topic_ids = tl(next_topic_ids)
+            prereqs = Knowledge.get_prereqs(topic.id)
+            {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
+          else
+            topic = Knowledge.get_topic!(socket.assigns.learning_topic_id)
+            next_topic_ids = []
+            prereqs = Knowledge.get_prereqs(topic.id)
+
+            {:noreply,
+             assign(socket,
+               topic: topic,
+               prereqs: prereqs,
+               next_topic_ids: next_topic_ids,
+               learn_topic_complete: true
+             )}
+          end
+        else
+          {:noreply, assign(socket, topic: nil, prereqs: [], next_topic_ids: [])}
+        end
+    end
   end
 
   def handle_event("edit", _, socket) do
@@ -89,20 +145,33 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("learn", _, socket) do
-    Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user.id)
-    socket = assign(socket, is_learning: true)
-    {:noreply, socket}
+    # Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user.id)
+    topic = socket.assigns.topic
+    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn")}
   end
 
   defp get_next_topics(socket) do
-    if socket.assigns.is_learning do
-      if length(socket.assigns.next_topic_ids) > 0 do
-        socket.assigns.next_topic_ids
-      else
-        Knowledge.get_next_unknown_topics(socket.assigns.subject.id, socket.assigns.user.id)
-      end
-    else
-      nil
+    case socket.assigns.mode do
+      :show ->
+        nil
+
+      :learn_subject ->
+        if length(socket.assigns.next_topic_ids) > 0 do
+          socket.assigns.next_topic_ids
+        else
+          Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
+        end
+
+      :learn_topic ->
+        if length(socket.assigns.next_topic_ids) > 0 do
+          socket.assigns.next_topic_ids
+        else
+          Knowledge.get_next_unknown_topic_topics(
+            socket.assigns.subject.id,
+            socket.assigns.learning_topic_id,
+            socket.assigns.user.id
+          )
+        end
     end
   end
 
@@ -161,12 +230,7 @@ defmodule IKnoWeb.TopicLive.Show do
           </button>
         </div>
       </div>
-      <.live_component
-        module={PrereqEditor}
-        id={:prereq_editor}
-        topic={@topic}
-        subject={@subject}
-      />
+      <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
     <% end %>
     """
   end

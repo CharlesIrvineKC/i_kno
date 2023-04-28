@@ -58,39 +58,40 @@ defmodule IKno.Knowledge do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
-  def get_next_unknown_topics(_subject_id, user_id) do
-    query = "select t.id
-    from topics as t
-    left join prereq_topics as pt
-    on t.id = pt.topic_id
-    where t.id not in
-    (
-        select t.id
-        from topics as t
-        left join prereq_topics as pt
-        on t.id = pt.topic_id
-        where pt.prereq_id = any
-        (
-            select t.id
-            from topics t
-            where t.id not in
-            (
-                select kt.topic_id
-                from known_topics as kt
-                where kt.user_id = $1
-            )
-        )
-    )
-    and t.id not in
-    (
-        select kt.topic_id
-        from known_topics as kt, topics as t
-        where kt.user_id = 2
-        and kt.topic_id = t.id
-    )
-    group by t.id"
+  def get_next_unknown_topic_topics(subject_id, topic_id, user_id) do
+    query =
+      "with recursive prereqs as
+      (select topic_id,
+          prereq_id
+        from prereq_topics
+        where topic_id = $2
+        union select p.topic_id,
+          p.prereq_id
+        from prereq_topics p
+        inner join prereqs c on c.prereq_id = p.topic_id)
+    select prereq_id
+    from prereqs
+    where prereq_id not in
+    -- where there are no unknown prereqs
+        (select t.id
+          from topics as t
+          left join prereq_topics as pt on t.id = pt.topic_id
+          where pt.prereq_id = any
+              (select t.id
+                from topics t
+                where t.subject_id = $1
+                -- not in known topics
+                  and t.id not in
+                    (select kt.topic_id
+                      from known_topics as kt
+                      where kt.user_id = $3 ) ) )
+      and prereq_id not in
+        (select kt.topic_id
+          from known_topics as kt
+          where kt.user_id = $3 )
+    group by prereq_id"
 
-    {:ok, result} = SQL.query(Repo, query, [user_id])
+    {:ok, result} = SQL.query(Repo, query, [subject_id, topic_id, user_id])
 
     if length(result.rows) > 0 do
       Enum.map(result.rows, &hd(&1))
@@ -99,11 +100,57 @@ defmodule IKno.Knowledge do
     end
   end
 
-  def reset_subject_progress(subject_id, user_id) do
+  def get_next_unknown_subject_topics(subject_id, user_id) do
+    query =
+    " -- topics in subject
+    select t.id
+    from topics as t
+    where t.subject_id = $1
+    and t.id not in
+    (  -- topics with unknown prereqs
+        select t.id
+        from topics as t
+        left join prereq_topics as pt
+        on t.id = pt.topic_id
+        where pt.prereq_id = any
+        (   -- subject topics
+            select t.id
+            from topics t
+            where t.subject_id = $1
+            and t.id not in
+            (   -- known topics
+                select kt.topic_id
+                from known_topics as kt
+                where kt.user_id = $2
+            )
+        )
+    )
+    and t.id not in
+    (   -- known topics
+        select kt.topic_id
+        from known_topics as kt
+        where kt.user_id = 2
+    )
+    group by t.id"
+
+    {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
+
+    if length(result.rows) > 0 do
+      Enum.map(result.rows, &hd(&1))
+    else
+      []
+    end
+  end
+
+  def reset_learn_subject_progress(subject_id, user_id) do
     query = "delete from known_topics
              where topic_id in (select id from topics where subject_id = $1)
              and user_id = $2"
     SQL.query(Repo, query, [subject_id, user_id])
+  end
+
+  def reset_learn_topic_progress(_topic_id, _user_id) do
+
   end
 
   def create_topic(attrs \\ %{}) do
