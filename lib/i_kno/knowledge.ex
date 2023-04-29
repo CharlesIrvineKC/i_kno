@@ -149,8 +149,26 @@ defmodule IKno.Knowledge do
     SQL.query(Repo, query, [subject_id, user_id])
   end
 
-  def reset_learn_topic_progress(_topic_id, _user_id) do
-
+  def reset_learn_topic_progress(topic_id, user_id) do
+    query = "
+      delete from known_topics where user_id = $2
+      and topic_id in
+      (
+      select #{topic_id} as prereq
+      union
+      (with recursive prereqs as
+        (select topic_id,
+            prereq_id
+          from prereq_topics
+          where topic_id = $1
+          union select p.topic_id,
+            p.prereq_id
+          from prereq_topics p
+          inner join prereqs c on c.prereq_id = p.topic_id)
+      select prereq_id
+      from prereqs
+    ))"
+  SQL.query(Repo, query, [topic_id, user_id])
   end
 
   def create_topic(attrs \\ %{}) do

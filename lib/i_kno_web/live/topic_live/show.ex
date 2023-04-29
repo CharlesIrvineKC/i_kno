@@ -78,13 +78,43 @@ defmodule IKnoWeb.TopicLive.Show do
   end
 
   def handle_event("review", _, socket) do
-    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
-    topic_ids = Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
-    topic = Knowledge.get_topic!(hd(topic_ids))
-    next_topic_ids = tl(topic_ids)
-    prereqs = Knowledge.get_prereqs(topic.id)
-    socket = assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs)
-    {:noreply, socket}
+    case socket.assigns.mode do
+      :learn_subject ->
+        Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
+
+        topic_ids =
+          Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
+
+        topic = Knowledge.get_topic!(hd(topic_ids))
+        next_topic_ids = tl(topic_ids)
+        prereqs = Knowledge.get_prereqs(topic.id)
+        socket = assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs)
+        {:noreply, socket}
+
+      :learn_topic ->
+        Knowledge.reset_learn_topic_progress(socket.assigns.learning_topic_id, socket.assigns.user.id)
+
+        topic_ids =
+          Knowledge.get_next_unknown_topic_topics(
+            socket.assigns.subject.id,
+            socket.assigns.learning_topic_id,
+            socket.assigns.user.id
+          )
+
+        topic = Knowledge.get_topic!(hd(topic_ids))
+        next_topic_ids = tl(topic_ids)
+        prereqs = Knowledge.get_prereqs(topic.id)
+
+        socket =
+          assign(socket,
+            topic: topic,
+            next_topic_ids: next_topic_ids,
+            prereqs: prereqs,
+            learn_topic_complete: false
+          )
+
+        {:noreply, socket}
+    end
   end
 
   def handle_event("understood", _, socket) do
