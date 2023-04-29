@@ -101,19 +101,33 @@ defmodule IKnoWeb.TopicLive.Show do
             socket.assigns.user.id
           )
 
-        topic = Knowledge.get_topic!(hd(topic_ids))
-        next_topic_ids = tl(topic_ids)
-        prereqs = Knowledge.get_prereqs(topic.id)
+        if topic_ids != [] do
+          topic = Knowledge.get_topic!(hd(topic_ids))
+          next_topic_ids = tl(topic_ids)
+          prereqs = Knowledge.get_prereqs(topic.id)
 
-        socket =
-          assign(socket,
-            topic: topic,
-            next_topic_ids: next_topic_ids,
-            prereqs: prereqs,
-            learn_topic_complete: false
-          )
+          socket =
+            assign(socket,
+              topic: topic,
+              next_topic_ids: next_topic_ids,
+              prereqs: prereqs,
+              learn_topic_complete: false
+            )
 
-        {:noreply, socket}
+          {:noreply, socket}
+        else
+          topic = Knowledge.get_topic!(socket.assigns.learning_topic_id)
+          next_topic_ids = []
+          prereqs = Knowledge.get_prereqs(topic.id)
+
+          {:noreply,
+           assign(socket,
+             topic: topic,
+             prereqs: prereqs,
+             next_topic_ids: next_topic_ids,
+             learn_topic_complete: true
+           )}
+        end
     end
   end
 
