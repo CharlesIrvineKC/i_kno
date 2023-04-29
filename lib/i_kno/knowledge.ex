@@ -23,6 +23,23 @@ defmodule IKno.Knowledge do
     Repo.all(query)
   end
 
+  def list_known_subject_topics(subject_id, user_id) do
+    query = "
+    select t.id, t.name, t.description, t.subject_id, (kt.topic_id is not null) as known
+    from topics t
+    left join known_topics kt
+    on t.id = kt.topic_id
+    where kt.user_id = $2
+    or kt.topic_id is null
+    and t.subject_id = $1"
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
+    splice_rows_cols(rows,cols)
+  end
+
+  defp splice_rows_cols(rows, cols) do
+    Enum.map(rows, fn row -> Enum.zip(cols, row) |> Map.new() end)
+  end
+
   def get_known(topic_id, user_id) do
     query =
       from KnownTopic,

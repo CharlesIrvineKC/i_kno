@@ -5,11 +5,18 @@ defmodule IKnoWeb.TopicLive.Topics do
   alias IKno.Accounts
 
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
-    topics = Knowledge.list_subject_topics(subject_id)
+    subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
+    topics = Knowledge.list_known_subject_topics(subject_id, user.id)
     subject = Knowledge.get_subject!(subject_id)
     socket = assign(socket, topics: topics, subject: subject, user: user)
     {:ok, socket}
+  end
+
+  def handle_event("refresh", %{"topic_id" => topic_id}, socket) do
+    topic_id = String.to_integer(topic_id)
+    Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user.id)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
   end
 
   def render(assigns) do
@@ -36,23 +43,31 @@ defmodule IKnoWeb.TopicLive.Topics do
               class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <%= topic.name %>
+                <%= topic["name"] %>
               </th>
               <td class="px-6 py-1">
                 <a
-                  href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
+                  href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   View
                 </a>
-                <a
-                  href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
+                <a :if={!topic["known"]}
+                  href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}/learn"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Learn
                 </a>
+                <a :if={topic["known"]}
+                  phx-click="refresh"
+                  phx-value-topic_id={topic["id"]}
+                  href="#"
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                >
+                  Refresh
+                </a>
                 <a
-                  href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
+                  href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}/edit"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Edit
