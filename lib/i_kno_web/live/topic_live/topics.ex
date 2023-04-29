@@ -46,6 +46,12 @@ defmodule IKnoWeb.TopicLive.Topics do
                   View
                 </a>
                 <a
+                  href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                >
+                  Learn
+                </a>
+                <a
                   href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
