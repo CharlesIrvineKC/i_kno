@@ -245,10 +245,37 @@ defmodule IKno.Knowledge do
 
   # Prerequisties
 
-  def create_prereq(attrs) do
+  def create_prereq(%{topic_id: topic_id, prereq_id: prereq_id} = attrs) do
     %PrereqTopic{}
     |> PrereqTopic.changeset(attrs)
     |> Repo.insert()
+
+    if is_cycle(topic_id) do
+      delete_prereq(topic_id, prereq_id)
+      :is_cycle
+    else
+      :is_no_cycle
+    end
+  end
+
+  defp is_cycle(topic_id) do
+    query = "
+    with recursive prereqs as
+	(
+    select topic_id, prereq_id
+		from prereq_topics
+		where topic_id = $1
+
+		union
+
+    select p.topic_id, p.prereq_id
+		from prereq_topics p
+		inner join prereqs c on c.prereq_id = p.topic_id)
+
+  select prereq_id
+  from prereqs"
+  {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
+  Enum.find(rows, fn(row) -> hd(row) == topic_id end)
   end
 
   def get_immediate_unknown_prereqs(topic_id, user_id) do
@@ -284,7 +311,6 @@ defmodule IKno.Knowledge do
   end
 
   def delete_prereq(topic_id, prereq_topic_id) do
-    prereq_topic_id = String.to_integer(prereq_topic_id)
     query = "delete from prereq_topics where topic_id = $1 and prereq_id = $2"
     {:ok, _result} = SQL.query(Repo, query, [topic_id, prereq_topic_id])
   end

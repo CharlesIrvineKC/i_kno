@@ -21,6 +21,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
   end
 
   def handle_event("delete-prereq", %{"prereq-topic-id" => prereq_topic_id}, socket) do
+    prereq_topic_id = String.to_integer(prereq_topic_id)
     Knowledge.delete_prereq(socket.assigns.topic.id, prereq_topic_id)
     prereqs = Knowledge.get_prereqs(socket.assigns.topic.id)
     socket = assign(socket, prereqs: prereqs)
