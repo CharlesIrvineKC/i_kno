@@ -33,7 +33,7 @@ defmodule IKno.Knowledge do
     or kt.topic_id is null
     and t.subject_id = $1"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
-    splice_rows_cols(rows,cols)
+    splice_rows_cols(rows, cols)
   end
 
   defp splice_rows_cols(rows, cols) do
@@ -76,8 +76,7 @@ defmodule IKno.Knowledge do
   def get_topic!(id), do: Repo.get!(Topic, id)
 
   def get_next_unknown_topic_topics(subject_id, topic_id, user_id) do
-    query =
-      "with recursive prereqs as
+    query = "with recursive prereqs as
       (select topic_id,
           prereq_id
         from prereq_topics
@@ -118,8 +117,7 @@ defmodule IKno.Knowledge do
   end
 
   def get_next_unknown_subject_topics(subject_id, user_id) do
-    query =
-    " -- topics in subject
+    query = " -- topics in subject
     select t.id
     from topics as t
     where t.subject_id = $1
@@ -185,7 +183,7 @@ defmodule IKno.Knowledge do
       select prereq_id
       from prereqs
     ))"
-  SQL.query(Repo, query, [topic_id, user_id])
+    SQL.query(Repo, query, [topic_id, user_id])
   end
 
   def create_topic(attrs \\ %{}) do
@@ -245,37 +243,46 @@ defmodule IKno.Knowledge do
 
   # Prerequisties
 
-  def create_prereq(%{topic_id: topic_id, prereq_id: prereq_id} = attrs) do
+  def create_prereq!(attrs) do
     %PrereqTopic{}
     |> PrereqTopic.changeset(attrs)
     |> Repo.insert()
+  end
 
-    if is_cycle(topic_id) do
-      delete_prereq(topic_id, prereq_id)
-      :is_cycle
+  def create_prereq(%{topic_id: topic_id, prereq_id: prereq_id} = attrs) do
+    create_prereq!(attrs)
+
+    cycle = detect_cycle(topic_id)
+
+    if IO.inspect(cycle, label: "******** cycle ********") == [] do
+      :ok
     else
-      :is_no_cycle
+      delete_prereq(topic_id, prereq_id)
+      cycle
     end
   end
 
-  defp is_cycle(topic_id) do
+  def detect_cycle(topic_id) do
     query = "
-    with recursive prereqs as
-	(
-    select topic_id, prereq_id
-		from prereq_topics
-		where topic_id = $1
+    WITH RECURSIVE prereqs AS (
+    SELECT topic_id, prereq_id
+    FROM prereq_topics
+    WHERE topic_id = $1
 
-		union
+    UNION
 
-    select p.topic_id, p.prereq_id
-		from prereq_topics p
-		inner join prereqs c on c.prereq_id = p.topic_id)
+        SELECT child.topic_id, child.prereq_id
+        FROM prereq_topics child
+        JOIN prereqs g
+          ON g.topic_id = child.prereq_id
+    )
+    SELECT  t.id, t.name
+    FROM prereqs g
+    JOIN topics t
+    ON g.topic_id = t.id"
 
-  select prereq_id
-  from prereqs"
-  {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
-  Enum.find(rows, fn(row) -> hd(row) == topic_id end)
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
+    if length(IO.inspect(rows, label: "********* rows *************")) > 1, do: rows, else: :ok
   end
 
   def get_immediate_unknown_prereqs(topic_id, user_id) do
