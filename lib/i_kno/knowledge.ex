@@ -18,20 +18,20 @@ defmodule IKno.Knowledge do
     Repo.all(Topic)
   end
 
-  def list_subject_topics(subject_id) do
+  def list_subject_topics!(subject_id) do
     query = from Topic, where: [subject_id: ^subject_id]
     Repo.all(query)
   end
 
-  def list_known_subject_topics(subject_id, user_id) do
+  def list_subject_topics(subject_id, user_id) do
     query = "
     select t.id, t.name, t.description, t.subject_id, (kt.topic_id is not null) as known
     from topics t
     left join known_topics kt
     on t.id = kt.topic_id
-    where kt.user_id = $2
-    or kt.topic_id is null
-    and t.subject_id = $1"
+    where t.subject_id = $1
+    and (kt.user_id = $2
+    or kt.topic_id is null)"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
     splice_rows_cols(rows, cols)
   end
@@ -244,13 +244,13 @@ defmodule IKno.Knowledge do
   # Prerequisties
 
   def create_prereq(%{topic_id: topic_id, prereq_id: prereq_id} = attrs) do
-
     cycle = detect_cycle(topic_id, prereq_id)
 
     if cycle == :ok do
       %PrereqTopic{}
       |> PrereqTopic.changeset(attrs)
       |> Repo.insert()
+
       :ok
     else
       cycle
@@ -275,6 +275,7 @@ defmodule IKno.Knowledge do
     on t.id = p.prereq_id"
 
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [])
+
     if Enum.find(rows, fn row -> hd(row) == topic_id end) do
       rows
     else

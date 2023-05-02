@@ -7,7 +7,7 @@ defmodule IKnoWeb.TopicLive.Topics do
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
-    topics = Knowledge.list_known_subject_topics(subject_id, user.id)
+    topics = Knowledge.list_subject_topics(subject_id, user.id)
     subject = Knowledge.get_subject!(subject_id)
     socket = assign(socket, topics: topics, subject: subject, user: user)
     {:ok, socket}
@@ -52,13 +52,15 @@ defmodule IKnoWeb.TopicLive.Topics do
                 >
                   View
                 </a>
-                <a :if={!topic["known"]}
+                <a
+                  :if={!topic["known"]}
                   href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}/learn"}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Learn
                 </a>
-                <a :if={topic["known"]}
+                <a
+                  :if={topic["known"]}
                   phx-click="refresh"
                   phx-value-topic_id={topic["id"]}
                   href="#"
