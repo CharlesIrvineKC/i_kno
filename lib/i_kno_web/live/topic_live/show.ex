@@ -24,7 +24,12 @@ defmodule IKnoWeb.TopicLive.Show do
     learning_topic_id = String.to_integer(topic_id)
     user = socket.assigns.user
     topic_ids = Knowledge.get_next_unknown_topic_topics(subject_id, learning_topic_id, user.id)
-    topic = if topic_ids != [], do: Knowledge.get_topic!(hd(topic_ids)), else: nil
+    topic =
+      if topic_ids != [] do
+        Knowledge.get_topic!(hd(topic_ids))
+      else
+        Knowledge.get_topic!(learning_topic_id)
+      end
     prereqs = if topic, do: Knowledge.get_topic_prereqs(topic.id), else: []
     is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
 
@@ -36,7 +41,7 @@ defmodule IKnoWeb.TopicLive.Show do
       is_known: is_known,
       prereqs: prereqs,
       mode: :learn_topic,
-      learn_topic_complete: false
+      learn_topic_complete: length(topic_ids) == 0
     )
   end
 
