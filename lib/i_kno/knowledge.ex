@@ -243,46 +243,43 @@ defmodule IKno.Knowledge do
 
   # Prerequisties
 
-  def create_prereq!(attrs) do
-    %PrereqTopic{}
-    |> PrereqTopic.changeset(attrs)
-    |> Repo.insert()
-  end
-
   def create_prereq(%{topic_id: topic_id, prereq_id: prereq_id} = attrs) do
-    create_prereq!(attrs)
 
-    cycle = detect_cycle(topic_id)
+    cycle = detect_cycle(topic_id, prereq_id)
 
-    if IO.inspect(cycle, label: "******** cycle ********") == [] do
+    if cycle == :ok do
+      %PrereqTopic{}
+      |> PrereqTopic.changeset(attrs)
+      |> Repo.insert()
       :ok
     else
-      delete_prereq(topic_id, prereq_id)
       cycle
     end
   end
 
-  def detect_cycle(topic_id) do
+  def detect_cycle(topic_id, prereq_id) do
     query = "
-    WITH RECURSIVE prereqs AS (
-    SELECT topic_id, prereq_id
-    FROM prereq_topics
-    WHERE topic_id = $1
+    with recursive all_prereqs as(
+      select #{topic_id}::bigint topic_id, #{prereq_id}::bigint prereq_id
 
-    UNION
+      union
 
-        SELECT child.topic_id, child.prereq_id
-        FROM prereq_topics child
-        JOIN prereqs g
-          ON g.topic_id = child.prereq_id
+      select child.topic_id, parent.prereq_id
+      from all_prereqs as child
+      inner join prereq_topics as parent
+      on child.prereq_id = parent.topic_id
     )
-    SELECT  t.id, t.name
-    FROM prereqs g
-    JOIN topics t
-    ON g.topic_id = t.id"
+    select p.prereq_id, t.name
+    from all_prereqs p
+    inner join topics t
+    on t.id = p.prereq_id"
 
-    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
-    if length(IO.inspect(rows, label: "********* rows *************")) > 1, do: rows, else: :ok
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [])
+    if Enum.find(rows, fn row -> hd(row) == topic_id end) do
+      rows
+    else
+      :ok
+    end
   end
 
   def get_immediate_unknown_prereqs(topic_id, user_id) do
@@ -310,7 +307,7 @@ defmodule IKno.Knowledge do
     Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
   end
 
-  def get_prereqs(topic_id) do
+  def get_topic_prereqs(topic_id) do
     query = "select id, name from topics
             where id in (select prereq_id from prereq_topics where topic_id = $1)"
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id])
@@ -322,7 +319,7 @@ defmodule IKno.Knowledge do
     {:ok, _result} = SQL.query(Repo, query, [topic_id, prereq_topic_id])
   end
 
-  def all_prereqs(subject_id) do
+  def all_subject_prereqs(subject_id) do
     query = "select t.id, pt.prereq_id
              from topics as t
              left join prereq_topics as pt

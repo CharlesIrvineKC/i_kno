@@ -9,7 +9,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
 
   def update(assigns, socket) do
     topic = assigns.topic
-    prereqs = Knowledge.get_prereqs(topic.id)
+    prereqs = Knowledge.get_topic_prereqs(topic.id)
 
     socket =
       socket
@@ -23,13 +23,8 @@ defmodule IKnoWeb.Components.PrereqEditor do
   def handle_event("delete-prereq", %{"prereq-topic-id" => prereq_topic_id}, socket) do
     prereq_topic_id = String.to_integer(prereq_topic_id)
     Knowledge.delete_prereq(socket.assigns.topic.id, prereq_topic_id)
-    prereqs = Knowledge.get_prereqs(socket.assigns.topic.id)
+    prereqs = Knowledge.get_topic_prereqs(socket.assigns.topic.id)
     socket = assign(socket, prereqs: prereqs)
-    {:noreply, socket}
-  end
-
-  def handle_event("switch-topics", %{"prereq-topic-id" => prereq_topic_id}, socket) do
-    # socket = assign(socket, key: value)
     {:noreply, socket}
   end
 
@@ -55,8 +50,8 @@ defmodule IKnoWeb.Components.PrereqEditor do
 
     case result do
       :ok ->
-        prereqs = Knowledge.get_prereqs(topic_id)
-        {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
+    prereqs = Knowledge.get_topic_prereqs(topic_id)
+    {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
 
       cycle ->
         message = create_cycle_message(cycle)
@@ -84,9 +79,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
             <tr :for={prereq <- @prereqs} class="bg-white dark:bg-gray-800">
               <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <a
-                  href="#"
-                  phx-click="switch-topics"
-                  phx-value-prereq-topic-id={prereq.topic_id}
+                  href={~p"/subjects/#{@topic.subject_id}/topics/#{prereq.topic_id}"}
                   phx-target={@myself}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
