@@ -13,10 +13,17 @@ defmodule IKnoWeb.TopicLive.Topics do
     {:ok, socket}
   end
 
-  def handle_event("refresh", %{"topic-id" => topic_id}, socket) do
+  def handle_event("refresh-topic", %{"topic-id" => topic_id}, socket) do
     topic_id = String.to_integer(topic_id)
     Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user.id)
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
+  end
+
+  def handle_event("reset-subject", _, socket) do
+    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
+    topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
+    socket = assign(socket, topics: topics)
+    {:noreply, socket}
   end
 
   def handle_event("delete", %{"topic-id" => topic_id}, socket) do
@@ -71,12 +78,12 @@ defmodule IKnoWeb.TopicLive.Topics do
                 </a>
                 <a
                   :if={topic["known"]}
-                  phx-click="refresh"
+                  phx-click="refresh-topic"
                   phx-value-topic-id={topic["id"]}
                   href="#"
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
-                  Refresh
+                  Reset
                 </a>
                 <a
                   href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}/edit"}
@@ -109,6 +116,13 @@ defmodule IKnoWeb.TopicLive.Topics do
       class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/topics/learn"}>Learn</a>
+    </button>
+    <button
+      type="button"
+      phx-click="reset-subject"
+      class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >
+      <a href="#">Reset Subject</a>
     </button>
     """
   end

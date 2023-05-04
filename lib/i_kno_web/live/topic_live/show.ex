@@ -24,12 +24,14 @@ defmodule IKnoWeb.TopicLive.Show do
     learning_topic_id = String.to_integer(topic_id)
     user = socket.assigns.user
     topic_ids = Knowledge.get_next_unknown_topic_topics(subject_id, learning_topic_id, user.id)
+
     topic =
       if topic_ids != [] do
         Knowledge.get_topic!(hd(topic_ids))
       else
         Knowledge.get_topic!(learning_topic_id)
       end
+
     prereqs = if topic, do: Knowledge.get_topic_prereqs(topic.id), else: []
     is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
 
@@ -82,7 +84,7 @@ defmodule IKnoWeb.TopicLive.Show do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/new")}
   end
 
-  def handle_event("review", _, socket) do
+  def handle_event("reset-subject", _, socket) do
     case socket.assigns.mode do
       :learn_subject ->
         Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
@@ -141,7 +143,7 @@ defmodule IKnoWeb.TopicLive.Show do
 
     case socket.assigns.mode do
       :show ->
-        {:noreply, socket}
+        {:noreply, assign(socket, is_known: true)}
 
       :learn_subject ->
         next_topic_ids = get_next_topics(socket)
@@ -306,11 +308,11 @@ defmodule IKnoWeb.TopicLive.Show do
         You have completed your review of <i><b><%= @subject.name %></b></i>. Click the button below if you would like to review this subject again.
       </p>
       <a
-        phx-click="review"
+        phx-click="reset-subject"
         href="#"
         class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
       >
-        Review
+        Reset Subject
       </a>
     <% else %>
       <div>
