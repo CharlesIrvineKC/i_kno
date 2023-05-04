@@ -13,10 +13,20 @@ defmodule IKnoWeb.TopicLive.Topics do
     {:ok, socket}
   end
 
-  def handle_event("refresh", %{"topic_id" => topic_id}, socket) do
+  def handle_event("refresh", %{"topic-id" => topic_id}, socket) do
     topic_id = String.to_integer(topic_id)
     Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user.id)
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
+  end
+
+  def handle_event("delete", %{"topic-id" => topic_id}, socket) do
+    topic = Knowledge.get_topic!(String.to_integer(topic_id))
+    Knowledge.delete_topic(topic)
+    subject_id = socket.assigns.subject.id
+    user_id = socket.assigns.user.id
+    topics = Knowledge.list_subject_topics(subject_id, user_id)
+    socket = assign(socket, topics: topics)
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -62,7 +72,7 @@ defmodule IKnoWeb.TopicLive.Topics do
                 <a
                   :if={topic["known"]}
                   phx-click="refresh"
-                  phx-value-topic_id={topic["id"]}
+                  phx-value-topic-id={topic["id"]}
                   href="#"
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
@@ -73,6 +83,14 @@ defmodule IKnoWeb.TopicLive.Topics do
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
                   Edit
+                </a>
+                <a
+                  href="#"
+                  phx-click="delete"
+                  phx-value-topic-id={topic["id"]}
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                >
+                  Delete
                 </a>
               </td>
             </tr>
