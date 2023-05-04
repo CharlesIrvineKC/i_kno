@@ -50,7 +50,7 @@ defmodule IKnoWeb.TopicLive.Topics do
           <tbody>
             <tr
               :for={topic <- @topics}
-              class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              class="border-b bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <%= topic["name"] %>
