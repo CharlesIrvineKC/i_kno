@@ -28,11 +28,11 @@ defmodule IKnoWeb.Router do
     live "/subjects/:subject_id/edit", SubjectLive.Edit
 
     live "/subjects/:subject_id/topics", TopicLive.Topics
-    live "/subjects/:subject_id/topics/new", TopicLive.New
+    live "/subjects/:subject_id/topics/new", TopicLive.Edit, :new
     live "/subjects/:subject_id/topics/learn", TopicLive.Show, :learn_subject
     live "/subjects/:subject_id/topics/:topic_id", TopicLive.Show, :show
     live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.Show, :learn_topic
-    live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit
+    live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
 
   end
 
