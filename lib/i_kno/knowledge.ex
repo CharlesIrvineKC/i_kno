@@ -18,6 +18,15 @@ defmodule IKno.Knowledge do
     Repo.all(Topic)
   end
 
+  def find_topics(search_string) do
+    query =
+      "select id, name, description from topics
+       where description like '%#{search_string}%'"
+    IO.inspect(query, label: "********************************")
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [])
+    IO.inspect(splice_rows_cols(rows, cols), label: "***** rows cols *******")
+  end
+
   def list_subject_topics!(subject_id) do
     query = from Topic, where: [subject_id: ^subject_id]
     Repo.all(query)
