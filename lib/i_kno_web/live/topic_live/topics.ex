@@ -20,8 +20,6 @@ defmodule IKnoWeb.TopicLive.Topics do
   end
 
   def handle_event("tasks-only", params, socket) do
-    IO.inspect(params)
-
     case params do
       %{"value" => "checked"} ->
         topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
@@ -71,7 +69,7 @@ defmodule IKnoWeb.TopicLive.Topics do
           <tbody>
             <%= for topic <- @topics do %>
               <tr
-                :if={!@tasks_only || IO.inspect(topic)["is_task"]}
+                :if={!@tasks_only || topic["is_task"]}
                 class="border-b bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
