@@ -25,7 +25,7 @@ defmodule IKno.Knowledge do
 
   def list_subject_topics(subject_id, user_id) do
     query = "
-    select t.id, t.name, t.description, t.subject_id, (kt.topic_id is not null) as known
+    select t.id, t.name, t.description, t.subject_id, t.is_task, (kt.topic_id is not null) as known
     from topics t
     left join known_topics kt
     on t.id = kt.topic_id
