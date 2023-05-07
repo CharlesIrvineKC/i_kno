@@ -77,7 +77,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <tbody>
             <tr :for={prereq <- @prereqs} class="bg-white dark:bg-gray-800">
-              <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <td scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <a
                   href={~p"/subjects/#{@topic.subject_id}/topics/#{prereq.topic_id}"}
                   phx-target={@myself}
@@ -86,7 +86,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
                   <%= prereq.name %>
                 </a>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-1">
                 <a
                   href="#"
                   phx-click="delete-prereq"
@@ -146,7 +146,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
           />
           <button
             type="submit"
-            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Add Prerequisite
           </button>
