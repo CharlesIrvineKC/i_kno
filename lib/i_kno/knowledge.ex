@@ -20,7 +20,7 @@ defmodule IKno.Knowledge do
 
   def find_topics(search_string) do
     query =
-      "select id, name,
+      "select id, name, subject_id,
                 substr(
                         description,
                         greatest(
