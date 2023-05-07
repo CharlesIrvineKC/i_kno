@@ -20,11 +20,18 @@ defmodule IKno.Knowledge do
 
   def find_topics(search_string) do
     query =
-      "select id, name, description from topics
-       where description like '%#{search_string}%'"
-    IO.inspect(query, label: "********************************")
+      "select id, name,
+                substr(
+                        description,
+                        greatest(
+                          position('#{search_string}' in description) - 100,
+                          1),
+                        position('#{search_string}' in description) + 100)
+                as description
+        from topics
+        where description like '%#{search_string}%'"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [])
-    IO.inspect(splice_rows_cols(rows, cols), label: "***** rows cols *******")
+    splice_rows_cols(rows, cols)
   end
 
   def list_subject_topics!(subject_id) do
