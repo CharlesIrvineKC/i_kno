@@ -139,13 +139,13 @@ defmodule IKnoWeb.TopicLive.Search do
     </div>
     <div :for={topic <- @topics} class="border border-black rounded-lg p-3 m-3">
       <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        <a href={~p"/subjects/#{topic["subject_id"]}/topics/#{topic["id"]}"} class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-        <%= topic["name"] %>
+        <a href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"} class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+        <%= topic.name %>
       </a>
       </h5>
       <p class="text-black dark:text-gray-400">
         <section class="markdown">
-          <%= Earmark.as_html!(topic["description"]) |> Phoenix.HTML.raw() %>
+          <%= Earmark.as_html!(topic.description) |> Phoenix.HTML.raw() %>
         </section>
       </p>
     </div>

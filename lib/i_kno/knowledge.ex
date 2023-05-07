@@ -53,6 +53,7 @@ defmodule IKno.Knowledge do
   end
 
   defp splice_rows_cols(rows, cols) do
+    cols = Enum.map(cols, fn col -> String.to_atom(col) end)
     Enum.map(rows, fn row -> Enum.zip(cols, row) |> Map.new() end)
   end
 
