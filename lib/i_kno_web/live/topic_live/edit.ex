@@ -4,6 +4,8 @@ defmodule IKnoWeb.TopicLive.Edit do
   alias IKno.Knowledge
   alias IKno.Knowledge.Topic
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, _session, socket) do
     subject = Knowledge.get_subject!(subject_id)
     socket = assign(socket, subject: subject)

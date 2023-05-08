@@ -5,6 +5,8 @@ defmodule IKnoWeb.TopicLive.Show do
   alias IKno.Accounts
   alias IKnoWeb.Components.PrereqEditor
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)

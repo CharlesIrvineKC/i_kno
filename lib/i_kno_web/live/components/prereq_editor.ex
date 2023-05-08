@@ -1,6 +1,8 @@
 defmodule IKnoWeb.Components.PrereqEditor do
   use IKnoWeb, :live_component
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   alias IKno.Knowledge
 
   def mount(socket) do

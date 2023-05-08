@@ -4,6 +4,8 @@ defmodule IKnoWeb.TopicLive.Topics do
   alias IKno.Knowledge
   alias IKno.Accounts
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)

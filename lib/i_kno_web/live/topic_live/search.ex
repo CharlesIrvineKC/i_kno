@@ -3,6 +3,8 @@ defmodule IKnoWeb.TopicLive.Search do
 
   alias IKno.Knowledge
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, _session, socket) do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)

@@ -18,11 +18,7 @@ defmodule IKnoWeb.Router do
   end
 
   scope "/", IKnoWeb do
-    pipe_through :browser
-
-    live "/", WelcomeLive
-
-    live "/test", TestLive
+    pipe_through [:browser, :require_authenticated_user]
 
     live "/subjects", SubjectLive.Subjects
     live "/subjects/new", SubjectLive.New
@@ -36,6 +32,14 @@ defmodule IKnoWeb.Router do
     live "/subjects/:subject_id/topics/:topic_id", TopicLive.Show, :show
     live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.Show, :learn_topic
     live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
+  end
+
+  scope "/", IKnoWeb do
+    pipe_through :browser
+
+    live "/", WelcomeLive
+
+    live "/test", TestLive
 
   end
 

@@ -4,6 +4,8 @@ defmodule IKnoWeb.SubjectLive.New do
   alias IKno.Knowledge
   alias IKno.Knowledge.Subject
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(_params, _session, socket) do
     {:ok, assign(socket, subject: %Subject{})}
   end

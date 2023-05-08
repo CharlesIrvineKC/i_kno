@@ -3,6 +3,8 @@ defmodule IKnoWeb.SubjectLive.Show do
 
   alias IKno.Knowledge
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, _session, socket) do
     socket =
       assign(socket,
