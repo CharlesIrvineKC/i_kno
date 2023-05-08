@@ -47,7 +47,8 @@ defmodule IKno.Knowledge do
     on t.id = kt.topic_id
     where t.subject_id = $1
     and (kt.user_id = $2
-    or kt.topic_id is null)"
+    or kt.topic_id is null)
+    order by t.name"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
     splice_rows_cols(rows, cols)
   end
