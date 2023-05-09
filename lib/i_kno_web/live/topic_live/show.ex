@@ -11,8 +11,9 @@ defmodule IKnoWeb.TopicLive.Show do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
+    is_admin = Accounts.is_admin(subject_id, user.id)
 
-    socket = assign(socket, subject: subject, user: user)
+    socket = assign(socket, subject: subject, user: user, is_admin: is_admin)
 
     {:ok, socket}
   end
@@ -370,18 +371,21 @@ defmodule IKnoWeb.TopicLive.Show do
             Learn
           </button>
           <button
+            :if={@is_admin}
             phx-click="edit"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Edit
           </button>
           <button
+            :if={@is_admin}
             phx-click="delete"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Delete
           </button>
           <button
+            :if={@is_admin}
             phx-click="new"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
