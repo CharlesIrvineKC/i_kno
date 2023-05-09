@@ -5,6 +5,7 @@ defmodule IKno.Accounts do
 
   import Ecto.Query, warn: false
   alias IKno.Repo
+  alias Ecto.Adapters.SQL
 
   alias IKno.Accounts.{User, UserToken, UserNotifier}
 
@@ -349,5 +350,113 @@ defmodule IKno.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  alias IKno.Accounts.SubjectAdmin
+
+  @doc """
+  Returns the list of subject_admins.
+
+  ## Examples
+
+      iex> list_subject_admins()
+      [%SubjectAdmin{}, ...]
+
+  """
+  def list_subject_admins do
+    Repo.all(SubjectAdmin)
+  end
+
+  @doc """
+  Gets a single subject_admin.
+
+  Raises `Ecto.NoResultsError` if the Subject admin does not exist.
+
+  ## Examples
+
+      iex> get_subject_admin!(123)
+      %SubjectAdmin{}
+
+      iex> get_subject_admin!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_subject_admin!(id), do: Repo.get!(SubjectAdmin, id)
+
+  @doc """
+  Creates a subject_admin.
+
+  ## Examples
+
+      iex> create_subject_admin(%{field: value})
+      {:ok, %SubjectAdmin{}}
+
+      iex> create_subject_admin(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_subject_admin(attrs \\ %{}) do
+    %SubjectAdmin{}
+    |> SubjectAdmin.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a subject_admin.
+
+  ## Examples
+
+      iex> update_subject_admin(subject_admin, %{field: new_value})
+      {:ok, %SubjectAdmin{}}
+
+      iex> update_subject_admin(subject_admin, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_subject_admin(%SubjectAdmin{} = subject_admin, attrs) do
+    subject_admin
+    |> SubjectAdmin.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a subject_admin.
+
+  ## Examples
+
+      iex> delete_subject_admin(subject_admin)
+      {:ok, %SubjectAdmin{}}
+
+      iex> delete_subject_admin(subject_admin)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_subject_admin(%SubjectAdmin{} = subject_admin) do
+    Repo.delete(subject_admin)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking subject_admin changes.
+
+  ## Examples
+
+      iex> change_subject_admin(subject_admin)
+      %Ecto.Changeset{data: %SubjectAdmin{}}
+
+  """
+  def change_subject_admin(%SubjectAdmin{} = subject_admin, attrs \\ %{}) do
+    SubjectAdmin.changeset(subject_admin, attrs)
+  end
+
+  def is_admin(subject_id, user_id) do
+    query = "
+    select s.id
+    from subjects s
+    inner join subject_admins sa
+    on s.id = sa.subject_id
+    where s.id = $1
+    and sa.user_id = $2"
+    {:ok, %{rows: rows}} = SQL.query(Repo, query, [subject_id, user_id])
+    length(rows) > 0
   end
 end

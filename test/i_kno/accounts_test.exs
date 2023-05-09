@@ -505,4 +505,56 @@ defmodule IKno.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "subject_admins" do
+    alias IKno.Accounts.SubjectAdmin
+
+    import IKno.AccountsFixtures
+
+    @invalid_attrs %{}
+
+    test "list_subject_admins/0 returns all subject_admins" do
+      subject_admin = subject_admin_fixture()
+      assert Accounts.list_subject_admins() == [subject_admin]
+    end
+
+    test "get_subject_admin!/1 returns the subject_admin with given id" do
+      subject_admin = subject_admin_fixture()
+      assert Accounts.get_subject_admin!(subject_admin.id) == subject_admin
+    end
+
+    test "create_subject_admin/1 with valid data creates a subject_admin" do
+      valid_attrs = %{}
+
+      assert {:ok, %SubjectAdmin{} = subject_admin} = Accounts.create_subject_admin(valid_attrs)
+    end
+
+    test "create_subject_admin/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_subject_admin(@invalid_attrs)
+    end
+
+    test "update_subject_admin/2 with valid data updates the subject_admin" do
+      subject_admin = subject_admin_fixture()
+      update_attrs = %{}
+
+      assert {:ok, %SubjectAdmin{} = subject_admin} = Accounts.update_subject_admin(subject_admin, update_attrs)
+    end
+
+    test "update_subject_admin/2 with invalid data returns error changeset" do
+      subject_admin = subject_admin_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_subject_admin(subject_admin, @invalid_attrs)
+      assert subject_admin == Accounts.get_subject_admin!(subject_admin.id)
+    end
+
+    test "delete_subject_admin/1 deletes the subject_admin" do
+      subject_admin = subject_admin_fixture()
+      assert {:ok, %SubjectAdmin{}} = Accounts.delete_subject_admin(subject_admin)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_subject_admin!(subject_admin.id) end
+    end
+
+    test "change_subject_admin/1 returns a subject_admin changeset" do
+      subject_admin = subject_admin_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_subject_admin(subject_admin)
+    end
+  end
 end

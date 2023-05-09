@@ -28,4 +28,18 @@ defmodule IKno.AccountsFixtures do
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token
   end
+
+  @doc """
+  Generate a subject_admin.
+  """
+  def subject_admin_fixture(attrs \\ %{}) do
+    {:ok, subject_admin} =
+      attrs
+      |> Enum.into(%{
+
+      })
+      |> IKno.Accounts.create_subject_admin()
+
+    subject_admin
+  end
 end

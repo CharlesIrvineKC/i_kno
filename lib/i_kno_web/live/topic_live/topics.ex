@@ -11,7 +11,11 @@ defmodule IKnoWeb.TopicLive.Topics do
     user = Accounts.get_user_by_session_token(user_token)
     topics = Knowledge.list_subject_topics(subject_id, user.id)
     subject = Knowledge.get_subject!(subject_id)
-    socket = assign(socket, topics: topics, subject: subject, user: user, tasks_only: true)
+    is_admin = Accounts.is_admin(subject_id, user.id)
+
+    socket =
+      assign(socket, topics: topics, subject: subject, user: user, tasks_only: true, is_admin: is_admin)
+
     {:ok, socket}
   end
 
@@ -101,12 +105,14 @@ defmodule IKnoWeb.TopicLive.Topics do
                     Reset
                   </a>
                   <a
+                    :if={@is_admin}
                     href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Edit
                   </a>
                   <a
+                    :if={@is_admin}
                     href="#"
                     phx-click="delete"
                     phx-value-topic-id={topic.id}
@@ -122,6 +128,7 @@ defmodule IKnoWeb.TopicLive.Topics do
       </div>
     </div>
     <button
+      :if={@is_admin}
       type="button"
       class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
