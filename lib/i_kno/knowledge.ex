@@ -320,7 +320,7 @@ defmodule IKno.Knowledge do
   end
 
   def suggest_prereqs(substring, subject_id) do
-    query = "select id, name from topics where subject_id = $1 and name like $2"
+    query = "select id, name from topics where subject_id = $1 and name ilike $2"
     pattern = "%" <> substring <> "%"
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, pattern])
     Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
