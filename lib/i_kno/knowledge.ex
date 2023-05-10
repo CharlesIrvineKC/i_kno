@@ -29,7 +29,7 @@ defmodule IKno.Knowledge do
                         position('#{search_string}' in description) + 100)
                 as description
         from topics
-        where description like '%#{search_string}%'"
+        where description ilike '%#{search_string}%'"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [])
     splice_rows_cols(rows, cols)
   end
