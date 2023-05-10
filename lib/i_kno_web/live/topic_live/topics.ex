@@ -14,7 +14,7 @@ defmodule IKnoWeb.TopicLive.Topics do
     is_admin = Accounts.is_admin(subject_id, user.id)
 
     socket =
-      assign(socket, topics: topics, subject: subject, user: user, tasks_only: true, is_admin: is_admin)
+      assign(socket, topics: topics, subject: subject, user: user, tasks_only: false, is_admin: is_admin)
 
     {:ok, socket}
   end
@@ -220,7 +220,6 @@ defmodule IKnoWeb.TopicLive.Topics do
     </button>
     <%= if @tasks_only do %>
       <input
-        checked
         id="tasks-only"
         name="tasks-only"
         phx-click="tasks-only"
@@ -230,7 +229,6 @@ defmodule IKnoWeb.TopicLive.Topics do
       />
     <% else %>
       <input
-        checked
         id="tasks-only"
         name="tasks-only"
         phx-click="tasks-only"
@@ -241,15 +239,6 @@ defmodule IKnoWeb.TopicLive.Topics do
     <% end %>
     <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
       Tasks Only
-    </label>
-    <input
-      id="default-checkbox"
-      type="checkbox"
-      value=""
-      class="ml-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-    />
-    <label for="default-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-      Unknown Only
     </label>
     """
   end
