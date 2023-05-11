@@ -12,7 +12,7 @@ defmodule IKnoWeb.TopicLive.Search do
   end
 
   def handle_event("search", %{"topic-search" => search_string}, socket) do
-    topics = Knowledge.find_topics(search_string)
+    topics = Knowledge.find_topics(search_string, socket.assigns.subject.id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
   end

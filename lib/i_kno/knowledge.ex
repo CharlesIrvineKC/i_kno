@@ -18,7 +18,7 @@ defmodule IKno.Knowledge do
     Repo.all(Topic)
   end
 
-  def find_topics(search_string) do
+  def find_topics(search_string, subject_id) do
     query =
       "select id, name, subject_id,
                 substr(
@@ -29,8 +29,9 @@ defmodule IKno.Knowledge do
                         position('#{search_string}' in description) + 100)
                 as description
         from topics
-        where description ilike '%#{search_string}%'"
-    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [])
+        where description ilike '%#{search_string}%'
+        and topics.subject_id = $1"
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id])
     splice_rows_cols(rows, cols)
   end
 
