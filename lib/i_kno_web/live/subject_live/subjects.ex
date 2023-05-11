@@ -45,13 +45,13 @@ defmodule IKnoWeb.SubjectLive.Subjects do
             :for={subject <- @subjects}
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               <%= subject.name %>
             </th>
-            <td class="px-6 py-4">
+            <td class="px-6 py-1">
               <%= subject.summary %>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-1">
               <a
                 href={~p"/subjects/#{subject.id}"}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
