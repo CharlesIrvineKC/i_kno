@@ -9,7 +9,7 @@
             "name": "phx.server",
             "request": "launch",
             "debugAutoInterpretAllModules": false,
-            "debugInterpretModulesPatterns": ["IKnoWeb.*", "IKnow.*"],
+            "debugInterpretModulesPatterns": ["IKnoWeb.*", "IKno.*"],
             "task": "phx.server",
             "projectDir": "${workspaceRoot}"
         },
