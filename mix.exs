@@ -51,7 +51,10 @@ defmodule IKno.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:makeup, "~> 1.1"},
+      {:makeup_elixir, "~> 0.16.1"},
+      {:ex_doc, "~> 0.29.4"}
     ]
   end
 

@@ -1,0 +1,67 @@
+.makeup .bp {color: #007020; } /* :name_builtin_pseudo */
+.makeup .c {color: #888; } /* :comment */
+.makeup .c1 {color: #888; } /* :comment_single */
+.makeup .ch {color: #888; } /* :comment_hashbang */
+.makeup .cm {color: #888; } /* :comment_multiline */
+.makeup .cp {color: #579; } /* :comment_preproc */
+.makeup .cpf {color: #579; } /* :comment_preproc_file */
+.makeup .cs {color: #cc0000; font-weight: bold; } /* :comment_special */
+.makeup .dl {background-color: #fff0f0; } /* :string_delimiter */
+.makeup .err {color: #F00; background-color: #FAA; } /* :error */
+.makeup .fm {color: #06B; font-weight: bold; } /* :name_function_magic */
+.makeup .gd {color: #A00000; } /* :generic_deleted */
+.makeup .ge {font-style: italic; } /* :generic_emph */
+.makeup .gh {color: #000080; font-weight: bold; } /* :generic_heading */
+.makeup .gi {color: #00A000; } /* :generic_inserted */
+.makeup .go {color: #888; } /* :generic_output */
+.makeup .gp {color: #c65d09; font-weight: bold; } /* :generic_prompt */
+.makeup .gr {color: #FF0000; } /* :generic_error */
+.makeup .gs {font-weight: bold; } /* :generic_strong */
+.makeup .gt {color: #04D; } /* :generic_traceback */
+.makeup .gu {color: #800080; font-weight: bold; } /* :generic_subheading */
+.makeup .il {color: #00D; font-weight: bold; } /* :number_integer_long */
+.makeup .k {color: #080; font-weight: bold; } /* :keyword */
+.makeup .kc {color: #080; font-weight: bold; } /* :keyword_constant */
+.makeup .kd {color: #080; font-weight: bold; } /* :keyword_declaration */
+.makeup .kn {color: #080; font-weight: bold; } /* :keyword_namespace */
+.makeup .kp {color: #038; font-weight: bold; } /* :keyword_pseudo */
+.makeup .kr {color: #080; font-weight: bold; } /* :keyword_reserved */
+.makeup .kt {color: #339; font-weight: bold; } /* :keyword_type */
+.makeup .m {color: #60E; font-weight: bold; } /* :number */
+.makeup .mb {color: #60E; font-weight: bold; } /* :number_bin */
+.makeup .mf {color: #60E; font-weight: bold; } /* :number_float */
+.makeup .mh {color: #058; font-weight: bold; } /* :number_hex */
+.makeup .mi {color: #00D; font-weight: bold; } /* :number_integer */
+.makeup .mo {color: #40E; font-weight: bold; } /* :number_oct */
+.makeup .na {color: #00C; } /* :name_attribute */
+.makeup .nb {color: #007020; } /* :name_builtin */
+.makeup .nc {color: #B06; font-weight: bold; } /* :name_class */
+.makeup .nd {color: #555; font-weight: bold; } /* :name_decorator */
+.makeup .ne {color: #F00; font-weight: bold; } /* :name_exception */
+.makeup .nf {color: #06B; font-weight: bold; } /* :name_function */
+.makeup .ni {color: #800; font-weight: bold; } /* :name_entity */
+.makeup .nl {color: #970; font-weight: bold; } /* :name_label */
+.makeup .nn {color: #0e84b5; font-weight: bold; } /* :name_namespace */
+.makeup .no {color: #036; font-weight: bold; } /* :name_constant */
+.makeup .nt {color: #070; } /* :name_tag */
+.makeup .nv {color: #963; } /* :name_variable */
+.makeup .o {color: #333; } /* :operator */
+.makeup .ow {color: #000; font-weight: bold; } /* :operator_word */
+.makeup .s {background-color: #fff0f0; } /* :string */
+.makeup .s1 {background-color: #fff0f0; } /* :string_single */
+.makeup .s2 {background-color: #fff0f0; } /* :string_double */
+.makeup .sa {background-color: #fff0f0; } /* :string_affix */
+.makeup .sb {background-color: #fff0f0; } /* :string_backtick */
+.makeup .sc {color: #04D; background-color: ; } /* :string_char */
+.makeup .sd {color: #D42; background-color: ; } /* :string_doc */
+.makeup .se {color: #666; font-weight: bold; background-color: #fff0f0; } /* :string_escape */
+.makeup .sh {background-color: #fff0f0; } /* :string_heredoc */
+.makeup .si {background-color: #eee; } /* :string_interpol */
+.makeup .sr {color: #000; background-color: #fff0ff; } /* :string_regex */
+.makeup .ss {color: #A60; background-color: ; } /* :string_symbol */
+.makeup .sx {background-color: #fff0f0; } /* :string_sigil */
+.makeup .sx {color: #D20; background-color: #fff0f0; } /* :string_other */
+.makeup .vc {color: #369; } /* :name_variable_class */
+.makeup .vg {color: #d70; font-weight: bold; } /* :name_variable_global */
+.makeup .vi {color: #33B; } /* :name_variable_instance */
+.makeup .vm {color: #963; } /* :name_variable_magic */

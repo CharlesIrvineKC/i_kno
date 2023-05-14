@@ -3,7 +3,9 @@ defmodule IKnoWeb.TopicLive.Show do
 
   alias IKno.Knowledge
   alias IKno.Accounts
+
   alias IKnoWeb.Components.PrereqEditor
+  alias IKnoWeb.Highlighter
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
 
@@ -350,9 +352,9 @@ defmodule IKnoWeb.TopicLive.Show do
         <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
           <%= @topic.name %>
         </h1>
-        <p class="text-black dark:text-gray-400">
+        <p>
           <section class="markdown">
-            <%= Earmark.as_html!(@topic.description) |> Phoenix.HTML.raw() %>
+            <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>
         <div class="mt-12">
