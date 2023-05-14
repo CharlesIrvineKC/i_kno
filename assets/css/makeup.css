@@ -58,9 +58,8 @@
 .makeup .sh {background-color: #fff0f0; } /* :string_heredoc */
 .makeup .si {background-color: #eee; } /* :string_interpol */
 .makeup .sr {color: #000; background-color: #fff0ff; } /* :string_regex */
-.makeup .ss {color: #A60; background-color: ; } /* :string_symbol */
-.makeup .sx {background-color: #fff0f0; } /* :string_sigil */
-.makeup .sx {color: #D20; background-color: #fff0f0; } /* :string_other */
+.makeup .ss {color: #A60;} /* :string_symbol */
+.makeup .sx {color: rgb(205, 47, 19);} /* :string_other */
 .makeup .vc {color: #369; } /* :name_variable_class */
 .makeup .vg {color: #d70; font-weight: bold; } /* :name_variable_global */
 .makeup .vi {color: #33B; } /* :name_variable_instance */
