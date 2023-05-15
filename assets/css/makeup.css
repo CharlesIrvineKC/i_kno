@@ -1,6 +1,6 @@
 .makeup .bp {color: #007020; } /* :name_builtin_pseudo */
 .makeup .c {color: #888; } /* :comment */
-.makeup .c1 {color: #888; } /* :comment_single */
+.makeup .c1 {color: #ff9d00; } /* :comment_single */
 .makeup .ch {color: #888; } /* :comment_hashbang */
 .makeup .cm {color: #888; } /* :comment_multiline */
 .makeup .cp {color: #579; } /* :comment_preproc */
