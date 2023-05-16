@@ -362,11 +362,13 @@ defmodule IKnoWeb.TopicLive.Show do
         <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
           <%= @topic.name %>
         </h1>
-        <p>
-          <section class="markdown">
-            <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
-          </section>
-        </p>
+        <div class="border rounded border-grey-900 p-3">
+          <p>
+            <section class="markdown">
+              <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
+            </section>
+          </p>
+        </div>
 
         <button
           type="button"
