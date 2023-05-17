@@ -25,8 +25,8 @@ defmodule IKnoWeb.SubjectLive.Subjects do
   def render(assigns) do
     ~H"""
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <h2 class="mb-10 text-4xl font-extrabold dark:text-white">IKno Subjects</h2>
-    <table class="mt-2 w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <h2 class="mb-10 text-4xl font-extrabold dark:text-white">IKno Subjects</h2>
+      <table class="mt-2 w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" class="px-6 py-3">
@@ -35,7 +35,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
             <th scope="col" class="px-6 py-3">
               Summary
             </th>
-            <th scope="col" class="px-6 py-3">
+            <th :if={@is_super_user} scope="col" class="px-6 py-3">
               Actions
             </th>
           </tr>
@@ -46,27 +46,24 @@ defmodule IKnoWeb.SubjectLive.Subjects do
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
             <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <%= subject.name %>
-            </th>
-            <td class="px-6 py-1">
-              <%= subject.summary %>
-            </td>
-            <td class="px-6 py-1">
               <a
                 href={~p"/subjects/#{subject.id}"}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
-                View
+              <%= subject.name %>
               </a>
+            </th>
+            <td class="px-6 py-1">
+              <%= subject.summary %>
+            </td>
+            <td :if={@is_super_user} class="px-6 py-1">
               <a
-                :if={@is_super_user}
                 href={~p"/subjects/#{subject.id}/edit"}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
                 Edit
               </a>
               <a
-                :if={@is_super_user}
                 phx-click="delete-subject"
                 phx-value-subject-id={subject.id}
                 href="#"
