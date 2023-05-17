@@ -241,7 +241,7 @@ defmodule IKnoWeb.TopicLive.Show do
     end
   end
 
-  def render(assigns) do
+  def breadcrumb(assigns) do
     ~H"""
     <div class="h-14">
       <nav class="pt-3 inline-block " aria-label="Breadcrumb">
@@ -334,71 +334,95 @@ defmodule IKnoWeb.TopicLive.Show do
         <span class="sr-only">Search</span>
       </button>
     </div>
-    <%= if @topic == nil do %>
-      <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-        Congradulations!
-      </h1>
-      <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-        You have completed your review of <i><b><%= @subject.name %></b></i>. Click the button below if you would like to review this subject again.
-      </p>
-      <a
-        phx-click="reset-subject"
-        href="#"
-        class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+    """
+  end
+
+  def render_learn_complete(assigns) do
+    ~H"""
+    <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+      Congradulations!
+    </h1>
+    <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
+      You have completed your review of <i><b><%= @subject.name %></b></i>. Click the button below if you would like to review this subject again.
+    </p>
+    <a
+      phx-click="reset-subject"
+      href="#"
+      class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+    >
+      Reset Subject
+    </a>
+    """
+  end
+
+  def render_buttons(assigns) do
+    ~H"""
+    <div class="mt-8">
+      <button
+        :if={!@is_known}
+        phx-click="understood"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Reset Subject
-      </a>
-    <% else %>
-      <div>
-        <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
-          <%= @topic.name %>
-        </h1>
-        <div class="border rounded border-grey-900 p-3">
-          <p>
-            <section class="markdown">
-              <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
-            </section>
-          </p>
-        </div>
-        <.live_component module={TopicQuestion} id={:topic_question} topic={@topic} subject={@subject} />
-        <div class="mt-8">
-          <button
-            :if={!@is_known}
-            phx-click="understood"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Understood
-          </button>
-          <button
-            :if={!@is_known}
-            phx-click="learn"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Learn
-          </button>
-          <button
-            :if={@is_admin}
-            phx-click="edit"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Edit
-          </button>
-          <button
-            :if={@is_admin}
-            phx-click="delete"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Delete
-          </button>
-          <button
-            :if={@is_admin}
-            phx-click="new"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            New
-          </button>
-        </div>
+        Understood
+      </button>
+      <button
+        :if={!@is_known}
+        phx-click="learn"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Learn
+      </button>
+      <button
+        :if={@is_admin}
+        phx-click="edit"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Edit
+      </button>
+      <button
+        :if={@is_admin}
+        phx-click="delete"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Delete
+      </button>
+      <button
+        :if={@is_admin}
+        phx-click="new"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        New
+      </button>
+    </div>
+    """
+  end
+
+  def render_topic(assigns) do
+    ~H"""
+    <div>
+      <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
+        <%= @topic.name %>
+      </h1>
+      <div class="border rounded border-grey-900 p-3">
+        <p>
+          <section class="markdown">
+            <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
+          </section>
+        </p>
       </div>
+      <.live_component module={TopicQuestion} id={:topic_question} topic={@topic} subject={@subject} />
+    </div>
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.breadcrumb subject={@subject} topic={@topic} />
+    <%= if @topic == nil do %>
+      <.render_learn_complete subject={@subject} />
+    <% else %>
+      <.render_topic topic={@topic} subject={@subject} />
+      <.render_buttons is_known={@is_known} is_admin={@is_admin} />
       <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
     <% end %>
     """
