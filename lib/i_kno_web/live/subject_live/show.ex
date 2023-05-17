@@ -2,13 +2,17 @@ defmodule IKnoWeb.SubjectLive.Show do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
+  alias IKno.Accounts
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
 
-  def mount(%{"subject_id" => subject_id}, _session, socket) do
+  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
+    user = Accounts.get_user_by_session_token(user_token)
+    is_super_user = user.id == 2
     socket =
       assign(socket,
-        subject: Knowledge.get_subject!(subject_id)
+        subject: Knowledge.get_subject!(subject_id),
+        is_super_user: is_super_user
       )
 
     {:ok, socket}
@@ -40,6 +44,7 @@ defmodule IKnoWeb.SubjectLive.Show do
       <a href={~p"/subjects/#{@subject.id}/topics/learn"}>Learn</a>
     </button>
     <button
+      :if={@is_super_user}
       type="button"
       class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
