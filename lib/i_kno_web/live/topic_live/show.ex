@@ -241,7 +241,7 @@ defmodule IKnoWeb.TopicLive.Show do
     end
   end
 
-  def breadcrumb(assigns) do
+  def render_breadcrumb(assigns) do
     ~H"""
     <div class="h-14">
       <nav class="pt-3 inline-block " aria-label="Breadcrumb">
@@ -410,18 +410,18 @@ defmodule IKnoWeb.TopicLive.Show do
           </section>
         </p>
       </div>
-      <.live_component module={TopicQuestion} id={:topic_question} topic={@topic} subject={@subject} />
     </div>
     """
   end
 
   def render(assigns) do
     ~H"""
-    <.breadcrumb subject={@subject} topic={@topic} />
+    <.render_breadcrumb subject={@subject} topic={@topic} />
     <%= if @topic == nil do %>
       <.render_learn_complete subject={@subject} />
     <% else %>
       <.render_topic topic={@topic} subject={@subject} />
+      <.live_component module={TopicQuestion} id={:topic_question} topic={@topic} subject={@subject} />
       <.render_buttons is_known={@is_known} is_admin={@is_admin} />
       <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
     <% end %>
