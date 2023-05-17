@@ -163,7 +163,7 @@ defmodule IKno.Knowledge do
     (   -- known topics
         select kt.topic_id
         from known_topics as kt
-        where kt.user_id = 2
+        where kt.user_id = $2
     )
     group by t.id"
 
