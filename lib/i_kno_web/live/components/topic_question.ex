@@ -48,14 +48,14 @@ defmodule IKnoWeb.Components.TopicQuestion do
           type="button"
           phx-click="take-question"
           phx-target={@myself}
-          class="h-8 mt-2 px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="h-8 mt-2 px-3 py-2 text-xs text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           <%= if @take_question, do: "Cancel Question", else: "Ask Question" %>
         </button>
         <div
           :if={@question_posted}
           id="toast-success"
-          class="flex items-center mt-6 w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+          class="flex items-center mt-6 w-full max-w-full p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
           role="alert"
         >
           <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
@@ -75,7 +75,9 @@ defmodule IKnoWeb.Components.TopicQuestion do
             </svg>
             <span class="sr-only">Check icon</span>
           </div>
-          <div class="ml-3 text-sm font-normal">Your question was posted.</div>
+          <div class="ml-3 px-6 text-sm font-normal">
+            Your question was posted. Thanks! If we make a change to the topic as a result of your question, we will definitely get back to you. Otherwise, we may or may not, depending on the volume of questions that have been asked. Sorry.
+          </div>
           <button
             type="button"
             class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
