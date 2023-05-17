@@ -52,8 +52,8 @@ defmodule IKnoWeb.Components.PrereqEditor do
 
     case result do
       :ok ->
-    prereqs = Knowledge.get_topic_prereqs(topic_id)
-    {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
+        prereqs = Knowledge.get_topic_prereqs(topic_id)
+        {:noreply, assign(socket, matches: [], keys: [], prefix: "", prereqs: prereqs)}
 
       cycle ->
         message = create_cycle_message(cycle)
