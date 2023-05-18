@@ -15,6 +15,9 @@ defmodule IKnoWeb.WelcomeLive do
         <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-400">
           There are big plans for <strong>IKno</strong>. For now, we would like to share what we've learned about Phoenix LiveView.
         </p>
+        <p class="mb-8 text-sm font-normal text-gray-500 sm:px-16 lg:px-48 dark:text-gray-400">
+          <strong>Hint:</strong> Hover over buttons and links to understand how things works.
+        </p>
         <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <a
             href={~p"/subjects"}
@@ -28,12 +31,6 @@ defmodule IKnoWeb.WelcomeLive do
                 clip-rule="evenodd"
               />
             </svg>
-          </a>
-          <a
-            href="#"
-            class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
-          >
-            Learn more
           </a>
         </div>
       </div>
