@@ -35,7 +35,7 @@ defmodule IKnoWeb.TopicLive.Edit do
       {:ok, topic} = Knowledge.update_topic(socket.assigns.topic, topic_params)
       socket = assign(socket, topic: topic)
       subject_id = socket.assigns.subject.id
-      {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics/#{topic.id}")}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{subject_id}/topics/learn")}
     else
       subject = socket.assigns.subject
       topic_params = Map.put(topic_params, "subject_id", subject.id)
