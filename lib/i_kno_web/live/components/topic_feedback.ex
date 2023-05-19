@@ -1,4 +1,4 @@
-defmodule IKnoWeb.Components.TopicQuestion do
+defmodule IKnoWeb.Components.TopicFeedback do
   use IKnoWeb, :live_component
 
   def mount(socket) do
@@ -6,30 +6,30 @@ defmodule IKnoWeb.Components.TopicQuestion do
   end
 
   def update(_assigns, socket) do
-    {:ok, assign(socket, take_question: false, question_posted: false)}
+    {:ok, assign(socket, take_feedback: false, feedback_posted: false)}
   end
 
-  def handle_event("post-question", _, socket) do
-    socket = assign(socket, take_question: false, question_posted: true )
+  def handle_event("post-feedback", _, socket) do
+    socket = assign(socket, take_feedback: false, feedback_posted: true)
     {:noreply, socket}
   end
 
-  def handle_event("take-question", _, socket) do
-    socket = assign(socket, take_question: !socket.assigns.take_question)
+  def handle_event("take-feedback", _, socket) do
+    socket = assign(socket, take_feedback: !socket.assigns.take_feedback)
     {:noreply, socket}
   end
 
   def render(assigns) do
     ~H"""
     <div>
-      <form :if={@take_question} phx-submit="post-question" phx-target={@myself} class="mt-5">
+      <form :if={@take_feedback} phx-submit="post-feedback" phx-target={@myself} class="mt-5">
         <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
           <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
             <textarea
               id="comment"
               rows="4"
               class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-              placeholder="Ask a question"
+              placeholder="Provide feedback"
               required
             />
           </div>
@@ -38,7 +38,7 @@ defmodule IKnoWeb.Components.TopicQuestion do
               type="submit"
               class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
             >
-              Post your question
+              Post your feedback
             </button>
           </div>
         </div>
@@ -46,14 +46,14 @@ defmodule IKnoWeb.Components.TopicQuestion do
       <div>
         <button
           type="button"
-          phx-click="take-question"
+          phx-click="take-feedback"
           phx-target={@myself}
           class="h-8 mt-2 px-3 py-2 text-xs text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          <%= if @take_question, do: "Cancel Question", else: "Ask Question" %>
+          <%= if @take_feedback, do: "Cancel Feedback", else: "Provide Feedback" %>
         </button>
         <div
-          :if={@question_posted}
+          :if={@feedback_posted}
           id="toast-success"
           class="flex items-center mt-6 w-full max-w-full p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
           role="alert"
@@ -76,7 +76,7 @@ defmodule IKnoWeb.Components.TopicQuestion do
             <span class="sr-only">Check icon</span>
           </div>
           <div class="ml-3 px-6 text-sm font-normal">
-            Your question was posted. Thanks! If we make a change to the topic as a result of your question, we will definitely get back to you. Otherwise, we may or may not, depending on the volume of questions that have been asked. Sorry.
+            Your feedback was posted. Thanks! If we make a change to the topic as a result, we will definitely get back to you.
           </div>
           <button
             type="button"
