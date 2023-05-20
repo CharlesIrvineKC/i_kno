@@ -116,4 +116,62 @@ defmodule IKno.KnowledgeTest do
       assert %Ecto.Changeset{} = Knowledge.change_subject(subject)
     end
   end
+
+  describe "issues" do
+    alias IKno.Knowledge.Issue
+
+    import IKno.KnowledgeFixtures
+
+    @invalid_attrs %{description: nil, resolution: nil, status: nil}
+
+    test "list_issues/0 returns all issues" do
+      issue = issue_fixture()
+      assert Knowledge.list_issues() == [issue]
+    end
+
+    test "get_issue!/1 returns the issue with given id" do
+      issue = issue_fixture()
+      assert Knowledge.get_issue!(issue.id) == issue
+    end
+
+    test "create_issue/1 with valid data creates a issue" do
+      valid_attrs = %{description: "some description", resolution: "some resolution", status: :open}
+
+      assert {:ok, %Issue{} = issue} = Knowledge.create_issue(valid_attrs)
+      assert issue.description == "some description"
+      assert issue.resolution == "some resolution"
+      assert issue.status == :open
+    end
+
+    test "create_issue/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Knowledge.create_issue(@invalid_attrs)
+    end
+
+    test "update_issue/2 with valid data updates the issue" do
+      issue = issue_fixture()
+      update_attrs = %{description: "some updated description", resolution: "some updated resolution", status: :closed}
+
+      assert {:ok, %Issue{} = issue} = Knowledge.update_issue(issue, update_attrs)
+      assert issue.description == "some updated description"
+      assert issue.resolution == "some updated resolution"
+      assert issue.status == :closed
+    end
+
+    test "update_issue/2 with invalid data returns error changeset" do
+      issue = issue_fixture()
+      assert {:error, %Ecto.Changeset{}} = Knowledge.update_issue(issue, @invalid_attrs)
+      assert issue == Knowledge.get_issue!(issue.id)
+    end
+
+    test "delete_issue/1 deletes the issue" do
+      issue = issue_fixture()
+      assert {:ok, %Issue{}} = Knowledge.delete_issue(issue)
+      assert_raise Ecto.NoResultsError, fn -> Knowledge.get_issue!(issue.id) end
+    end
+
+    test "change_issue/1 returns a issue changeset" do
+      issue = issue_fixture()
+      assert %Ecto.Changeset{} = Knowledge.change_issue(issue)
+    end
+  end
 end

@@ -1,15 +1,29 @@
 defmodule IKnoWeb.Components.TopicIssue do
+  alias IKno.Knowledge
   use IKnoWeb, :live_component
 
   def mount(socket) do
     {:ok, socket}
   end
 
-  def update(_assigns, socket) do
+  def update(assigns, socket) do
+    socket = assign(socket, assigns)
     {:ok, assign(socket, take_issue: false, issue_posted: false)}
   end
 
-  def handle_event("post-issue", _, socket) do
+  def handle_event("post-issue", %{"issue" => issue}, socket) do
+    topic_id = socket.assigns.topic_id
+    subject_id = socket.assigns.subject_id
+    user_id = socket.assigns.user_id
+
+    Knowledge.create_issue(%{
+      description: issue,
+      status: :open,
+      user_id: user_id,
+      topic_id: topic_id,
+      subject_id: subject_id
+    })
+
     socket = assign(socket, take_issue: false, issue_posted: true)
     {:noreply, socket}
   end
@@ -27,6 +41,7 @@ defmodule IKnoWeb.Components.TopicIssue do
           <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
             <textarea
               id="comment"
+              name="issue"
               rows="4"
               class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
               placeholder="Describe issue"

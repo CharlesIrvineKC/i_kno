@@ -34,4 +34,20 @@ defmodule IKno.KnowledgeFixtures do
 
     subject
   end
+
+  @doc """
+  Generate a issue.
+  """
+  def issue_fixture(attrs \\ %{}) do
+    {:ok, issue} =
+      attrs
+      |> Enum.into(%{
+        description: "some description",
+        resolution: "some resolution",
+        status: :open
+      })
+      |> IKno.Knowledge.create_issue()
+
+    issue
+  end
 end
