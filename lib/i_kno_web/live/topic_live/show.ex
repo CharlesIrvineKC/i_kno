@@ -5,7 +5,7 @@ defmodule IKnoWeb.TopicLive.Show do
   alias IKno.Accounts
 
   alias IKnoWeb.Components.PrereqEditor
-  alias IKnoWeb.Components.TopicFeedback
+  alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
@@ -421,7 +421,7 @@ defmodule IKnoWeb.TopicLive.Show do
       <.render_learn_complete subject={@subject} />
     <% else %>
       <.render_topic topic={@topic} subject={@subject} />
-      <.live_component module={TopicFeedback} id={:topic_feedback} topic={@topic} subject={@subject} />
+      <.live_component module={TopicIssue} id={:topic_issue} topic={@topic} subject={@subject} />
       <.render_buttons is_known={@is_known} is_admin={@is_admin} />
       <%= if @is_admin do %>
         <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
