@@ -29,7 +29,7 @@ defmodule IKnoWeb.Components.TopicIssue do
               id="comment"
               rows="4"
               class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
-              placeholder="Provide issue"
+              placeholder="Describe issue"
               required
             />
           </div>
