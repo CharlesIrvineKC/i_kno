@@ -423,7 +423,9 @@ defmodule IKnoWeb.TopicLive.Show do
       <.render_topic topic={@topic} subject={@subject} />
       <.live_component module={TopicFeedback} id={:topic_feedback} topic={@topic} subject={@subject} />
       <.render_buttons is_known={@is_known} is_admin={@is_admin} />
-      <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
+      <%= if @is_admin do %>
+        <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
+      <% end %>
     <% end %>
     """
   end
