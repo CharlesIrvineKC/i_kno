@@ -38,7 +38,7 @@ defmodule IKnoWeb.Components.TopicIssue do
               type="submit"
               class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
             >
-              Post your issue
+              Post Issue
             </button>
           </div>
         </div>
@@ -50,7 +50,7 @@ defmodule IKnoWeb.Components.TopicIssue do
           phx-target={@myself}
           class="h-8 mt-2 px-3 py-2 text-xs text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          <%= if @take_issue, do: "Cancel Issue", else: "Submit I" %>
+          <%= if @take_issue, do: "Cancel Issue", else: "Report Issue" %>
         </button>
         <div
           :if={@issue_posted}
@@ -76,7 +76,7 @@ defmodule IKnoWeb.Components.TopicIssue do
             <span class="sr-only">Check icon</span>
           </div>
           <div class="ml-3 px-6 text-sm font-normal">
-            Your issue was posted. Thanks! If we make a change to the topic as a result, we will definitely get back to you.
+            Your issue was posted. We will notify you by email upon issue resolution.
           </div>
           <button
             type="button"
