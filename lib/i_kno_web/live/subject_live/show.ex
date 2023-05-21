@@ -8,12 +8,13 @@ defmodule IKnoWeb.SubjectLive.Show do
 
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     user = Accounts.get_user_by_session_token(user_token)
-    is_super_user = user.id == 2
+    subject_id = String.to_integer(subject_id)
+    is_admin = Accounts.is_admin(subject_id, user.id)
 
     socket =
       assign(socket,
         subject: Knowledge.get_subject!(subject_id),
-        is_super_user: is_super_user
+        is_admin: is_admin
       )
 
     {:ok, socket}
@@ -80,13 +81,19 @@ defmodule IKnoWeb.SubjectLive.Show do
       </div>
       <div data-popper-arrow></div>
     </div>
-
     <button
-      :if={@is_super_user}
+      :if={@is_admin}
+      type="button"
+      class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >
+      <a href={~p"/subjects/#{@subject.id}/edit"}>Edit</a>
+    </button>
+    <button
+      :if={@is_admin}
       type="button"
       class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
-      <a href={~p"/subjects/#{@subject.id}/edit"}>Edit</a>
+      <a href={~p"/subjects/#{@subject.id}/issues"}>Issues</a>
     </button>
     """
   end

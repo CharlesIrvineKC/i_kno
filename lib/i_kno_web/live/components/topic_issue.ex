@@ -11,13 +11,14 @@ defmodule IKnoWeb.Components.TopicIssue do
     {:ok, assign(socket, take_issue: false, issue_posted: false)}
   end
 
-  def handle_event("post-issue", %{"issue" => issue}, socket) do
+  def handle_event("post-issue", %{"description" => description, "summary" => summary}, socket) do
     topic_id = socket.assigns.topic_id
     subject_id = socket.assigns.subject_id
     user_id = socket.assigns.user_id
 
     Knowledge.create_issue(%{
-      description: issue,
+      summary: summary,
+      description: description,
       status: :open,
       user_id: user_id,
       topic_id: topic_id,
@@ -38,10 +39,20 @@ defmodule IKnoWeb.Components.TopicIssue do
     <div>
       <form :if={@take_issue} phx-submit="post-issue" phx-target={@myself} class="mt-5">
         <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <div class="border-b border-gray-200 px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+          <textarea
+            id="summary"
+            name="summary"
+            rows="1"
+            class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
+            placeholder="Summarize issue"
+            required
+          />
+        </div>
           <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
             <textarea
               id="comment"
-              name="issue"
+              name="description"
               rows="4"
               class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
               placeholder="Describe issue"

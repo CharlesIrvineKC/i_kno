@@ -3,6 +3,7 @@ defmodule IKno.Knowledge.Issue do
   import Ecto.Changeset
 
   schema "issues" do
+    field :summary, :string
     field :description, :string
     field :resolution, :string
     field :status, Ecto.Enum, values: [:open, :closed]
@@ -16,7 +17,7 @@ defmodule IKno.Knowledge.Issue do
   @doc false
   def changeset(issue, attrs) do
     issue
-    |> cast(attrs, [:description, :status, :resolution, :user_id, :topic_id, :subject_id])
-    |> validate_required([:description, :status, :user_id, :topic_id, :subject_id])
+    |> cast(attrs, [:summary, :description, :status, :resolution, :user_id, :topic_id, :subject_id])
+    |> validate_required([:summary, :description, :status, :user_id, :topic_id, :subject_id])
   end
 end

@@ -97,6 +97,8 @@ defmodule IKno.Knowledge do
 
   def get_topic!(id), do: Repo.get!(Topic, id)
 
+  def get_topic_name(id), do: get_topic!(id).name
+
   def get_next_unknown_topic_topics(subject_id, topic_id, user_id) do
     query = "with recursive prereqs as
       (select topic_id,
@@ -238,6 +240,8 @@ defmodule IKno.Knowledge do
 
   def get_subject!(id), do: Repo.get!(Subject, id)
 
+  def get_subject_name(id), do: get_subject!(id).name
+
   def create_subject(attrs \\ %{}) do
     %Subject{}
     |> Subject.changeset(attrs)
@@ -365,6 +369,13 @@ defmodule IKno.Knowledge do
   """
   def list_issues do
     Repo.all(Issue)
+  end
+
+  def get_issues_by_subject_id(subject_id) do
+    query =
+      from Issue,
+      where: [subject_id: ^subject_id]
+    Repo.all(query)
   end
 
   @doc """
