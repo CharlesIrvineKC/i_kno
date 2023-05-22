@@ -58,75 +58,83 @@ defmodule IKnoWeb.TopicLive.Topics do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/search")}
   end
 
-  def render(assigns) do
+  def render_breadcrumb(assigns) do
     ~H"""
-    <div class="h-14">
-      <nav class="pt-3 inline-block " aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-          <li class="inline-flex items-center">
-            <a
-              href={~p"/subjects"}
-              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
-            >
-              <svg
-                aria-hidden="true"
-                class="w-4 h-4 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
-                </path>
-              </svg>
-              Subjects
-            </a>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <svg
-                aria-hidden="true"
-                class="w-6 h-6 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
-                >
-                </path>
-              </svg>
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">
-                <%= @subject.name %>
-              </span>
-            </div>
-          </li>
-        </ol>
-      </nav>
-      <button
-        type="submit"
-        phx-click="search"
-        class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    <nav class="pt-3 inline-block " aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a
+            href={~p"/subjects"}
+            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
           >
-          </path>
-        </svg>
-        <span class="sr-only">Search</span>
-      </button>
-    </div>
+            <svg
+              aria-hidden="true"
+              class="w-4 h-4 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+              </path>
+            </svg>
+            Subjects
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg
+              aria-hidden="true"
+              class="w-6 h-6 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              >
+              </path>
+            </svg>
+            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">
+              <%= @subject.name %>
+            </span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+    """
+  end
+
+  def render_searchbox(assigns) do
+    ~H"""
+    <button
+      type="submit"
+      phx-click="search"
+      class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        >
+        </path>
+      </svg>
+      <span class="sr-only">Search</span>
+    </button>
+    """
+  end
+
+  def render_topic_table(assigns) do
+    ~H"""
     <div>
       <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
         <%= @subject.name %>
@@ -198,48 +206,66 @@ defmodule IKnoWeb.TopicLive.Topics do
         </table>
       </div>
     </div>
-    <button
-      :if={@is_admin}
-      type="button"
-      class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-    >
-      <a href={~p"/subjects/#{@subject.id}/topics/new"}>New</a>
-    </button>
-    <button
-      type="button"
-      class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-    >
-      <a href={~p"/subjects/#{@subject.id}/topics/learn"}>Learn</a>
-    </button>
-    <button
-      type="button"
-      phx-click="reset-subject"
-      class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-    >
-      <a href="#">Reset Subject</a>
-    </button>
-    <%= if @tasks_only do %>
-      <input
-        id="tasks-only"
-        name="tasks-only"
-        phx-click="tasks-only"
-        type="checkbox"
-        value="checked"
-        class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-      />
-    <% else %>
-      <input
-        id="tasks-only"
-        name="tasks-only"
-        phx-click="tasks-only"
-        type="checkbox"
-        value="checked"
-        class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-      />
-    <% end %>
-    <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-      Tasks Only
-    </label>
+    """
+  end
+
+  def render_buttons(assigns) do
+    ~H"""
+    <div>
+      <button
+        :if={@is_admin}
+        type="button"
+        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <a href={~p"/subjects/#{@subject.id}/topics/new"}>New</a>
+      </button>
+      <button
+        type="button"
+        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <a href={~p"/subjects/#{@subject.id}/topics/learn"}>Learn</a>
+      </button>
+      <button
+        type="button"
+        phx-click="reset-subject"
+        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <a href="#">Reset Subject</a>
+      </button>
+      <%= if @tasks_only do %>
+        <input
+          id="tasks-only"
+          name="tasks-only"
+          phx-click="tasks-only"
+          type="checkbox"
+          value="checked"
+          class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+      <% else %>
+        <input
+          id="tasks-only"
+          name="tasks-only"
+          phx-click="tasks-only"
+          type="checkbox"
+          value="checked"
+          class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+      <% end %>
+      <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+        Tasks Only
+      </label>
+    </div>
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
+    <div class="h-14">
+      <.render_breadcrumb subject={@subject} />
+      <.render_searchbox />
+    </div>
+    <.render_topic_table subject={@subject} topics={@topics} tasks_only={@tasks_only} is_admin={@is_admin} />
+    <.render_buttons is_admin={@is_admin} subject={@subject} tasks_only={@tasks_only} />
     """
   end
 end
