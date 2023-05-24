@@ -1,13 +1,10 @@
 # IKno
 
-To start your Phoenix server:
+## Deploy to Fly.io
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+1. Launch
+1. Remove node_modules from gitignore
+1. Deploy
 
 ## Copy Database to Fly.io 
 
