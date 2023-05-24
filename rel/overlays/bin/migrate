@@ -1,3 +1,0 @@
-#!/bin/sh
-cd -P -- "$(dirname -- "$0")"
-exec ./i_kno eval IKno.Release.migrate
