@@ -17,7 +17,7 @@ pg_dump -c -F t i_kno_dev > ikno.db
 ### Open Proxy to Database
 
 ```
- fly proxy 15432:5432 -a i-kno-db
+ fly proxy 15432:5432 -a irvine-i-kno-db
 ```
 
 ### Copy Database to Fly.ikno
