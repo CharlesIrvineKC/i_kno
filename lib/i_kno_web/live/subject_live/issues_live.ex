@@ -17,8 +17,16 @@ defmodule IKnoWeb.IssuesLive do
     {:ok, socket}
   end
 
+  def handle_event("close", %{"issue_id" => _issue_id, "resolution" => _resolution}, socket) do
+    # socket = assign(socket, key: value)
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
+    <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
+      <%= @subject_name %>
+    </h1>
     <%= for issue <- @issues do %>
       <.render_issue issue={issue} subject_name={@subject_name} />
     <% end %>
@@ -40,13 +48,31 @@ defmodule IKnoWeb.IssuesLive do
         href={~p"/subjects/#{@issue.subject_id}/topics/#{@issue.topic_id}"}
         class="inline-flex items-center text-blue-600 hover:underline"
       >
-        <%= @subject_name %> : <%= Knowledge.get_topic_name(@issue.topic_id) %>
+        Topic Name: <%= Knowledge.get_topic_name(@issue.topic_id) %>
         <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z">
           </path>
           <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
         </svg>
       </a>
+      <div class="mt-5">
+        <form phx-submit="close">
+          <textarea
+            id="resolution"
+            name="resolution"
+            rows="4"
+            required
+            class="p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Describe resolution..."></textarea>
+          <input type="hidden" id="issue_id" name="issue_id" value={@issue.id} />
+          <button
+            type="submit"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mt-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Close
+          </button>
+        </form>
+      </div>
     </div>
     """
   end
