@@ -11,24 +11,68 @@ defmodule IKnoWeb.IssuesLive do
       assign(socket,
         subject_id: subject_id,
         issues: issues,
-        subject_name: subject_name
+        subject_name: subject_name,
+        status: :open
       )
 
     {:ok, socket}
   end
 
-  def handle_event("close", %{"issue_id" => _issue_id, "resolution" => _resolution}, socket) do
-    # socket = assign(socket, key: value)
+  def handle_event("close", %{"issue_id" => issue_id, "resolution" => resolution}, socket) do
+    IO.inspect([socket.assigns.issues, issue_id])
+    issue = Enum.find(socket.assigns.issues, &(&1.id == String.to_integer(issue_id)))
+    Knowledge.update_issue(issue, %{status: :closed, resolution: resolution})
+    issues = Knowledge.get_issues_by_subject_id(socket.assigns.subject_id)
+    socket = assign(socket, issues: issues)
+    {:noreply, socket}
+  end
+
+  def handle_event("toggle-status", %{"status" => status} = params, socket) do
+    IO.inspect(params)
+    socket = assign(socket, status: String.to_atom(status))
     {:noreply, socket}
   end
 
   def render(assigns) do
     ~H"""
     <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
-      <%= @subject_name %>
+      <%= @subject_name %> Issues
     </h1>
+    <div class="flex mb-2">
+      <div class="flex items-center mr-4">
+        <input
+          checked
+          id="open-radio"
+          phx-click="toggle-status"
+          phx-value-status="open"
+          type="radio"
+          value=""
+          name="inline-radio-group"
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <label for="inline-checked-radio" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+          Open
+        </label>
+      </div>
+      <div class="flex items-center mr-4">
+        <input
+          id="closed-radio"
+          type="radio"
+          value=""
+          phx-click="toggle-status"
+          phx-value-status="closed"
+          name="inline-radio-group"
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <label for="inline-radio" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+          Closed
+        </label>
+      </div>
+    </div>
     <%= for issue <- @issues do %>
-      <.render_issue issue={issue} subject_name={@subject_name} />
+      <%= if IO.inspect(issue).status == IO.inspect(@status) do %>
+        <.render_issue issue={issue} subject_name={@subject_name} />
+      <% end %>
     <% end %>
     """
   end
@@ -63,13 +107,13 @@ defmodule IKnoWeb.IssuesLive do
             rows="4"
             required
             class="p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Describe resolution..."></textarea>
+            placeholder="Describe resolution..."><%= @issue.resolution %></textarea>
           <input type="hidden" id="issue_id" name="issue_id" value={@issue.id} />
           <button
             type="submit"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mt-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
-            Close
+            <%= if @issue.status == :open, do: "Close", else: "Re-Open" %>
           </button>
         </form>
       </div>
