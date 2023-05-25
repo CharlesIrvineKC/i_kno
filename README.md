@@ -11,7 +11,7 @@
 ### Copy Local Database
 
 ```
-pg_dump -c -F t i_kno_dev > ikno.db
+pg_dump -F t i_kno_dev > ikno.db
 ```
 
 ### Open Proxy to Database
@@ -23,5 +23,10 @@ pg_dump -c -F t i_kno_dev > ikno.db
 ### Copy Database to Fly.ikno
 
 ```
-pg_restore -U postgres -h localhost -p 15432 -d i_kno < ikno.db
+pg_restore -c -U postgres -h localhost -p 15432 -d i_kno < ikno.db
 ```
+
+
+
+## Log into Fly.io db
+fly postgres connect -a irvine-i-kno-db
