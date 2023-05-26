@@ -279,6 +279,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
   def render(assigns) do
     ~H"""
     <.render_breadcrumb subject={@subject} topic={@topic} />
+    <h1 class="mb-6 text-purple-700" >Learning Topic: <%= @learning_topic.name %></h1>
     <%= if @topic == nil do %>
       <.render_learn_complete subject={@subject} learning_topic={@learning_topic}/>
     <% else %>
