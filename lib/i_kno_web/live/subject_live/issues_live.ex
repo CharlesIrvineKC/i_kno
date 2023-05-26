@@ -117,9 +117,11 @@ defmodule IKnoWeb.IssuesLive do
             <%= if @issue.status == :open, do: "Close", else: "Re-Open" %>
           </button>
         </form>
+        <div :if={@issue.status == :closed}>
         <label class="text-gray-500 mb-1">Resolution:</label>
-        <div class="border border-gray-300 rounded p-2" :if={@issue.status == :closed}>
+        <div class="border border-gray-300 rounded p-2">
           <p><%= @issue.resolution %></p>
+        </div>
         </div>
       </div>
     </div>
