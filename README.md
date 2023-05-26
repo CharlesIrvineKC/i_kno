@@ -11,7 +11,8 @@
 ### Copy Local Database
 
 ```
-pg_dump -F t i_kno_dev > ikno.db
+$ cd priv/repo
+$ pg_dump -F t i_kno_dev > ikno.db
 ```
 
 ### Open Proxy to Database
