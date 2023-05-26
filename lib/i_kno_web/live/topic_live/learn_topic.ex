@@ -36,7 +36,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         is_admin: is_admin,
         learning_topic: learning_topic,
         topic: topic,
-        visited_topics: [topic.name],
+        visited_topics: [topic],
         next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: []),
         is_known: is_known,
         prereqs: prereqs,
@@ -65,7 +65,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       socket =
         assign(socket,
           topic: topic,
-          visited_topics: [topic.name],
+          visited_topics: [topic],
           next_topic_ids: next_topic_ids,
           prereqs: prereqs,
           learn_topic_complete: false
@@ -80,7 +80,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       {:noreply,
        assign(socket,
          topic: topic,
-         visited_topics: [topic.name],
+         visited_topics: [topic],
          prereqs: prereqs,
          next_topic_ids: next_topic_ids,
          learn_topic_complete: true
@@ -105,7 +105,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         {:noreply,
          assign(socket,
            topic: topic,
-           visited_topics: visited_topics ++ [topic.name],
+           visited_topics: visited_topics ++ [topic],
            prereqs: prereqs,
            next_topic_ids: next_topic_ids
          )}
@@ -117,7 +117,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         {:noreply,
          assign(socket,
            topic: topic,
-           visited_topics: visited_topics ++ [topic.name],
+           visited_topics: visited_topics ++ [topic],
            prereqs: prereqs,
            next_topic_ids: next_topic_ids,
            learn_topic_complete: true
@@ -292,13 +292,13 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
   def render_learning_progress(assigns) do
     ~H"""
     <h1 class="text-purple-700">Learning Topic: <%= @learning_topic.name %></h1>
-    <div :for={topic_name <- @visited_topics}:if={@is_admin}>
+    <div :for={topic <- @visited_topics} :if={@is_admin}>
       <a
 
-        href={~p"/subjects/#{@subject.id}/topics/#{@topic.id}"}
+        href={~p"/subjects/#{@subject.id}/topics/#{topic.id}"}
         class="text-green-700"
       >
-        (<%= topic_name %>)
+        (<%= topic.name %>)
       </a>
     </div>
     """
@@ -309,7 +309,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     <.render_breadcrumb subject={@subject} topic={@topic} />
     <.render_learning_progress
       subject={@subject}
-      topic={@topic}
       is_admin={@is_admin}
       learning_topic={@learning_topic}
       visited_topics={@visited_topics}
