@@ -36,6 +36,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         is_admin: is_admin,
         learning_topic: learning_topic,
         topic: topic,
+        visited_topics: [topic.name],
         next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: []),
         is_known: is_known,
         prereqs: prereqs,
@@ -64,6 +65,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       socket =
         assign(socket,
           topic: topic,
+          visited_topics: [topic.name],
           next_topic_ids: next_topic_ids,
           prereqs: prereqs,
           learn_topic_complete: false
@@ -78,6 +80,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       {:noreply,
        assign(socket,
          topic: topic,
+         visited_topics: [topic.name],
          prereqs: prereqs,
          next_topic_ids: next_topic_ids,
          learn_topic_complete: true
@@ -87,6 +90,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
+    visited_topics = socket.assigns.visited_topics
 
     if !socket.assigns.learn_topic_complete do
       next_topic_ids = get_next_topics(socket)
@@ -94,9 +98,17 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
       if next_topic_id do
         topic = Knowledge.get_topic!(next_topic_id)
+
         next_topic_ids = tl(next_topic_ids)
         prereqs = Knowledge.get_topic_prereqs(topic.id)
-        {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
+
+        {:noreply,
+         assign(socket,
+           topic: topic,
+           visited_topics: visited_topics ++ [topic.name],
+           prereqs: prereqs,
+           next_topic_ids: next_topic_ids
+         )}
       else
         topic = Knowledge.get_topic!(socket.assigns.learning_topic.id)
         next_topic_ids = []
@@ -105,6 +117,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         {:noreply,
          assign(socket,
            topic: topic,
+           visited_topics: visited_topics ++ [topic.name],
            prereqs: prereqs,
            next_topic_ids: next_topic_ids,
            learn_topic_complete: true
@@ -276,12 +289,33 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     """
   end
 
+  def render_learning_progress(assigns) do
+    ~H"""
+    <h1 class="text-purple-700">Learning Topic: <%= @learning_topic.name %></h1>
+    <div :for={topic_name <- @visited_topics}:if={@is_admin}>
+      <a
+
+        href={~p"/subjects/#{@subject.id}/topics/#{@topic.id}"}
+        class="text-green-700"
+      >
+        (<%= topic_name %>)
+      </a>
+    </div>
+    """
+  end
+
   def render(assigns) do
     ~H"""
     <.render_breadcrumb subject={@subject} topic={@topic} />
-    <h1 class="mb-6 text-purple-700" >Learning Topic: <%= @learning_topic.name %></h1>
+    <.render_learning_progress
+      subject={@subject}
+      topic={@topic}
+      is_admin={@is_admin}
+      learning_topic={@learning_topic}
+      visited_topics={@visited_topics}
+    />
     <%= if @topic == nil do %>
-      <.render_learn_complete subject={@subject} learning_topic={@learning_topic}/>
+      <.render_learn_complete subject={@subject} learning_topic={@learning_topic} />
     <% else %>
       <.render_topic topic={@topic} subject={@subject} />
       <.live_component
