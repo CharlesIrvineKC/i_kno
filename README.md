@@ -23,7 +23,7 @@ pg_dump -F t i_kno_dev > ikno.db
 ### Copy Database to Fly.ikno
 
 ```
-pg_restore -c -U postgres -h localhost -p 15432 -d i_kno < ikno.db
+pg_restore -c -U postgres -h localhost -p 15432 -d irvine_i_kno < ikno.db
 ```
 
 
