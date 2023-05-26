@@ -19,7 +19,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     prereqs = Knowledge.get_topic_prereqs(topic.id)
     is_known = Knowledge.get_known(topic.id, user.id)
 
-    assign(
+    socket = assign(
       socket,
       subject: subject,
       user: user,
