@@ -1,4 +1,4 @@
-defmodule IKnoWeb.TopicLive.Show do
+defmodule IKnoWeb.TopicLive.ShowTopic do
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
@@ -10,190 +10,36 @@ defmodule IKnoWeb.TopicLive.Show do
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
 
-  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
+  def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
     is_admin = Accounts.is_admin(subject_id, user.id)
-
-    socket = assign(socket, subject: subject, user: user, is_admin: is_admin)
-
-    {:ok, socket}
-  end
-
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :learn_topic, %{"topic_id" => topic_id}) do
-    subject_id = socket.assigns.subject.id
-    learning_topic_id = String.to_integer(topic_id)
-    user = socket.assigns.user
-    topic_ids = Knowledge.get_next_unknown_topic_topics(subject_id, learning_topic_id, user.id)
-
-    topic =
-      if topic_ids != [] do
-        Knowledge.get_topic!(hd(topic_ids))
-      else
-        Knowledge.get_topic!(learning_topic_id)
-      end
-
-    prereqs = if topic, do: Knowledge.get_topic_prereqs(topic.id), else: []
-    is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
-
-    assign(
-      socket,
-      learning_topic_id: learning_topic_id,
-      topic: topic,
-      next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: []),
-      is_known: is_known,
-      prereqs: prereqs,
-      mode: :learn_topic,
-      learn_topic_complete: length(topic_ids) == 0
-    )
-  end
-
-  defp apply_action(socket, :learn_subject, _params) do
-    subject_id = socket.assigns.subject.id
-    user = socket.assigns.user
-    topic_ids = Knowledge.get_next_unknown_subject_topics(subject_id, user.id)
-    topic = if topic_ids != [], do: Knowledge.get_topic!(hd(topic_ids)), else: nil
-    prereqs = if topic, do: Knowledge.get_topic_prereqs(topic.id), else: []
-    is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
-
-    assign(
-      socket,
-      topic: topic,
-      next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
-      is_known: is_known,
-      prereqs: prereqs,
-      mode: :learn_subject
-    )
-  end
-
-  defp apply_action(socket, :show, %{"topic_id" => topic_id}) do
-    user = socket.assigns.user
-    topic = Knowledge.get_topic!(topic_id)
+    topic = Knowledge.get_topic!(String.to_integer(topic_id))
     prereqs = Knowledge.get_topic_prereqs(topic.id)
     is_known = Knowledge.get_known(topic.id, user.id)
 
     assign(
       socket,
+      subject: subject,
+      user: user,
+      is_admin: is_admin,
       topic: topic,
       is_known: is_known,
       prereqs: prereqs,
       mode: :show
     )
+
+    {:ok, socket}
   end
 
   def handle_event("new", _, socket) do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/new")}
   end
 
-  def handle_event("reset-subject", _, socket) do
-    case socket.assigns.mode do
-      :learn_subject ->
-        Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
-
-        topic_ids =
-          Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
-
-        topic = Knowledge.get_topic!(hd(topic_ids))
-        next_topic_ids = tl(topic_ids)
-        prereqs = Knowledge.get_topic_prereqs(topic.id)
-        socket = assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs)
-        {:noreply, socket}
-
-      :learn_topic ->
-        Knowledge.reset_learn_topic_progress(socket.assigns.learning_topic_id, socket.assigns.user.id)
-
-        topic_ids =
-          Knowledge.get_next_unknown_topic_topics(
-            socket.assigns.subject.id,
-            socket.assigns.learning_topic_id,
-            socket.assigns.user.id
-          )
-
-        if topic_ids != [] do
-          topic = Knowledge.get_topic!(hd(topic_ids))
-          next_topic_ids = tl(topic_ids)
-          prereqs = Knowledge.get_topic_prereqs(topic.id)
-
-          socket =
-            assign(socket,
-              topic: topic,
-              next_topic_ids: next_topic_ids,
-              prereqs: prereqs,
-              learn_topic_complete: false
-            )
-
-          {:noreply, socket}
-        else
-          topic = Knowledge.get_topic!(socket.assigns.learning_topic_id)
-          next_topic_ids = []
-          prereqs = Knowledge.get_topic_prereqs(topic.id)
-
-          {:noreply,
-           assign(socket,
-             topic: topic,
-             prereqs: prereqs,
-             next_topic_ids: next_topic_ids,
-             learn_topic_complete: true
-           )}
-        end
-    end
-  end
-
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
-
-    case socket.assigns.mode do
-      :show ->
-        {:noreply, assign(socket, is_known: true)}
-
-      :learn_subject ->
-        next_topic_ids = get_next_topics(socket)
-        next_topic_id = List.first(next_topic_ids)
-
-        if next_topic_id do
-          topic = Knowledge.get_topic!(next_topic_id)
-          next_topic_ids = tl(next_topic_ids)
-          prereqs = Knowledge.get_topic_prereqs(topic.id)
-          {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
-        else
-          topic = nil
-          next_topic_ids = []
-          prereqs = []
-          {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
-        end
-
-      :learn_topic ->
-        if !socket.assigns.learn_topic_complete do
-          next_topic_ids = get_next_topics(socket)
-          next_topic_id = List.first(next_topic_ids)
-
-          if next_topic_id do
-            topic = Knowledge.get_topic!(next_topic_id)
-            next_topic_ids = tl(next_topic_ids)
-            prereqs = Knowledge.get_topic_prereqs(topic.id)
-            {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
-          else
-            topic = Knowledge.get_topic!(socket.assigns.learning_topic_id)
-            next_topic_ids = []
-            prereqs = Knowledge.get_topic_prereqs(topic.id)
-
-            {:noreply,
-             assign(socket,
-               topic: topic,
-               prereqs: prereqs,
-               next_topic_ids: next_topic_ids,
-               learn_topic_complete: true
-             )}
-          end
-        else
-          {:noreply, assign(socket, topic: nil, prereqs: [], next_topic_ids: [])}
-        end
-    end
+    {:noreply, assign(socket, is_known: true)}
   end
 
   def handle_event("edit", _, socket) do
@@ -214,31 +60,6 @@ defmodule IKnoWeb.TopicLive.Show do
   def handle_event("delete", _, socket) do
     Knowledge.delete_topic(socket.assigns.topic)
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.topic.subject_id}/topics")}
-  end
-
-  defp get_next_topics(socket) do
-    case socket.assigns.mode do
-      :show ->
-        nil
-
-      :learn_subject ->
-        if length(socket.assigns.next_topic_ids) > 0 do
-          socket.assigns.next_topic_ids
-        else
-          Knowledge.get_next_unknown_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
-        end
-
-      :learn_topic ->
-        if length(socket.assigns.next_topic_ids) > 0 do
-          socket.assigns.next_topic_ids
-        else
-          Knowledge.get_next_unknown_topic_topics(
-            socket.assigns.subject.id,
-            socket.assigns.learning_topic_id,
-            socket.assigns.user.id
-          )
-        end
-    end
   end
 
   def render_breadcrumb(assigns) do
@@ -358,13 +179,6 @@ defmodule IKnoWeb.TopicLive.Show do
   def render_buttons(assigns) do
     ~H"""
     <div class="mt-8">
-      <button
-        :if={!@is_known}
-        phx-click="understood"
-        class="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Understood
-      </button>
       <button
         :if={!@is_known}
         phx-click="learn"

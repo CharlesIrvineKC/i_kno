@@ -22,16 +22,16 @@ defmodule IKnoWeb.Router do
 
     live "/subjects", SubjectLive.Subjects
     live "/subjects/new", SubjectLive.New
-    live "/subjects/:subject_id", SubjectLive.Show
+    live "/subjects/:subject_id", SubjectLive.ShowSubject
     live "/subjects/:subject_id/edit", SubjectLive.Edit
     live "/subjects/:subject_id/issues", IssuesLive
+    live "/subjects/:subject_id/learn", SubjectLive.LearnSubject
 
     live "/subjects/:subject_id/topics", TopicLive.Topics
     live "/subjects/:subject_id/topics/new", TopicLive.Edit, :new
     live "/subjects/:subject_id/topics/search", TopicLive.Search
-    live "/subjects/:subject_id/topics/learn", TopicLive.Show, :learn_subject
-    live "/subjects/:subject_id/topics/:topic_id", TopicLive.Show, :show
-    live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.Show, :learn_topic
+    live "/subjects/:subject_id/topics/:topic_id", TopicLive.ShowTopic
+    live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.LearnTopic
     live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
   end
 
