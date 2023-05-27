@@ -163,14 +163,14 @@ defmodule IKnoWeb.TopicLive.Topics do
                 <td class="px-6 py-1">
                   <a
                     href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
                   >
                     View
                   </a>
                   <a
                     :if={!topic.known}
                     href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
                   >
                     Learn
                   </a>
@@ -179,14 +179,14 @@ defmodule IKnoWeb.TopicLive.Topics do
                     phx-click="refresh-topic"
                     phx-value-topic-id={topic.id}
                     href="#"
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
                   >
                     Reset
                   </a>
                   <a
                     :if={@is_admin}
                     href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
                   >
                     Edit
                   </a>
@@ -195,7 +195,7 @@ defmodule IKnoWeb.TopicLive.Topics do
                     href="#"
                     phx-click="delete"
                     phx-value-topic-id={topic.id}
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
                   >
                     Delete
                   </a>
