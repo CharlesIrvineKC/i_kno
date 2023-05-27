@@ -242,7 +242,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
   def render_learn_complete(assigns) do
     ~H"""
-    <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+    <h1 class="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Congradulations!
     </h1>
     <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
@@ -291,15 +291,19 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
   def render_learning_progress(assigns) do
     ~H"""
-    <h1 class="text-purple-700">Learning Topic: <%= @learning_topic.name %></h1>
-    <div :for={topic <- @visited_topics} :if={@is_admin}>
+    <div class="mb-2">
       <a
-
-        href={~p"/subjects/#{@subject.id}/topics/#{topic.id}"}
+        class="text-purple-700"
+        href={~p"/subjects/#{@learning_topic.subject_id}/topics/#{@learning_topic.id}"}
         class="text-green-700"
       >
-        (<%= topic.name %>)
+        Learning: <%= @learning_topic.name %>
       </a>
+      <div :for={topic <- @visited_topics} :if={@is_admin}>
+        <a href={~p"/subjects/#{@subject.id}/topics/#{topic.id}"} class="text-green-700">
+          (<%= topic.name %>)
+        </a>
+      </div>
     </div>
     """
   end
