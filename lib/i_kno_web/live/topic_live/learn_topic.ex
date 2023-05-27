@@ -246,7 +246,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       Congradulations!
     </h1>
     <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-      You should now have a good understanding of <i><b><%= @learning_topic.name %></b></i>. Click the button below if you would like to review this topic again.
+      You should now have a good understanding of <i><b><%= @learning_topic.name %></b></i>. Click the <strong>Review</strong> button below if you would like to review this topic again.
     </p>
     <a
       phx-click="reset-progress"
