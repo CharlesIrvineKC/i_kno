@@ -37,3 +37,6 @@ i_kno-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Mac
+.DS_Store
+

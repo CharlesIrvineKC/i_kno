@@ -1,33 +1,31 @@
 # IKno
 
-## Deploy to Fly.io
-
-1. Launch
-1. Remove node_modules from gitignore
-1. Deploy
-
 ## Copy Database to Fly.io 
 
 ### Copy Local Database
-
 ```
 $ cd priv/repo
-$ pg_dump -F t i_kno_dev > ikno.db
+$ pg_dump -a -Fc -t subjects -t topics -t prereq_topics i_kno_dev > ikno.db
 ```
 
 ### Open Proxy to Database
-
 ```
  fly proxy 15432:5432 -a irvine-i-kno-db
 ```
 
-### Copy Database to Fly.ikno
-
+### Login to Fly.io DB and Set Replication Role
 ```
-pg_restore -c -U postgres -h localhost -p 15432 -d irvine_i_kno < ikno.db
-```
-
-
-
-## Log into Fly.io db
 fly postgres connect -a irvine-i-kno-db
+SET session_replication_role = 'replica';
+delete from topics; delete from subjects; delete from prereq_topics;
+```
+
+### Copy Database to Fly.ikno
+```
+pg_restore -U postgres -h localhost -p 15432 -d irvine_i_kno < ikno.db
+```
+
+### Set Replication Role Back to Origin
+```
+SET session_replication_role = 'origin';
+```
