@@ -20,6 +20,7 @@ defmodule IKnoWeb.WelcomeLive do
         </p>
         <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <a
+            data-popover-target="popover-default"
             href={~p"/subjects"}
             class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
           >
@@ -32,6 +33,20 @@ defmodule IKnoWeb.WelcomeLive do
               />
             </svg>
           </a>
+          <div
+            data-popover
+            id="popover-default"
+            role="tooltip"
+            class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+          >
+            <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+              <h3 class="font-semibold text-gray-900 dark:text-white">Subjects</h3>
+            </div>
+            <div class="px-3 py-2">
+              <p>Show all available IKno subjects.</p>
+            </div>
+            <div data-popper-arrow></div>
+          </div>
         </div>
       </div>
     </section>
