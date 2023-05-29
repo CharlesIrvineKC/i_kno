@@ -12,13 +12,15 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     admins = Accounts.get_admins(subject_id)
     is_admin = Enum.any?(admins, &(elem(&1, 1) == user.id))
     is_super_user = user.id == 2
+    edit_admins = false
 
     socket =
       assign(socket,
         subject: Knowledge.get_subject!(subject_id),
         is_admin: is_admin,
         admins: admins,
-        is_super_user: is_super_user
+        is_super_user: is_super_user,
+        edit_admins: edit_admins
       )
 
     {:ok, socket}
@@ -29,6 +31,11 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     Accounts.create_subject_admin_by_email_id(subject_id, email_id)
     admins = Accounts.get_admins(subject_id)
     socket = assign(socket, admins: admins)
+    {:noreply, socket}
+  end
+
+  def handle_event("edit-admins", _, socket) do
+    socket = assign(socket, edit_admins: !socket.assigns.edit_admins)
     {:noreply, socket}
   end
 
@@ -116,30 +123,41 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   def render_admins(assigns) do
     ~H"""
-    Current Admins:
-    <label :for={admin <- @admins}>
-      (<%= elem(admin, 0) %>)
-    </label>
-    <form phx-submit="create-new-admin" class="my-5">
-      <div>
-        <label for="admin_email_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          New Admin Email ID
-        </label>
-        <input
-          type="text"
-          id="admin_email_id"
-          name="admin_email_id"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    <div>
+      <a
+        href="#"
+        phx-click="edit-admins"
+        class="inline-flex items-center text-sm font-medium text-lime-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
       >
-        Submit
-      </button>
-    </form>
+        <%= if @edit_admins, do: "Cancel", else: "Edit Admins" %>
+      </a>
+    </div>
+    <div :if={@edit_admins} class="mt-3">
+      Current Admins:
+      <label :for={admin <- @admins}>
+        (<%= elem(admin, 0) %>)
+      </label>
+      <form phx-submit="create-new-admin" class="my-5">
+        <div>
+          <label for="admin_email_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            New Admin Email ID
+          </label>
+          <input
+            type="text"
+            id="admin_email_id"
+            name="admin_email_id"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
     """
   end
 
@@ -147,7 +165,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     ~H"""
     <.render_subject subject={@subject} />
     <%= if @is_super_user do %>
-      <.render_admins admins={@admins} />
+      <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
     <.render_buttons subject={@subject} is_admin={@is_admin} />
     """
