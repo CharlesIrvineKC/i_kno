@@ -4,7 +4,6 @@ defmodule IKno.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias Inspect.IKno.Accounts
   alias IKno.Repo
   alias Ecto.Adapters.SQL
 
