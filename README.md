@@ -4,8 +4,8 @@
 
 ### Copy Local Database
 ```
-$ cd priv/repo
-$ pg_dump -a -Fc -t subjects -t topics -t prereq_topics i_kno_dev > ikno.db
+cd priv/repo
+pg_dump -a -Fc -t subjects -t topics -t prereq_topics i_kno_dev > ikno.db
 ```
 
 ### Open Proxy to Database
@@ -15,7 +15,8 @@ $ pg_dump -a -Fc -t subjects -t topics -t prereq_topics i_kno_dev > ikno.db
 
 ### Login to Fly.io DB and Set Replication Role
 ```
-fly postgres connect -a irvine-i-kno-db
+fly postgres connect -a irvine-i-kno-db;
+\c irvine_i_kno
 SET session_replication_role = 'replica';
 delete from topics; delete from subjects; delete from prereq_topics;
 ```
