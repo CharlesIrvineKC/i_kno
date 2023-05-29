@@ -4,6 +4,7 @@ defmodule IKno.Accounts do
   """
 
   import Ecto.Query, warn: false
+  alias Inspect.IKno.Accounts
   alias IKno.Repo
   alias Ecto.Adapters.SQL
 
@@ -367,6 +368,16 @@ defmodule IKno.Accounts do
     Repo.all(SubjectAdmin)
   end
 
+  def get_admins(subject_id) do
+    query =
+      from sa in SubjectAdmin,
+      join: u in User,
+      on: sa.user_id == u.id,
+      where: sa.subject_id == ^subject_id,
+      select: {u.email, sa.user_id}
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single subject_admin.
 
@@ -399,6 +410,11 @@ defmodule IKno.Accounts do
     %SubjectAdmin{}
     |> SubjectAdmin.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_subject_admin_by_email_id(subject_id, email_id) do
+    user = get_user_by_email(email_id)
+    create_subject_admin(%{subject_id: subject_id, user_id: user.id})
   end
 
   @doc """

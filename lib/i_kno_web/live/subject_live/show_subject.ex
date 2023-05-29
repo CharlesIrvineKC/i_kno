@@ -9,33 +9,31 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     user = Accounts.get_user_by_session_token(user_token)
     subject_id = String.to_integer(subject_id)
-    is_admin = Accounts.is_admin(subject_id, user.id)
+    admins = Accounts.get_admins(subject_id)
+    is_admin = Enum.any?(admins, &(elem(&1, 1) == user.id))
+    is_super_user = user.id == 2
 
     socket =
       assign(socket,
         subject: Knowledge.get_subject!(subject_id),
-        is_admin: is_admin
+        is_admin: is_admin,
+        admins: admins,
+        is_super_user: is_super_user
       )
 
     {:ok, socket}
   end
 
-  def render(assigns) do
-    ~H"""
-    <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      <%= @subject.name %>
-    </h1>
-    <p class="mb-3 text-black dark:text-gray-400">
-      <%= @subject.summary %>
-    </p>
-    <div class="mb-5 border rounded border-grey-900 p-3">
-      <p class="text-black dark:text-gray-400">
-        <section class="markdown">
-          <%= Earmark.as_html!(@subject.description) |> Phoenix.HTML.raw() %>
-        </section>
-      </p>
-    </div>
+  def handle_event("create-new-admin", %{"admin_email_id" => email_id}, socket) do
+    subject_id = socket.assigns.subject.id
+    Accounts.create_subject_admin_by_email_id(subject_id, email_id)
+    admins = Accounts.get_admins(subject_id)
+    socket = assign(socket, admins: admins)
+    {:noreply, socket}
+  end
 
+  def render_buttons(assigns) do
+    ~H"""
     <button
       data-popover-target="topics-popover"
       type="button"
@@ -95,6 +93,63 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     >
       <a href={~p"/subjects/#{@subject.id}/issues"}>Issues</a>
     </button>
+    """
+  end
+
+  def render_subject(assigns) do
+    ~H"""
+    <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+      <%= @subject.name %>
+    </h1>
+    <p class="mb-3 text-black dark:text-gray-400">
+      <%= @subject.summary %>
+    </p>
+    <div class="mb-5 border rounded border-grey-900 p-3">
+      <p class="text-black dark:text-gray-400">
+        <section class="markdown">
+          <%= Earmark.as_html!(@subject.description) |> Phoenix.HTML.raw() %>
+        </section>
+      </p>
+    </div>
+    """
+  end
+
+  def render_admins(assigns) do
+    ~H"""
+    Current Admins:
+    <label :for={admin <- @admins}>
+      (<%= elem(admin, 0) %>)
+    </label>
+    <form phx-submit="create-new-admin" class="my-5">
+      <div>
+        <label for="admin_email_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          New Admin Email ID
+        </label>
+        <input
+          type="text"
+          id="admin_email_id"
+          name="admin_email_id"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Submit
+      </button>
+    </form>
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.render_subject subject={@subject} />
+    <%= if @is_super_user do %>
+      <.render_admins admins={@admins} />
+    <% end %>
+    <.render_buttons subject={@subject} is_admin={@is_admin} />
     """
   end
 end
