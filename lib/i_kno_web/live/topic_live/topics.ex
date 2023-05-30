@@ -27,7 +27,7 @@ defmodule IKnoWeb.TopicLive.Topics do
 
   def handle_event("tasks-only", params, socket) do
     case params do
-      %{"value" => "checked"} ->
+      %{"value" => "on"} ->
         topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
         {:noreply, assign(socket, tasks_only: true, topics: topics)}
 
@@ -247,25 +247,14 @@ defmodule IKnoWeb.TopicLive.Topics do
       >
         <a href="#">Reset Subject</a>
       </button>
-      <%= if @tasks_only do %>
         <input
           id="tasks-only"
           name="tasks-only"
           phx-click="tasks-only"
           type="checkbox"
-          value="checked"
+          checked={@tasks_only}
           class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
         />
-      <% else %>
-        <input
-          id="tasks-only"
-          name="tasks-only"
-          phx-click="tasks-only"
-          type="checkbox"
-          value="checked"
-          class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-        />
-      <% end %>
       <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
         Tasks Only
       </label>
