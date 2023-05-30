@@ -145,9 +145,12 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
                 >
                 </path>
               </svg>
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">
+              <a
+                href={~p"/subjects/#{@subject.id}/topics/#{@topic.id}"}
+                class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+              >
                 <%= @topic.name %>
-              </span>
+              </a>
             </div>
           </li>
         </ol>
