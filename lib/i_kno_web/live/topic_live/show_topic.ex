@@ -19,16 +19,17 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     prereqs = Knowledge.get_topic_prereqs(topic.id)
     is_known = Knowledge.get_known(topic.id, user.id)
 
-    socket = assign(
-      socket,
-      subject: subject,
-      user: user,
-      is_admin: is_admin,
-      topic: topic,
-      is_known: is_known,
-      prereqs: prereqs,
-      mode: :show
-    )
+    socket =
+      assign(
+        socket,
+        subject: subject,
+        user: user,
+        is_admin: is_admin,
+        topic: topic,
+        is_known: is_known,
+        prereqs: prereqs,
+        mode: :show
+      )
 
     {:ok, socket}
   end
@@ -219,7 +220,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       </h1>
       <div class="border rounded border-grey-900 p-3">
         <p>
-          <section class="markdown">
+          <section class="markdown" phx-update="ignore" id="topic-description">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>
