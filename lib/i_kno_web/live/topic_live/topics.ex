@@ -136,17 +136,18 @@ defmodule IKnoWeb.TopicLive.Topics do
   def render_topics(assigns) do
     ~H"""
     <ul class="mt-5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      <li
-        :for={topic <- @topics}
-        class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-      >
-        <a
-          href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
-          class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-        >
-          <%= topic.name %>
-        </a>
-      </li>
+      <%= for topic <- @topics do %>
+        <li
+          :if={!@tasks_only || topic.is_task}
+          class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+          <a
+            href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
+            class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
+          >
+            <%= topic.name %>
+          </a>
+        </li>
+      <% end %>
     </ul>
     """
   end
