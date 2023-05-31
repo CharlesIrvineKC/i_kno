@@ -29,7 +29,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     </div>
     <div>
       <%= for subject <- @subjects do %>
-        <.render_subject_summary subject={subject} />
+        <.render_subject subject={subject} is_super_user={@is_super_user}/>
       <% end %>
     </div>
     <button
@@ -42,10 +42,15 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     """
   end
 
-  def render_subject_summary(assigns) do
+  def render_subject(assigns) do
     ~H"""
-    <div class="border border-gray-300 rounded my-2 p-2">
-      <a href={~p"/subjects/#{@subject.id}"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+    <div
+      :if={@is_super_user || @subject.is_published }
+      class="border border-gray-300 rounded my-2 p-2">
+      <a
+        href={~p"/subjects/#{@subject.id}"}
+        class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+      >
         <%= @subject.name %>
       </a>
       <div><%= @subject.summary %></div>

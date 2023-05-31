@@ -15,6 +15,7 @@ defmodule IKnoWeb.SubjectLive.New do
   end
 
   def handle_event("save", subject_params, socket) do
+    subject_params = Map.put(subject_params, :is_published, false)
     {:ok, subject} = Knowledge.create_subject(subject_params)
     {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}")}
   end

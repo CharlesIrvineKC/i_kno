@@ -8,6 +8,7 @@ defmodule IKno.Knowledge.Subject do
     field :description, :string
     field :name, :string
     field :summary, :string
+    field :is_published, :boolean
     has_many :topics, Topic
 
     timestamps()
@@ -16,7 +17,7 @@ defmodule IKno.Knowledge.Subject do
   @doc false
   def changeset(subject, attrs) do
     subject
-    |> cast(attrs, [:name, :summary, :description])
-    |> validate_required([:name, :summary, :description])
+    |> cast(attrs, [:name, :summary, :description, :is_published])
+    |> validate_required([:name, :summary, :description, :is_published])
   end
 end
