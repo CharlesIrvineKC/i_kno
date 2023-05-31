@@ -13,7 +13,7 @@ defmodule IKnoWeb.WelcomeLive do
           An open door to knowledge
         </h1>
         <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-400">
-          There are big plans for <strong>IKno</strong>. For now, we would like to share what we've learned about Phoenix LiveView.
+          Welcome to <strong>IKno</strong>. It is an experimental application for authoring and presenting education subject matter. One of the subjects is <strong>Phoenix LiveView</strong>, a framework for authoring web applications.
         </p>
         <p class="mb-8 text-sm font-normal text-gray-500 sm:px-16 lg:px-48 dark:text-gray-400">
           <strong>Hint:</strong> Hover over buttons and links to understand how things works.

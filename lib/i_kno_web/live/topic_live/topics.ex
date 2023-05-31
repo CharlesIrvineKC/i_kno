@@ -133,79 +133,21 @@ defmodule IKnoWeb.TopicLive.Topics do
     """
   end
 
-  def render_topic_table(assigns) do
+  def render_topics(assigns) do
     ~H"""
-    <div>
-      <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
-        <%= @subject.name %>
-      </h1>
-      <div class="relative overflow-x-auto sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" class="px-6 py-3">
-                Topic name
-              </th>
-              <th scope="col" class="px-6 py-3">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= for topic <- @topics do %>
-              <tr
-                :if={!@tasks_only || topic.is_task}
-                class="border-b bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <th scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  <%= topic.name %>
-                </th>
-                <td class="px-6 py-1">
-                  <a
-                    href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
-                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-                  >
-                    View
-                  </a>
-                  <a
-                    :if={!topic.known}
-                    href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
-                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-                  >
-                    Learn
-                  </a>
-                  <a
-                    :if={topic.known}
-                    phx-click="refresh-topic"
-                    phx-value-topic-id={topic.id}
-                    href="#"
-                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-                  >
-                    Reset
-                  </a>
-                  <a
-                    :if={@is_admin}
-                    href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit"}
-                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-                  >
-                    Edit
-                  </a>
-                  <a
-                    :if={@is_admin}
-                    href="#"
-                    phx-click="delete"
-                    phx-value-topic-id={topic.id}
-                    class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-                  >
-                    Delete
-                  </a>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ul class="mt-5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      <li
+        :for={topic <- @topics}
+        class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+      >
+        <a
+          href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
+          class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
+        >
+          <%= topic.name %>
+        </a>
+      </li>
+    </ul>
     """
   end
 
@@ -247,14 +189,14 @@ defmodule IKnoWeb.TopicLive.Topics do
       >
         <a href="#">Reset Subject</a>
       </button>
-        <input
-          id="tasks-only"
-          name="tasks-only"
-          phx-click="tasks-only"
-          type="checkbox"
-          checked={@tasks_only}
-          class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-        />
+      <input
+        id="tasks-only"
+        name="tasks-only"
+        phx-click="tasks-only"
+        type="checkbox"
+        checked={@tasks_only}
+        class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+      />
       <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
         Tasks Only
       </label>
@@ -268,7 +210,7 @@ defmodule IKnoWeb.TopicLive.Topics do
       <.render_breadcrumb subject={@subject} />
       <.render_searchbox />
     </div>
-    <.render_topic_table subject={@subject} topics={@topics} tasks_only={@tasks_only} is_admin={@is_admin} />
+    <.render_topics subject={@subject} topics={@topics} tasks_only={@tasks_only} is_admin={@is_admin} />
     <.render_buttons is_admin={@is_admin} subject={@subject} tasks_only={@tasks_only} />
     """
   end
