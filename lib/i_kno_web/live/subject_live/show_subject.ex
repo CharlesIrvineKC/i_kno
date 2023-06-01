@@ -60,6 +60,10 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     {:noreply, socket}
   end
 
+  def handle_event("search", _, socket) do
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/search")}
+  end
+
   def render_searchbox(assigns) do
     ~H"""
     <button
