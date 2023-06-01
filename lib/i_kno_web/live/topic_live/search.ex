@@ -169,9 +169,14 @@ defmodule IKnoWeb.TopicLive.Search do
       <.render_breadcrumb subject={@subject} topic={@topic} />
       <.render_searchinput />
     </div>
-    <div :for={topic <- @topics} class="border border-black rounded-lg p-3 m-3">
-      <.render_search_item topic={topic} />
-    </div>
+    <ul :if={length(@topics) > 0} class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      <li
+        :for={topic <- @topics}
+        class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+      >
+        <.render_search_item topic={topic} />
+      </li>
+    </ul>
     """
   end
 end
