@@ -6,9 +6,11 @@ defmodule IKnoWeb.SubjectLive.Edit do
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
 
   def mount(%{"subject_id" => id}, _session, socket) do
+    subject = Knowledge.get_subject!(id)
     socket =
       assign(socket,
-        subject: Knowledge.get_subject!(id)
+        subject: subject,
+        page_title: "Edit: " <> subject.name
       )
 
     {:ok, socket}
@@ -84,12 +86,6 @@ defmodule IKnoWeb.SubjectLive.Edit do
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Cancel
-        </button>
-        <button
-          phx-click="preview"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Preview
         </button>
       </form>
     </div>

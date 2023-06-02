@@ -2,7 +2,7 @@ defmodule IKnoWeb.WelcomeLive do
   use IKnoWeb, :live_view
 
   def mount(_parameters, _session, socket) do
-    {:ok, socket}
+    {:ok, assign(socket, page_title: "Welcome to IKno")}
   end
 
   def render(assigns) do

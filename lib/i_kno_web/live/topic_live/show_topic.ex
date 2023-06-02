@@ -28,7 +28,8 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         topic: topic,
         is_known: is_known,
         prereqs: prereqs,
-        mode: :show
+        mode: :show,
+        page_title: topic.name
       )
 
     {:ok, socket}

@@ -41,6 +41,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         is_known: is_known,
         prereqs: prereqs,
         mode: :learn_topic,
+        page_title: "Learn: " <> topic.name,
         learn_topic_complete: length(topic_ids) == 0
       )
 

@@ -14,7 +14,14 @@ defmodule IKnoWeb.TopicLive.Topics do
     is_admin = Accounts.is_admin(subject_id, user.id)
 
     socket =
-      assign(socket, topics: topics, subject: subject, user: user, tasks_only: false, is_admin: is_admin)
+      assign(socket,
+        topics: topics,
+        subject: subject,
+        user: user,
+        tasks_only: false,
+        is_admin: is_admin,
+        page_title: subject.name <> " Topics"
+      )
 
     {:ok, socket}
   end
