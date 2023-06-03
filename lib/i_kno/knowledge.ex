@@ -47,7 +47,6 @@ defmodule IKno.Knowledge do
   end
 
   def list_subject_topics(subject_id, user_id) do
-    subject_id = String.to_integer(subject_id)
     query = "
     select t.id, t.name, t.description, t.subject_id, t.is_task
     from topics t

@@ -5,6 +5,7 @@ defmodule IKnoWeb.TopicLive.Topics do
   alias IKno.Accounts
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
+    subject_id = String.to_integer(IO.inspect(subject_id))
     user_token = Map.get(session, "user_token")
 
     {user_id, is_admin, topics} =
@@ -18,7 +19,6 @@ defmodule IKnoWeb.TopicLive.Topics do
         {nil, false, topics}
       end
 
-    subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
 
     socket =
