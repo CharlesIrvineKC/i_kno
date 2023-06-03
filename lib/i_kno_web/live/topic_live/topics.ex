@@ -4,21 +4,28 @@ defmodule IKnoWeb.TopicLive.Topics do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+  def mount(%{"subject_id" => subject_id}, session, socket) do
+    user_token = Map.get(session, "user_token")
 
-  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
+    {user_id, is_admin, topics} =
+      if user_token do
+        user = Accounts.get_user_by_session_token(user_token)
+        is_admin = Accounts.is_admin(subject_id, user.id)
+        topics = Knowledge.list_subject_topics(subject_id, user.id)
+        {user.id, is_admin, topics}
+      else
+        topics = Knowledge.list_subject_topics(subject_id, nil)
+        {nil, false, topics}
+      end
+
     subject_id = String.to_integer(subject_id)
-    user = Accounts.get_user_by_session_token(user_token)
-    topics = Knowledge.list_subject_topics(subject_id, user.id)
     subject = Knowledge.get_subject!(subject_id)
-    is_admin = Accounts.is_admin(subject_id, user.id)
 
     socket =
       assign(socket,
         topics: topics,
         subject: subject,
-        user: user,
-        tasks_only: false,
+        user_id: user_id,
         is_admin: is_admin,
         page_title: subject.name <> " Topics"
       )
@@ -28,25 +35,13 @@ defmodule IKnoWeb.TopicLive.Topics do
 
   def handle_event("refresh-topic", %{"topic-id" => topic_id}, socket) do
     topic_id = String.to_integer(topic_id)
-    Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user.id)
+    Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user_id)
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
   end
 
-  def handle_event("tasks-only", params, socket) do
-    case params do
-      %{"value" => "on"} ->
-        topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
-        {:noreply, assign(socket, tasks_only: true, topics: topics)}
-
-      _else ->
-        topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
-        {:noreply, assign(socket, tasks_only: false, topics: topics)}
-    end
-  end
-
   def handle_event("reset-subject", _, socket) do
-    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user.id)
-    topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user.id)
+    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
+    topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user_id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
   end
@@ -55,7 +50,7 @@ defmodule IKnoWeb.TopicLive.Topics do
     topic = Knowledge.get_topic!(String.to_integer(topic_id))
     Knowledge.delete_topic(topic)
     subject_id = socket.assigns.subject.id
-    user_id = socket.assigns.user.id
+    user_id = socket.assigns.user_id
     topics = Knowledge.list_subject_topics(subject_id, user_id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
@@ -147,7 +142,6 @@ defmodule IKnoWeb.TopicLive.Topics do
       <ul class="mt-1 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
         <%= for topic <- @topics do %>
           <li
-            :if={!@tasks_only || topic.is_task}
             class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
           >
             <a
@@ -174,6 +168,7 @@ defmodule IKnoWeb.TopicLive.Topics do
         <a href={~p"/subjects/#{@subject.id}/topics/new"}>New</a>
       </button>
       <button
+        :if={@user_id}
         type="button"
         data-popover-target="popover-learn"
         class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
@@ -195,23 +190,13 @@ defmodule IKnoWeb.TopicLive.Topics do
         <div data-popper-arrow></div>
       </div>
       <button
+        :if={@user_id}
         type="button"
         phx-click="reset-subject"
         class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href="#">Reset Subject</a>
       </button>
-      <input
-        id="tasks-only"
-        name="tasks-only"
-        phx-click="tasks-only"
-        type="checkbox"
-        checked={@tasks_only}
-        class="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-      />
-      <label for="tasks-only" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-        Tasks Only
-      </label>
     </div>
     """
   end
@@ -222,8 +207,8 @@ defmodule IKnoWeb.TopicLive.Topics do
       <.render_breadcrumb subject={@subject} />
       <.render_searchbox />
     </div>
-    <.render_topics subject={@subject} topics={@topics} tasks_only={@tasks_only} is_admin={@is_admin} />
-    <.render_buttons is_admin={@is_admin} subject={@subject} tasks_only={@tasks_only} />
+    <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} />
+    <.render_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
     """
   end
 end

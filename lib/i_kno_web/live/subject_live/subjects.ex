@@ -4,11 +4,16 @@ defmodule IKnoWeb.SubjectLive.Subjects do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+  def mount(_params, session, socket) do
+    user_token = Map.get(session, "user_token")
 
-  def mount(_parameters, %{"user_token" => user_token}, socket) do
-    user = Accounts.get_user_by_session_token(user_token)
-    is_super_user = user.id == 2
+    is_super_user =
+      if user_token do
+        user = Accounts.get_user_by_session_token(user_token)
+        user.id == 2
+      else
+        false
+      end
 
     {:ok,
      assign(socket,

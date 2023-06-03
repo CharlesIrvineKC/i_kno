@@ -3,6 +3,8 @@ defmodule IKnoWeb.IssuesLive do
 
   alias IKno.Knowledge
 
+  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
   def mount(%{"subject_id" => subject_id}, _session, socket) do
     issues = Knowledge.get_issues_by_subject_id(subject_id)
     subject_name = Knowledge.get_subject_name(subject_id)

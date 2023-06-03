@@ -4,15 +4,21 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+  def mount(%{"subject_id" => subject_id}, session, socket) do
+    user_token = Map.get(session, "user_token")
 
-  def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
-    user = Accounts.get_user_by_session_token(user_token)
+    is_super_user =
+      if user_token do
+        user = Accounts.get_user_by_session_token(user_token)
+        user.id == 2
+      else
+        false
+      end
+
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
-    is_admin = Enum.any?(admins, &(elem(&1, 1) == user.id))
-    is_super_user = user.id == 2
+    is_admin = false
     edit_admins = false
 
     socket =
@@ -334,7 +340,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   def render(assigns) do
     ~H"""
-    <.render_message display_message={@display_message} message={@message}/>
+    <.render_message display_message={@display_message} message={@message} />
     <div class="h-14">
       <.render_breadcrumb subject={@subject} />
       <.render_searchbox />

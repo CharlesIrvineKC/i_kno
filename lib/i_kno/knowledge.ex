@@ -47,6 +47,7 @@ defmodule IKno.Knowledge do
   end
 
   def list_subject_topics(subject_id, user_id) do
+    subject_id = String.to_integer(subject_id)
     query = "
     select t.id, t.name, t.description, t.subject_id, t.is_task
     from topics t
@@ -54,7 +55,11 @@ defmodule IKno.Knowledge do
     order by t.name"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id])
     topics = (splice_rows_cols(rows, cols))
-    Enum.map(topics, fn topic -> Map.put(topic, :known, is_known(topic.id, user_id)) end)
+    if user_id do
+      Enum.map(topics, fn topic -> Map.put(topic, :known, is_known(topic.id, user_id)) end)
+    else
+      Enum.map(topics, fn topic -> Map.put(topic, :known, false) end)
+    end
   end
 
   defp splice_rows_cols(rows, cols) do

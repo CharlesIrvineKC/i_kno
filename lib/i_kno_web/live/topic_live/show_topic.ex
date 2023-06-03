@@ -8,22 +8,31 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
 
-  on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+  def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, session, socket) do
+    topic = Knowledge.get_topic!(String.to_integer(topic_id))
 
-  def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, %{"user_token" => user_token}, socket) do
+    user_token = Map.get(session, "user_token")
+
+    {user_id, is_admin, is_known} =
+      if user_token do
+        user = Accounts.get_user_by_session_token(user_token)
+        user_id = user.id
+        is_admin = Accounts.is_admin(subject_id, user.id)
+        is_known = Knowledge.get_known(topic.id, user.id)
+        {user_id, is_admin, is_known}
+      else
+        {nil, false, false}
+      end
+
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
-    user = Accounts.get_user_by_session_token(user_token)
-    is_admin = Accounts.is_admin(subject_id, user.id)
-    topic = Knowledge.get_topic!(String.to_integer(topic_id))
     prereqs = Knowledge.get_topic_prereqs(topic.id)
-    is_known = Knowledge.get_known(topic.id, user.id)
 
     socket =
       assign(
         socket,
         subject: subject,
-        user: user,
+        user_id: user_id,
         is_admin: is_admin,
         topic: topic,
         is_known: is_known,
@@ -40,7 +49,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   end
 
   def handle_event("understood", _, socket) do
-    Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
+    Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user_id)
     {:noreply, assign(socket, is_known: true)}
   end
 
@@ -50,7 +59,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   end
 
   def handle_event("learn", _, socket) do
-    # Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user.id)
+    # Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user_id)
     topic = socket.assigns.topic
     {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn")}
   end
@@ -237,14 +246,16 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       <.render_learn_complete subject={@subject} />
     <% else %>
       <.render_topic topic={@topic} subject={@subject} />
-      <.live_component
-        module={TopicIssue}
-        id={:topic_issue}
-        topic_id={@topic.id}
-        subject_id={@subject.id}
-        user_id={@user.id}
-      />
-      <.render_buttons is_known={@is_known} is_admin={@is_admin} />
+      <%= if @user_id do %>
+        <.live_component
+          module={TopicIssue}
+          id={:topic_issue}
+          topic_id={@topic.id}
+          subject_id={@subject.id}
+          user_id={@user_id}
+        />
+      <% end %>
+      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} />
       <%= if @is_admin do %>
         <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
       <% end %>
