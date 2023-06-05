@@ -189,7 +189,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       </div>
       <div class="px-3 py-2">
         <p>
-          Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know.
+          Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know. <strong>Requires login.</strong>
         </p>
       </div>
       <div data-popper-arrow></div>

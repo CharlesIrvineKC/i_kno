@@ -185,7 +185,7 @@ defmodule IKnoWeb.TopicLive.Topics do
           <h3 class="font-semibold text-gray-900 dark:text-white">Learn Subject</h3>
         </div>
         <div class="px-3 py-2">
-          <p>Let IKno present topics based on what you already know.</p>
+          <p>Let IKno present topics based on what you already know. <strong>Requires login.</strong></p>
         </div>
         <div data-popper-arrow></div>
       </div>

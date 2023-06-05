@@ -18,6 +18,19 @@ defmodule IKnoWeb.Router do
   end
 
   scope "/", IKnoWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/subjects/new", SubjectLive.New
+    live "/subjects/:subject_id/edit", SubjectLive.Edit
+    live "/subjects/:subject_id/issues", IssuesLive
+    live "/subjects/:subject_id/learn", SubjectLive.LearnSubject
+
+    live "/subjects/:subject_id/topics/new", TopicLive.Edit, :new
+    live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.LearnTopic
+    live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
+  end
+
+  scope "/", IKnoWeb do
     pipe_through :browser
 
     live "/", WelcomeLive
@@ -31,19 +44,6 @@ defmodule IKnoWeb.Router do
 
     live "/test", TestLive
 
-  end
-
-  scope "/", IKnoWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live "/subjects/new", SubjectLive.New
-    live "/subjects/:subject_id/edit", SubjectLive.Edit
-    live "/subjects/:subject_id/issues", IssuesLive
-    live "/subjects/:subject_id/learn", SubjectLive.LearnSubject
-
-    live "/subjects/:subject_id/topics/new", TopicLive.Edit, :new
-    live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.LearnTopic
-    live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
   end
 
   # Other scopes may use custom stacks.

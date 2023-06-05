@@ -10,6 +10,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
 
   def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, session, socket) do
     topic = Knowledge.get_topic!(String.to_integer(topic_id))
+    subject_id = String.to_integer(subject_id)
 
     user_token = Map.get(session, "user_token")
 
@@ -24,7 +25,6 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         {nil, false, false}
       end
 
-    subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     prereqs = Knowledge.get_topic_prereqs(topic.id)
 
