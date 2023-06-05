@@ -20,18 +20,20 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
     prereqs = if topic, do: Knowledge.get_topic_prereqs(topic.id), else: []
     is_known = if topic, do: Knowledge.get_known(topic.id, user.id), else: nil
 
-    socket = assign(
-      socket,
-      subject: subject,
-      user: user,
-      is_admin: is_admin,
-      topic: topic,
-      next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
-      is_known: is_known,
-      prereqs: prereqs,
-      mode: :learn_subject,
-      page_title: "Learn: " <> subject.name
-    )
+    socket =
+      assign(
+        socket,
+        subject: subject,
+        user: user,
+        is_admin: is_admin,
+        topic: topic,
+        next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
+        is_known: is_known,
+        prereqs: prereqs,
+        mode: :learn_subject,
+        page_title: "Learn: " <> subject.name,
+        visited_topics: [topic]
+      )
 
     {:ok, socket}
   end
@@ -62,7 +64,15 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
       topic = Knowledge.get_topic!(next_topic_id)
       next_topic_ids = tl(next_topic_ids)
       prereqs = Knowledge.get_topic_prereqs(topic.id)
-      {:noreply, assign(socket, topic: topic, prereqs: prereqs, next_topic_ids: next_topic_ids)}
+      visited_topics = socket.assigns.visited_topics
+
+      {:noreply,
+       assign(socket,
+         topic: topic,
+         visited_topics: visited_topics ++ [topic],
+         prereqs: prereqs,
+         next_topic_ids: next_topic_ids
+       )}
     else
       topic = nil
       next_topic_ids = []
@@ -231,9 +241,30 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
     """
   end
 
+  def render_learning_progress(assigns) do
+    ~H"""
+    <div class="mb-2">
+      <span class="text-red-700">Learning: <%= @subject.name %></span>
+      <div :for={topic <- @visited_topics} :if={@is_admin}>
+        <a href={~p"/subjects/#{@subject.id}/topics/#{topic.id}"} class="text-red-700">
+          (<%= topic.name %>)
+        </a>
+      </div>
+    </div>
+    """
+  end
+
   def render(assigns) do
     ~H"""
     <.render_breadcrumb subject={@subject} topic={@topic} />
+    <%= if @is_admin do %>
+      <.render_learning_progress
+        topic={@topic}
+        subject={@subject}
+        is_admin={@is_admin}
+        visited_topics={@visited_topics}
+      />
+    <% end %>
     <%= if @topic == nil do %>
       <.render_learn_complete subject={@subject} />
     <% else %>
