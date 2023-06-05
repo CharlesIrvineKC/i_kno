@@ -15,6 +15,14 @@ defmodule IKnoWeb.TopicLive.Search do
     {:noreply, socket}
   end
 
+  def handle_event("view", %{"topic-id" => topic_id}, socket) do
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}")}
+  end
+
+  def handle_event("learn", %{"topic-id" => topic_id}, socket) do
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
+  end
+
   def render_breadcrumb(assigns) do
     ~H"""
     <nav class="pt-3 inline-block " aria-label="Breadcrumb">
@@ -146,18 +154,31 @@ defmodule IKnoWeb.TopicLive.Search do
   def render_search_item(assigns) do
     ~H"""
     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-      <a
-        href={~p"/subjects/#{@topic.subject_id}/topics/#{@topic.id}"}
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-      >
         <%= @topic.name %>
-      </a>
     </h5>
     <p class="text-black dark:text-gray-400">
       <section class="markdown">
         <%= Earmark.as_html!(@topic.description) |> Phoenix.HTML.raw() %>
       </section>
     </p>
+    <div class="mt-3 inline-flex rounded-md shadow-sm" role="group">
+      <button
+        type="button"
+        phx-click="view"
+        phx-value-topic-id={@topic.id}
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+      >
+        View
+      </button>
+      <button
+        type="button"
+        phx-click="learn"
+        phx-value-topic-id={@topic.id}
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+      >
+        Learn
+      </button>
+    </div>
     """
   end
 
@@ -167,7 +188,10 @@ defmodule IKnoWeb.TopicLive.Search do
       <.render_breadcrumb subject={@subject} topic={@topic} />
       <.render_searchinput />
     </div>
-    <ul :if={length(@topics) > 0} class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+    <ul
+      :if={length(@topics) > 0}
+      class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+    >
       <li
         :for={topic <- @topics}
         class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
