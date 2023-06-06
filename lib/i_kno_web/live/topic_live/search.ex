@@ -6,7 +6,7 @@ defmodule IKnoWeb.TopicLive.Search do
   def mount(%{"subject_id" => subject_id}, _session, socket) do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
-    {:ok, assign(socket, subject: subject, topic: nil, topics: [])}
+    {:ok, assign(socket, subject: subject, topic: nil, topics: [], page_title: "Search: " <> subject.name)}
   end
 
   def handle_event("search", %{"topic-search" => search_string}, socket) do

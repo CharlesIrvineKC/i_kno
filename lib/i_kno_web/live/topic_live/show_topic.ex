@@ -44,24 +44,9 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     {:ok, socket}
   end
 
-  def handle_event("new", _, socket) do
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/new")}
-  end
-
   def handle_event("understood", _, socket) do
     Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user_id)
     {:noreply, assign(socket, is_known: true)}
-  end
-
-  def handle_event("edit", _, socket) do
-    topic = socket.assigns.topic
-    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/edit")}
-  end
-
-  def handle_event("learn", _, socket) do
-    # Knowledge.set_learning(socket.assigns.topic.id, socket.assigns.user_id)
-    topic = socket.assigns.topic
-    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn")}
   end
 
   def handle_event("search", _, socket) do
@@ -192,17 +177,15 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     <div class="mt-8">
       <button
         :if={!@is_known}
-        phx-click="learn"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Learn
+        <a href={"/subjects/#{@topic.subject_id}/topics/#{@topic.id}/learn"}>Learn</a>
       </button>
       <button
         :if={@is_admin}
-        phx-click="edit"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Edit
+        <a href={"/subjects/#{@topic.subject_id}/topics/#{@topic.id}/edit"}>Edit</a>
       </button>
       <button
         :if={@is_admin}
@@ -216,7 +199,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         phx-click="new"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        New
+      <a href={"/subjects/#{@topic.subject_id}/topics/new"}>New</a>
       </button>
     </div>
     """
@@ -255,7 +238,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
           user_id={@user_id}
         />
       <% end %>
-      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} />
+      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic}/>
       <%= if @is_admin do %>
         <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
       <% end %>
