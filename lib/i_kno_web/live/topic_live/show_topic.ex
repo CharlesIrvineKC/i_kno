@@ -177,10 +177,28 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     <div class="mt-8">
       <button
         :if={!@is_known}
+        data-popover-target="popover-learn"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         <a href={"/subjects/#{@topic.subject_id}/topics/#{@topic.id}/learn"}>Learn</a>
       </button>
+      <div
+        data-popover
+        id="popover-learn"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+      >
+        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Learn Subject</h3>
+        </div>
+        <div class="px-3 py-2">
+          <p>
+            Let IKno present prereqisite topics for <strong><%= @topic.name %></strong>
+            based on what you already know. <strong>Requires login.</strong>
+          </p>
+        </div>
+        <div data-popper-arrow></div>
+      </div>
       <button
         :if={@is_admin}
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -199,7 +217,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         phx-click="new"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-      <a href={"/subjects/#{@topic.subject_id}/topics/new"}>New</a>
+        <a href={"/subjects/#{@topic.subject_id}/topics/new"}>New</a>
       </button>
     </div>
     """
@@ -238,7 +256,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
           user_id={@user_id}
         />
       <% end %>
-      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic}/>
+      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic} />
       <%= if @is_admin do %>
         <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
       <% end %>
