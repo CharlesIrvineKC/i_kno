@@ -6,6 +6,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     user_token = Map.get(session, "user_token")
+    user = Accounts.get_user_by_session_token(user_token)
 
     is_super_user =
       if user_token do
@@ -18,7 +19,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
-    is_admin = false
+    is_admin = Enum.any?(admins, fn admin -> elem(admin, 1) == user.id end)
     edit_admins = false
 
     socket =
