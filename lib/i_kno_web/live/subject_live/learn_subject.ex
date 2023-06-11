@@ -232,7 +232,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
       </h1>
       <div class="border rounded border-grey-900 p-3">
         <p>
-          <section class="markdown">
+          <section class="markdown" phx-update="ignore" id="topic-description">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>
