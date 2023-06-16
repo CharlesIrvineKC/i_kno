@@ -6,7 +6,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     user_token = Map.get(session, "user_token")
-    user = Accounts.get_user_by_session_token(user_token)
+    user = if user_token, do: Accounts.get_user_by_session_token(user_token), else: nil
 
     is_super_user =
       if user_token do
@@ -19,7 +19,14 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
-    is_admin = Enum.any?(admins, fn admin -> elem(admin, 1) == user.id end)
+
+    is_admin =
+      if user do
+        Enum.any?(admins, fn admin -> elem(admin, 1) == user.id end)
+      else
+        false
+      end
+
     edit_admins = false
 
     socket =
@@ -190,7 +197,8 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       </div>
       <div class="px-3 py-2">
         <p>
-          Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know. <strong>Requires login.</strong>
+          Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know.
+          <strong>Requires login.</strong>
         </p>
       </div>
       <div data-popper-arrow></div>
