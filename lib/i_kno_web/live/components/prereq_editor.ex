@@ -254,7 +254,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
         keys={@keys}
         search_all_subjects={@search_all_subjects}
       />
-      <.render_cycle_alert cycle={@cycle} />
+      <.render_cycle_alert cycle={@cycle} myself={@myself}/>
     </div>
     """
   end
