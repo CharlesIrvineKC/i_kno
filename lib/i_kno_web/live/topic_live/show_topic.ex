@@ -261,7 +261,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       </h1>
       <div class="border rounded border-grey-900 p-3">
         <p>
-          <section class="markdown" phx-update="ignore" id="topic-description">
+          <section class="markdown" id="topic-discription" phx-hook="ShowTopic">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>
