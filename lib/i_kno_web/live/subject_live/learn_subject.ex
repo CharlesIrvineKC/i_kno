@@ -50,7 +50,10 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
     topic = Knowledge.get_topic!(hd(topic_ids))
     next_topic_ids = tl(topic_ids)
     prereqs = Knowledge.get_topic_prereqs(topic.id)
-    socket = assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs)
+
+    socket =
+      assign(socket, topic: topic, next_topic_ids: next_topic_ids, prereqs: prereqs, visited_topics: [topic])
+
     {:noreply, socket}
   end
 
