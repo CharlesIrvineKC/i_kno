@@ -181,7 +181,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
 
   def render_buttons(assigns) do
     ~H"""
-    <div class="mt-8">
+    <div class="mt-8 [&>button]:mb-1">
       <button
         :if={!@is_known}
         data-popover-target="popover-learn"
