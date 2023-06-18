@@ -36,10 +36,6 @@ defmodule IKnoWeb.Components.PrereqEditor do
     {:noreply, socket}
   end
 
-  def handle_event("view", %{"prereq-topic-id" => prereq_topic_id}, socket) do
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{prereq_topic_id}")}
-  end
-
   def handle_event("suggest", %{"prefix" => prefix}, socket) do
 
     matches =
@@ -108,15 +104,6 @@ defmodule IKnoWeb.Components.PrereqEditor do
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
                 Delete
-              </a>
-              <a
-                href="#"
-                phx-click="view"
-                phx-value-prereq-topic-id={prereq.topic_id}
-                phx-target={@myself}
-                class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-              >
-                View
               </a>
             </td>
           </tr>
