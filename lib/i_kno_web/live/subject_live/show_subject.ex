@@ -262,7 +262,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         phx-click="edit-admins"
         class="inline-flex items-center text-sm font-medium text-lime-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
       >
-        <%= if @edit_admins, do: "Cancel", else: "Edit Admins" %>
+        <%= if @edit_admins, do: "Close Admins", else: "Edit Admins" %>
       </a>
     </div>
     <div :if={@edit_admins} class="mt-3">
