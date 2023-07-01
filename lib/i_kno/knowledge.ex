@@ -239,7 +239,8 @@ defmodule IKno.Knowledge do
   alias IKno.Knowledge.Subject
 
   def list_subjects do
-    Repo.all(Subject)
+    query = from s in Subject, order_by: s.name
+    Repo.all(query)
   end
 
   def get_subject!(id), do: Repo.get!(Subject, id)
