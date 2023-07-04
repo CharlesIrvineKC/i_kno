@@ -50,4 +50,33 @@ defmodule IKno.KnowledgeFixtures do
 
     issue
   end
+
+  @doc """
+  Generate a question.
+  """
+  def question_fixture(attrs \\ %{}) do
+    {:ok, question} =
+      attrs
+      |> Enum.into(%{
+        question: "some question"
+      })
+      |> IKno.Knowledge.create_question()
+
+    question
+  end
+
+  @doc """
+  Generate a answer.
+  """
+  def answer_fixture(attrs \\ %{}) do
+    {:ok, answer} =
+      attrs
+      |> Enum.into(%{
+        answer: "some answer",
+        is_correct: true
+      })
+      |> IKno.Knowledge.create_answer()
+
+    answer
+  end
 end
