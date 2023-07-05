@@ -143,7 +143,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
           phx-debounce="1000"
           required
           placeholder="Search for New Prerequisite Topics"
-          class="mt-10 mb-2 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          class="mt-4 mb-2 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
 
         <datalist id="matches">
@@ -232,8 +232,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
 
   def render(assigns) do
     ~H"""
-    <div class="mt-20">
-      <h2 class="mb-6 text-2xl font-extrabold dark:text-white">Prerequisite Topics</h2>
+    <div class="">
       <.render_prereqs prereqs={@prereqs} topic={@topic} myself={@myself} />
       <.render_input_form
         myself={@myself}

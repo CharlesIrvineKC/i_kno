@@ -5,6 +5,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   alias IKno.Accounts
 
   alias IKnoWeb.Components.PrereqEditor
+  alias IKnoWeb.Components.QuestionEditor
   alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
 
@@ -251,7 +252,8 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     ~H"""
     <button
       :if={@is_admin}
-      data-modal-target="popup-modal" data-modal-toggle="popup-modal"
+      data-modal-target="popup-modal"
+      data-modal-toggle="popup-modal"
       class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
     >
       Delete
@@ -344,6 +346,77 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     """
   end
 
+  def render_admin_panels(assigns) do
+    ~H"""
+    <div class="mt-5" id="accordion-collapse" data-accordion="collapse">
+      <h2 id="accordion-collapse-heading-1">
+        <button
+          type="button"
+          class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          data-accordion-target="#accordion-collapse-body-1"
+          aria-expanded="true"
+          aria-controls="accordion-collapse-body-1"
+        >
+          <span>Prerequisites</span>
+          <svg
+            data-accordion-icon
+            class="w-3 h-3 rotate-180 shrink-0"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 10 6"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5 5 1 1 5"
+            />
+          </svg>
+        </button>
+      </h2>
+      <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+        <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+          <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
+        </div>
+      </div>
+      <h2 id="accordion-collapse-heading-3">
+        <button
+          type="button"
+          class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          data-accordion-target="#accordion-collapse-body-3"
+          aria-expanded="false"
+          aria-controls="accordion-collapse-body-3"
+        >
+          <span>Questions</span>
+          <svg
+            data-accordion-icon
+            class="w-3 h-3 rotate-180 shrink-0"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 10 6"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5 5 1 1 5"
+            />
+          </svg>
+        </button>
+      </h2>
+      <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
+        <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
+        <.live_component module={QuestionEditor} id={:question_editor} topic={@topic} subject={@subject} />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def render(assigns) do
     ~H"""
     <.render_breadcrumb subject={@subject} topic={@topic} />
@@ -362,7 +435,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       <% end %>
       <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic} />
       <%= if @is_admin do %>
-        <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
+        <.render_admin_panels topic={@topic} subject={@subject}/>
       <% end %>
     <% end %>
     """

@@ -485,6 +485,11 @@ defmodule IKno.Knowledge do
     Repo.all(Question)
   end
 
+  def list_questions(topic_id) do
+    query = from Question, where: [topic_id: ^topic_id]
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single question.
 
