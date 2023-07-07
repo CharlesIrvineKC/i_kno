@@ -4,14 +4,28 @@ defmodule IKnoWeb.Components.QuestionEditor do
   alias IKno.Knowledge
 
   def mount(socket) do
-    {:ok, socket}
+    {:ok, assign(socket, current_question: nil, answers: nil)}
   end
 
   def update(assigns, socket) do
     topic = assigns.topic
     socket = assign(socket, assigns)
     questions = Knowledge.list_questions(topic.id)
+
     {:ok, assign(socket, questions: questions)}
+  end
+
+  def handle_event("edit-question", %{"question-id" => question_id}, socket) do
+    question = Knowledge.get_question!(question_id)
+
+    answers =
+      if question.type == :multiple_choice do
+        Knowledge.list_answers(question_id)
+      else
+        nil
+      end
+
+    {:noreply, assign(socket, current_question: question, answers: answers)}
   end
 
   def render_new_button(assigns) do
@@ -45,17 +59,38 @@ defmodule IKnoWeb.Components.QuestionEditor do
 
   def render_questions(assigns) do
     ~H"""
-    <div :for={question <- @questions}>
-      <%= question.question %>
+    <div :for={question <- @questions} class="relative overflow-x-auto">
+        <a
+          phx-click="edit-question"
+          phx-target={@myself}
+          phx-value-question-id={question.id}
+          href="#"
+          class="font-medium text-blue-600 dark:text-blue-500 hover:underline"><%= question.question %></a>
     </div>
+    """
+  end
+
+  def render_question(assigns) do
+    ~H"""
+    <div :if={@current_question}>
+      <div class="p-2 m-2 border border-grey-200 rounded"><%= @current_question.question %></div>
+      <div :for={answer <- @answers}><.render_answer answer={answer}/></div>
+    </div>
+    """
+  end
+
+  def render_answer(assigns) do
+    ~H"""
+    <div class="p-2 m-2 border border-grey-200 rounded"><%= @answer.answer %></div>
     """
   end
 
   def render(assigns) do
     ~H"""
     <dv>
-      <.render_new_button />
-      <.render_questions questions={@questions}/>
+      <!--.render_new_button /-->
+      <.render_questions questions={@questions} myself={@myself} />
+      <.render_question current_question={@current_question} answers={@answers} myself={@myself}/>
     </dv>
     """
   end

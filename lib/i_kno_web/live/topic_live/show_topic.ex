@@ -348,14 +348,14 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
 
   def render_admin_panels(assigns) do
     ~H"""
-    <div class="mt-5" id="accordion-collapse" data-accordion="collapse">
-      <h2 id="accordion-collapse-heading-1">
+    <div class="mt-5" id="accordion-collapse" data-accordion="open">
+      <h2 id="preq-heading">
         <button
           type="button"
-          class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-          data-accordion-target="#accordion-collapse-body-1"
-          aria-expanded="true"
-          aria-controls="accordion-collapse-body-1"
+          class="rounded-t-xl flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          data-accordion-target="#prereq-body"
+          aria-expanded="false"
+          aria-controls="prereq-body"
         >
           <span>Prerequisites</span>
           <svg
@@ -376,18 +376,18 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
           </svg>
         </button>
       </h2>
-      <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+      <div id="prereq-body" class="hidden" aria-labelledby="preq-heading">
         <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
           <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
         </div>
       </div>
-      <h2 id="accordion-collapse-heading-3">
+      <h2 id="questions-heading">
         <button
           type="button"
           class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-          data-accordion-target="#accordion-collapse-body-3"
+          data-accordion-target="#questions-body"
           aria-expanded="false"
-          aria-controls="accordion-collapse-body-3"
+          aria-controls="questions-body"
         >
           <span>Questions</span>
           <svg
@@ -408,7 +408,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
           </svg>
         </button>
       </h2>
-      <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
+      <div id="questions-body" class="hidden" aria-labelledby="questions-heading">
         <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
         <.live_component module={QuestionEditor} id={:question_editor} topic={@topic} subject={@subject} />
         </div>

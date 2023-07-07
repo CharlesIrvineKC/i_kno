@@ -13,7 +13,7 @@ defmodule IKno.Knowledge.Answer do
   @doc false
   def changeset(answer, attrs) do
     answer
-    |> cast(attrs, [:answer, :is_correct])
-    |> validate_required([:answer, :is_correct])
+    |> cast(attrs, [:answer, :is_correct, :question_id])
+    |> validate_required([:answer, :is_correct, :question_id])
   end
 end

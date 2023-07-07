@@ -89,7 +89,6 @@ defmodule IKnoWeb.Components.PrereqEditor do
             <td scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               <a
                 href={~p"/subjects/#{@topic.subject_id}/topics/#{prereq.topic_id}"}
-                phx-target={@myself}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
                 <%= prereq.name %>
@@ -100,7 +99,6 @@ defmodule IKnoWeb.Components.PrereqEditor do
                 href="#"
                 phx-click="delete-prereq"
                 phx-value-prereq-topic-id={prereq.topic_id}
-                phx-target={@myself}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
                 Delete
