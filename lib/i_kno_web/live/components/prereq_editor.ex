@@ -98,6 +98,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
               <a
                 href="#"
                 phx-click="delete-prereq"
+                phx-target={@myself}
                 phx-value-prereq-topic-id={prereq.topic_id}
                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
               >
