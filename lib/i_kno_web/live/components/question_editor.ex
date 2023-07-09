@@ -3,9 +3,10 @@ defmodule IKnoWeb.Components.QuestionEditor do
 
   alias IKno.Knowledge
   alias IKnoWeb.Components.AnswerEditor
+  alias IKnoWeb.Highlighter
 
   def mount(socket) do
-    {:ok, assign(socket, current_question: nil, answers: nil)}
+    {:ok, assign(socket, current_question: nil, answers: [])}
   end
 
   def update(assigns, socket) do
@@ -13,7 +14,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
     socket = assign(socket, assigns)
     questions = Knowledge.list_questions(topic.id)
 
-    {:ok, assign(socket, questions: questions)}
+    {:ok, assign(socket, questions: questions, is_editing: false)}
   end
 
   def handle_event("delete-answer", %{"answer-id" => answer_id}, socket) do
@@ -49,7 +50,9 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:ok, new_question} =
       Knowledge.create_question(%{question: "New Question", topic_id: topic.id, type: :multiple_choice})
 
-    {:noreply, assign(socket, current_question: new_question, answers: [])}
+    questions = socket.assigns.questions ++ [new_question]
+
+    {:noreply, assign(socket, questions: questions, current_question: new_question, answers: [])}
   end
 
   def handle_event("create-tf-question", _params, socket) do
@@ -66,6 +69,19 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:ok, new_answer} = Knowledge.create_answer(%{answer: "New Answer", question_id: current_question.id})
     answers = socket.assigns.answers ++ [new_answer]
     socket = assign(socket, answers: answers)
+    {:noreply, socket}
+  end
+
+  def handle_event("edit-question", _, socket) do
+    socket = assign(socket, is_editing: true)
+    {:noreply, socket}
+  end
+
+  def handle_event("save-question", %{"question-input" => question_question}, socket) do
+    question = socket.assigns.current_question
+    {:ok, question} = Knowledge.update_question(question, %{question: question_question})
+    questions = Knowledge.list_questions(socket.assigns.topic.id)
+    socket = assign(socket, current_question: question, is_editing: false, questions: questions)
     {:noreply, socket}
   end
 
@@ -108,18 +124,19 @@ defmodule IKnoWeb.Components.QuestionEditor do
 
   def render_question(assigns) do
     ~H"""
-    <div :if={@current_question} class="mt-10 p-2 m-2 border border-grey-200 rounded">
-      <div>Question</div>
-      <div class="flex flex-row">
-        <input
-          type="text"
-          id={"question-input-#{@current_question.id}"}
-          value={@current_question.question}
-          class="m-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="John"
-          required
-        />
-        <button type="button">
+    <div :if={@current_question}>
+      <div class="mt-10">Question</div>
+      <div class="p-2 rounded flex flex-row">
+        <!-- Question Display -->
+        <div :if={!@is_editing} class="border rounded border-grey-900 p-2 w-full mr-4 mb-2">
+          <p>
+            <section class="markdown" id="question-discription" phx-hook="ShowTopic">
+              <%= Highlighter.highlight(Earmark.as_html!(@current_question.question)) |> Phoenix.HTML.raw() %>
+            </section>
+          </p>
+        </div>
+        <!-- Question Edit Buttom -->
+        <button :if={!@is_editing} type="button" phx-click="edit-question" phx-target={@myself}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -135,30 +152,61 @@ defmodule IKnoWeb.Components.QuestionEditor do
             />
           </svg>
         </button>
+        <form :if={@is_editing} class="flex flex-row w-full" phx-submit="save-question" phx-target={@myself}>
+          <!-- Question Edit -->
+          <div class="flex flex-row w-full">
+            <input
+              type="text"
+              autofocus
+              id="question-input"
+              name="question-input"
+              value={@current_question.question}
+              class="m-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            />
+          </div>
+          <!-- Question Save Buttom -->
+          <button type="submit">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </button>
+        </form>
       </div>
-      <div class="flex flex-row">
-        <span>Answers</span>
-        <button class="ml-5" type="button" phx-click="new-answer" phx-target={@myself}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </button>
-      </div>
-      <div :for={answer <- @answers} class="flex flex-row">
-        <.live_component
-          module={AnswerEditor}
-          id={"answer-editor-#{answer.id}"}
-          parent_component={@myself}
-          answer={answer}
-          question={@current_question}
-        />
+      <!-- Display Answers -->
+      <div>
+        <div class="flex flex-row mb-2">
+          <span>Answers</span>
+          <!-- Create New Answer Button -->
+          <button class="ml-5" type="button" phx-click="new-answer" phx-target={@myself}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+        </div>
+        <div :for={answer <- @answers} class="flex flex-row ml-2">
+          <.live_component
+            module={AnswerEditor}
+            id={"answer-editor-#{answer.id}"}
+            parent_component={@myself}
+            answer={answer}
+            question={@current_question}
+          />
+        </div>
       </div>
     </div>
     """
@@ -166,11 +214,16 @@ defmodule IKnoWeb.Components.QuestionEditor do
 
   def render(assigns) do
     ~H"""
-    <dv>
+    <div>
       <.render_new_button myself={@myself} />
       <.render_questions questions={@questions} myself={@myself} />
-      <.render_question current_question={@current_question} answers={@answers} myself={@myself} />
-    </dv>
+      <.render_question
+        current_question={@current_question}
+        answers={@answers}
+        myself={@myself}
+        is_editing={@is_editing}
+      />
+    </div>
     """
   end
 end
