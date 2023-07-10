@@ -59,7 +59,12 @@ defmodule IKnoWeb.Components.QuestionEditor do
     topic = socket.assigns.topic
 
     {:ok, new_question} =
-      Knowledge.create_question(%{question: "New Question", topic_id: topic.id, type: :true_false})
+      Knowledge.create_question(%{
+        question: "New Question",
+        topic_id: topic.id,
+        type: :true_false,
+        is_correct: true
+      })
 
     {:noreply, assign(socket, current_question: new_question, answers: [])}
   end
@@ -206,8 +211,8 @@ defmodule IKnoWeb.Components.QuestionEditor do
         </form>
       </div>
       <!-- Display Answers -->
-      <div>
-        <div class="flex flex-row mb-2">
+      <div :if={@current_question.type == :multiple_choice}>
+        <div class="flex flex-row w-full mb-2">
           <span>Answers</span>
           <!-- Create New Answer Button -->
           <button class="ml-5" type="button" phx-click="new-answer" phx-target={@myself}>
@@ -223,7 +228,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
             </svg>
           </button>
         </div>
-        <div :for={answer <- @answers} class="flex flex-row ml-2">
+        <div :for={answer <- @answers} class="w-full flex flex-row ml-2">
           <.live_component
             module={AnswerEditor}
             id={"answer-editor-#{answer.id}"}
