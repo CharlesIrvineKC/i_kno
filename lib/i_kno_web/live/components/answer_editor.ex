@@ -25,6 +25,13 @@ defmodule IKnoWeb.Components.AnswerEditor do
     {:noreply, socket}
   end
 
+  def handle_event("toggle-is-correct", _, socket) do
+    answer = socket.assigns.answer
+    {:ok, answer} = Knowledge.update_answer(answer, %{is_correct: !answer.is_correct})
+    socket = assign(socket, answer: answer)
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="w-full flex flex-row">
@@ -49,7 +56,9 @@ defmodule IKnoWeb.Components.AnswerEditor do
         </div>
         <div :if={!@is_editing} class="mr-1 flex items-center">
           <input
-            checked
+            checked={@answer.is_correct}
+            phx-click="toggle-is-correct"
+            phx-target={@myself}
             id="checked-checkbox"
             type="checkbox"
             value=""
