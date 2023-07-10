@@ -38,9 +38,9 @@ defmodule IKnoWeb.Components.QuestionEditor do
           []
         end
 
-      {:noreply, assign(socket, current_question: question, answers: answers)}
+      {:noreply, assign(socket, current_question: question, answers: answers, is_editing: false)}
     else
-      {:noreply, assign(socket, current_question: nil, answers: [])}
+      {:noreply, assign(socket, current_question: nil, answers: [], is_editing: false)}
     end
   end
 
@@ -74,11 +74,6 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:ok, new_answer} = Knowledge.create_answer(%{answer: "New Answer", question_id: current_question.id})
     answers = socket.assigns.answers ++ [new_answer]
     socket = assign(socket, answers: answers)
-    {:noreply, socket}
-  end
-
-  def handle_event("edit-question", _, socket) do
-    socket = assign(socket, is_editing: true)
     {:noreply, socket}
   end
 
@@ -129,7 +124,9 @@ defmodule IKnoWeb.Components.QuestionEditor do
         href="#"
         class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
       >
-        <%= question.question %>
+        <section class="markdown" id="question-discription" phx-hook="MountAndUpdate">
+          <%= Highlighter.highlight(Earmark.as_html!(question.question)) |> Phoenix.HTML.raw() %>
+        </section>
       </a>
     </div>
     """
@@ -143,7 +140,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
         <!-- Question Display -->
         <div :if={!@is_editing} class="border rounded border-grey-900 p-2 w-full mr-4 mb-2">
           <p>
-            <section class="markdown" id="question-discription" phx-hook="ShowTopic">
+            <section class="markdown" id="question-discription" phx-hook="MountAndUpdate">
               <%= Highlighter.highlight(Earmark.as_html!(@current_question.question)) |> Phoenix.HTML.raw() %>
             </section>
           </p>

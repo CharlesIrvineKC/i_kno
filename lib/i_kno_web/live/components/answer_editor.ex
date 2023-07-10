@@ -3,7 +3,6 @@ defmodule IKnoWeb.Components.AnswerEditor do
 
   alias IKnoWeb.Highlighter
   alias IKno.Knowledge
-  alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -40,7 +39,7 @@ defmodule IKnoWeb.Components.AnswerEditor do
       <div id="answer-display" class="w-full flex flex-row">
         <div :if={!@is_editing} class="w-full border rounded border-grey-900 p-2 w-full mr-4 mb-2">
           <p class="w-full">
-            <section class="w-full markdown" id="answer-discription" phx-hook="ShowTopic">
+            <section class="w-full markdown" id="answer-discription" phx-hook="MountAndUpdate">
               <%= Highlighter.highlight(Earmark.as_html!(@answer.answer)) |> Phoenix.HTML.raw() %>
             </section>
           </p>
@@ -57,13 +56,7 @@ defmodule IKnoWeb.Components.AnswerEditor do
           />
         </div>
 
-        <button
-          :if={!@is_editing}
-          class="mr-1"
-          type="button"
-          phx-click="edit-answer"
-          phx-target={@myself}
-        >
+        <button :if={!@is_editing} class="mr-1" type="button" phx-click="edit-answer" phx-target={@myself}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -102,7 +95,7 @@ defmodule IKnoWeb.Components.AnswerEditor do
           </svg>
         </button>
       </div>
-      <form id="answer-form" class="w-full flex flex-row" phx-submit="save-answer" phx-target={@myself}>
+      <form class="w-full flex flex-row" phx-submit="save-answer" phx-target={@myself}>
         <div :if={@is_editing} class="w-full mr-4">
           <input
             type="text"

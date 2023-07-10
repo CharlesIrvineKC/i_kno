@@ -27,14 +27,10 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {
     params: {_csrf_token: csrfToken},
     hooks: { 
-        ShowTopic: { 
+        Mount: { 
             mounted() { MathJax.typeset(); }
         },
-        LearnTopic: {
-            mounted() { MathJax.typeset(); },
-            updated() { MathJax.typeset(); }
-        },
-        LearnSubject: {
+        MountAndUpdate: {
             mounted() { MathJax.typeset(); },
             updated() { MathJax.typeset(); }
         }

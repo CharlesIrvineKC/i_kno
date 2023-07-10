@@ -235,7 +235,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
       </h1>
       <div class="border rounded border-grey-900 p-3">
         <p>
-          <section class="markdown" id="learn-subject-topic-discription" phx-hook="LearnSubject">
+          <section class="markdown" id="learn-subject-topic-discription" phx-hook="MountAndUpdate">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>
