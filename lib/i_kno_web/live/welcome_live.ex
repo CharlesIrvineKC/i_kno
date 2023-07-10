@@ -16,7 +16,7 @@ defmodule IKnoWeb.WelcomeLive do
     </h1>
     <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
       <strong>IKno</strong>
-      is an prototype application for authoring and presenting educational subject matter. It aims to leverage conceptual structues inherent in language to to sequence information to the reader such that learning time is minimized.
+      is an prototype application for authoring and presenting educational subject matter. It aims to leverage conceptual structures inherent in language to to sequence information to the reader such that learning time is minimized.
     </p>
     <div class="flex flex-wrap">
       <a
