@@ -35,12 +35,12 @@ defmodule IKnoWeb.Components.QuestionEditor do
         if question.type == :multiple_choice do
           Knowledge.list_answers(question_id)
         else
-          nil
+          []
         end
 
       {:noreply, assign(socket, current_question: question, answers: answers)}
     else
-      {:noreply, assign(socket, current_question: nil, answers: nil)}
+      {:noreply, assign(socket, current_question: nil, answers: [])}
     end
   end
 
