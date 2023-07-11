@@ -15,7 +15,6 @@ defmodule IKnoWeb.Components.AnswerEditor do
 
   def handle_event("edit-answer", _, socket) do
     socket = assign(socket, is_editing: true)
-    JS.focus(to: "#answer-input")
     {:noreply, socket}
   end
 

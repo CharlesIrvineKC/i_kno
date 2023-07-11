@@ -26,6 +26,11 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:noreply, socket}
   end
 
+  def handle_event("edit-question", _, socket) do
+    socket = assign(socket, is_editing: true)
+    {:noreply, socket}
+  end
+
   def handle_event("delete-answer", %{"answer-id" => answer_id}, socket) do
     answer = Knowledge.get_answer!(answer_id)
     Knowledge.delete_answer(answer)
@@ -33,7 +38,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:noreply, assign(socket, answers: answers)}
   end
 
-  def handle_event("edit-question", %{"question-id" => question_id}, socket) do
+  def handle_event("show-question", %{"question-id" => question_id}, socket) do
     current_question = socket.assigns.current_question
     question_id = String.to_integer(question_id)
 
@@ -102,6 +107,13 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:noreply, socket}
   end
 
+  def handle_event("toggle-is-correct", _, socket) do
+    question = socket.assigns.current_question
+    {:ok, question} = Knowledge.update_question(question, %{is_correct: !question.is_correct})
+    socket = assign(socket, current_question: question)
+    {:noreply, socket}
+  end
+
   def render_new_button(assigns) do
     ~H"""
     <button
@@ -127,7 +139,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
     ~H"""
     <div :for={question <- @questions} class="relative overflow-x-auto">
       <a
-        phx-click="edit-question"
+        phx-click="show-question"
         phx-target={@myself}
         phx-value-question-id={question.id}
         href="#"
@@ -154,8 +166,25 @@ defmodule IKnoWeb.Components.QuestionEditor do
             </section>
           </p>
         </div>
+        <div :if={!@is_editing && @current_question.type == :true_false} class="mr-1 flex items-center">
+          <input
+            checked={@current_question.is_correct}
+            phx-click="toggle-is-correct"
+            phx-target={@myself}
+            id="checked-checkbox"
+            type="checkbox"
+            value=""
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+        </div>
         <!-- Question Edit Buttom -->
-        <button :if={!@is_editing} type="button" phx-click="edit-question" phx-target={@myself}>
+        <button
+          :if={!@is_editing}
+          type="button"
+          phx-click="edit-question"
+          phx-value-question-id={@current_question.id}
+          phx-target={@myself}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
