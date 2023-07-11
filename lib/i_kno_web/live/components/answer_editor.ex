@@ -19,13 +19,6 @@ defmodule IKnoWeb.Components.AnswerEditor do
     {:noreply, socket}
   end
 
-  def handle_event("save-answer", %{"answer-input" => new_answer}, socket) do
-    answer = socket.assigns.answer
-    {:ok, answer} = Knowledge.update_answer(answer, %{answer: new_answer})
-    socket = assign(socket, is_editing: false, answer: answer)
-    {:noreply, socket}
-  end
-
   def handle_event("toggle-is-correct", _, socket) do
     answer = socket.assigns.answer
     {:ok, answer} = Knowledge.update_answer(answer, %{is_correct: !answer.is_correct})
@@ -95,7 +88,12 @@ defmodule IKnoWeb.Components.AnswerEditor do
           </svg>
         </button>
       </div>
-      <form class="w-full flex flex-row" phx-submit="save-answer" phx-target={@myself}>
+      <form
+        class="w-full flex flex-row"
+        phx-submit="save-answer"
+        phx-target={@parent_component}
+        phx-value-answer-id={@answer.id}
+      >
         <div :if={@is_editing} class="w-full mr-4">
           <input
             type="text"

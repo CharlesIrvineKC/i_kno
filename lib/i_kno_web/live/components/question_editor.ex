@@ -17,6 +17,15 @@ defmodule IKnoWeb.Components.QuestionEditor do
     {:ok, assign(socket, questions: questions, is_editing: false)}
   end
 
+  def handle_event("save-answer", %{"answer-id" => answer_id, "answer-input" => new_answer}, socket) do
+    answer = Knowledge.get_answer!(String.to_integer(answer_id))
+    question = socket.assigns.current_question
+    {:ok, _answer} = Knowledge.update_answer(answer, %{answer: new_answer})
+    answers = Knowledge.list_answers(question.id)
+    socket = assign(socket, answers: answers)
+    {:noreply, socket}
+  end
+
   def handle_event("delete-answer", %{"answer-id" => answer_id}, socket) do
     answer = Knowledge.get_answer!(answer_id)
     Knowledge.delete_answer(answer)
