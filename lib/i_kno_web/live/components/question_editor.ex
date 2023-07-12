@@ -62,7 +62,12 @@ defmodule IKnoWeb.Components.QuestionEditor do
     topic = socket.assigns.topic
 
     {:ok, new_question} =
-      Knowledge.create_question(%{question: "New Question", topic_id: topic.id, type: :multiple_choice})
+      Knowledge.create_question(%{
+        question: "New Question",
+        topic_id: topic.id,
+        subject_id: topic.subject_id,
+        type: :multiple_choice
+      })
 
     questions = socket.assigns.questions ++ [new_question]
 
@@ -76,6 +81,7 @@ defmodule IKnoWeb.Components.QuestionEditor do
       Knowledge.create_question(%{
         question: "New Question",
         topic_id: topic.id,
+        subject_id: topic.subject_id,
         type: :true_false,
         is_correct: true
       })

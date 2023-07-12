@@ -79,4 +79,18 @@ defmodule IKno.KnowledgeFixtures do
 
     answer
   end
+
+  @doc """
+  Generate a user_question_status.
+  """
+  def user_question_status_fixture(attrs \\ %{}) do
+    {:ok, user_question_status} =
+      attrs
+      |> Enum.into(%{
+        status: :passed
+      })
+      |> IKno.Knowledge.create_user_question_status()
+
+    user_question_status
+  end
 end

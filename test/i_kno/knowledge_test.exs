@@ -284,4 +284,58 @@ defmodule IKno.KnowledgeTest do
       assert %Ecto.Changeset{} = Knowledge.change_answer(answer)
     end
   end
+
+  describe "user_question_statuses" do
+    alias IKno.Knowledge.UserQuestionStatus
+
+    import IKno.KnowledgeFixtures
+
+    @invalid_attrs %{status: nil}
+
+    test "list_user_question_statuses/0 returns all user_question_statuses" do
+      user_question_status = user_question_status_fixture()
+      assert Knowledge.list_user_question_statuses() == [user_question_status]
+    end
+
+    test "get_user_question_status!/1 returns the user_question_status with given id" do
+      user_question_status = user_question_status_fixture()
+      assert Knowledge.get_user_question_status!(user_question_status.id) == user_question_status
+    end
+
+    test "create_user_question_status/1 with valid data creates a user_question_status" do
+      valid_attrs = %{status: :passed}
+
+      assert {:ok, %UserQuestionStatus{} = user_question_status} = Knowledge.create_user_question_status(valid_attrs)
+      assert user_question_status.status == :passed
+    end
+
+    test "create_user_question_status/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Knowledge.create_user_question_status(@invalid_attrs)
+    end
+
+    test "update_user_question_status/2 with valid data updates the user_question_status" do
+      user_question_status = user_question_status_fixture()
+      update_attrs = %{status: :failed}
+
+      assert {:ok, %UserQuestionStatus{} = user_question_status} = Knowledge.update_user_question_status(user_question_status, update_attrs)
+      assert user_question_status.status == :failed
+    end
+
+    test "update_user_question_status/2 with invalid data returns error changeset" do
+      user_question_status = user_question_status_fixture()
+      assert {:error, %Ecto.Changeset{}} = Knowledge.update_user_question_status(user_question_status, @invalid_attrs)
+      assert user_question_status == Knowledge.get_user_question_status!(user_question_status.id)
+    end
+
+    test "delete_user_question_status/1 deletes the user_question_status" do
+      user_question_status = user_question_status_fixture()
+      assert {:ok, %UserQuestionStatus{}} = Knowledge.delete_user_question_status(user_question_status)
+      assert_raise Ecto.NoResultsError, fn -> Knowledge.get_user_question_status!(user_question_status.id) end
+    end
+
+    test "change_user_question_status/1 returns a user_question_status changeset" do
+      user_question_status = user_question_status_fixture()
+      assert %Ecto.Changeset{} = Knowledge.change_user_question_status(user_question_status)
+    end
+  end
 end

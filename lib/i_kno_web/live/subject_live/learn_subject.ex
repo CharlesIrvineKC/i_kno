@@ -30,7 +30,6 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
         next_topic_ids: if(length(topic_ids) > 0, do: tl(topic_ids), else: nil),
         is_known: is_known,
         prereqs: prereqs,
-        mode: :learn_subject,
         page_title: "Learn: " <> subject.name,
         visited_topics: [topic]
       )

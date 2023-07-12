@@ -490,6 +490,20 @@ defmodule IKno.Knowledge do
     Repo.all(query)
   end
 
+  def get_unanswered_question(subject_id, user_id) do
+    query = "
+      select q.id, q.question, q.type, q.is_correct
+      from questions q
+      left join user_question_statuses s
+      on q.id = s.question_id
+      where (s.user_id <> $2 or s.user_id is null)
+      and q.subject_id = $1
+      limit 1"
+      {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
+      result = splice_rows_cols(rows, cols)
+      if length(result) == 0, do: nil, else: hd(result)
+  end
+
   @doc """
   Gets a single question.
 
@@ -670,5 +684,101 @@ defmodule IKno.Knowledge do
   """
   def change_answer(%Answer{} = answer, attrs \\ %{}) do
     Answer.changeset(answer, attrs)
+  end
+
+  alias IKno.Knowledge.UserQuestionStatus
+
+  @doc """
+  Returns the list of user_question_statuses.
+
+  ## Examples
+
+      iex> list_user_question_statuses()
+      [%UserQuestionStatus{}, ...]
+
+  """
+  def list_user_question_statuses do
+    Repo.all(UserQuestionStatus)
+  end
+
+  @doc """
+  Gets a single user_question_status.
+
+  Raises `Ecto.NoResultsError` if the User question status does not exist.
+
+  ## Examples
+
+      iex> get_user_question_status!(123)
+      %UserQuestionStatus{}
+
+      iex> get_user_question_status!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_question_status!(id), do: Repo.get!(UserQuestionStatus, id)
+
+  @doc """
+  Creates a user_question_status.
+
+  ## Examples
+
+      iex> create_user_question_status(%{field: value})
+      {:ok, %UserQuestionStatus{}}
+
+      iex> create_user_question_status(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_user_question_status(attrs \\ %{}) do
+    %UserQuestionStatus{}
+    |> UserQuestionStatus.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a user_question_status.
+
+  ## Examples
+
+      iex> update_user_question_status(user_question_status, %{field: new_value})
+      {:ok, %UserQuestionStatus{}}
+
+      iex> update_user_question_status(user_question_status, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user_question_status(%UserQuestionStatus{} = user_question_status, attrs) do
+    user_question_status
+    |> UserQuestionStatus.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a user_question_status.
+
+  ## Examples
+
+      iex> delete_user_question_status(user_question_status)
+      {:ok, %UserQuestionStatus{}}
+
+      iex> delete_user_question_status(user_question_status)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_user_question_status(%UserQuestionStatus{} = user_question_status) do
+    Repo.delete(user_question_status)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user_question_status changes.
+
+  ## Examples
+
+      iex> change_user_question_status(user_question_status)
+      %Ecto.Changeset{data: %UserQuestionStatus{}}
+
+  """
+  def change_user_question_status(%UserQuestionStatus{} = user_question_status, attrs \\ %{}) do
+    UserQuestionStatus.changeset(user_question_status, attrs)
   end
 end
