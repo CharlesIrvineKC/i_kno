@@ -492,7 +492,7 @@ defmodule IKno.Knowledge do
 
   def get_unanswered_question(subject_id, user_id) do
     query = "
-      select q.id, q.question, q.type, q.is_correct
+      select q.id, q.question, q.type, q.is_correct, q.topic_id
       from questions q
       left join user_question_statuses s
       on q.id = s.question_id
