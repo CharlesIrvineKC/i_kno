@@ -66,6 +66,11 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics/#{topic.id}/learn")}
   end
 
+  def toggle_show_topic(js \\ %JS{}) do
+    js
+    |> JS.toggle(to: "#topic-description")
+  end
+
   def render_breadcrumb(assigns) do
     ~H"""
     <div class="h-14">
@@ -335,7 +340,19 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       <h1 class="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-4xl dark:text-white">
         <%= @topic.name %>
       </h1>
-      <div class="border rounded border-grey-900 p-3">
+      <div :if={@is_admin} class="flex items-center mb-4">
+        <input
+          phx-click={toggle_show_topic()}
+          id="default-checkbox"
+          type="checkbox"
+          value=""
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <label for="default-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+          Show/Hide
+        </label>
+      </div>
+      <div id="topic-description" class="border rounded border-grey-900 p-3">
         <p>
           <section class="markdown" id="topic-discription" phx-hook="Mount">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
@@ -410,7 +427,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       </h2>
       <div id="questions-body" class="hidden" aria-labelledby="questions-heading">
         <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
-        <.live_component module={QuestionEditor} id={:question_editor} topic={@topic} subject={@subject} />
+          <.live_component module={QuestionEditor} id={:question_editor} topic={@topic} subject={@subject} />
         </div>
       </div>
     </div>
@@ -423,7 +440,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     <%= if @topic == nil do %>
       <.render_learn_complete subject={@subject} />
     <% else %>
-      <.render_topic topic={@topic} subject={@subject} />
+      <.render_topic topic={@topic} subject={@subject} is_admin={@is_admin}/>
       <%= if @user_id do %>
         <.live_component
           module={TopicIssue}
@@ -435,7 +452,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       <% end %>
       <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic} />
       <%= if @is_admin do %>
-        <.render_admin_panels topic={@topic} subject={@subject}/>
+        <.render_admin_panels topic={@topic} subject={@subject} />
       <% end %>
     <% end %>
     """
