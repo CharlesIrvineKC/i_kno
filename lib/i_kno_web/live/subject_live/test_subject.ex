@@ -11,7 +11,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     question = Knowledge.get_unanswered_question(subject_id, user.id)
 
     answers =
-      if question.type == "multiple_choice" do
+      if question && question.type == "multiple_choice" do
         Knowledge.list_answers(question.id)
       else
         nil
@@ -31,7 +31,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     end
   end
 
-  def handle_event("submit-answers", params, socket) do
+  def handle_event("submit-mc-answers", params, socket) do
     %{answers: answers, question: question, user: user, subject_id: subject_id} = socket.assigns
 
     passed? =
@@ -55,6 +55,25 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     {:noreply, socket}
   end
 
+  def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
+    %{question: question, user: user, subject_id: subject_id} = socket.assigns
+    true? = String.to_atom(true?)
+    status = if true? == question.is_correct, do: :passed, else: :failed
+
+    Knowledge.create_user_question_status(%{
+      status: status,
+      question_id: question.id,
+      user_id: user.id,
+      topic_id: question.topic_id,
+      subject_id: subject_id
+    })
+
+    question = Knowledge.get_unanswered_question(subject_id, user.id)
+    socket = assign(socket, question: question)
+
+    {:noreply, socket}
+  end
+
   def render_topic_question(assigns) do
     ~H"""
     <div>
@@ -72,7 +91,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
 
   def render_multiple_choice(assigns) do
     ~H"""
-    <form phx-submit="submit-answers">
+    <form phx-submit="submit-mc-answers">
       <div class="border rounded border-grey-900 p-5">
         <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
@@ -115,16 +134,17 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
 
   def render_true_false(assigns) do
     ~H"""
-    <form>
+    <form phx-submit="submit-tf-answer">
       <div class="border rounded border-grey-900 p-5">
         <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
         </section>
         <div class="flex items-center mb-4">
           <input
-            id="default-radio-1"
+            id="true-button"
+            name="true?"
             type="radio"
-            value=""
+            value="true"
             name="default-radio"
             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           />
@@ -134,9 +154,10 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
         </div>
         <div class="flex items-center">
           <input
-            id="default-radio-2"
+            id="false-button"
+            name="true?"
             type="radio"
-            value=""
+            value="false"
             name="default-radio"
             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           />
@@ -161,9 +182,19 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     """
   end
 
+  def render_subject_test_complete(assigns) do
+    ~H"""
+    <h1>Subject Test Complete</h1>
+    """
+  end
+
   def render(assigns) do
     ~H"""
-    <.render_topic_question question={@question} answers={@answers} />
+    <%= if @question do %>
+      <.render_topic_question question={@question} answers={@answers} />
+    <% else %>
+      <.render_subject_test_complete />
+    <% end %>
     """
   end
 end
