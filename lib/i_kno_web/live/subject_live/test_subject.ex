@@ -9,7 +9,15 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     subject_id = String.to_integer(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
     question = Knowledge.get_unanswered_question(subject_id, user.id)
-    socket = assign(socket, question: IO.inspect(question))
+
+    answers =
+      if question.type == "multiple_choice" do
+        Knowledge.list_answers(question.id)
+      else
+        nil
+      end
+
+    socket = assign(socket, question: question, answers: answers)
     {:ok, socket}
   end
 
@@ -54,6 +62,24 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
             </label>
           </div>
         </form>
+        <form :if={@question.type == "multiple_choice"}>
+          <div :for={answer <- @answers} class="flex items-center mb-2">
+            <input
+              id={"default-checkbox-#{answer.id}"}
+              type="checkbox"
+              value=""
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              for="default-checkbox"
+              class="markdown ml-2 text-sm font-medium text-center text-gray-900 dark:text-gray-300"
+              id={"answer-#{answer.id}"}
+              phx-hook="Mount"
+            >
+                <%= Highlighter.highlight(Earmark.as_html!(answer.answer)) |> Phoenix.HTML.raw() %>
+            </label>
+          </div>
+        </form>
       </div>
       <button
         type="submit"
@@ -73,7 +99,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
 
   def render(assigns) do
     ~H"""
-    <.render_topic_question question={@question} />
+    <.render_topic_question question={@question} answers={@answers} />
     """
   end
 end

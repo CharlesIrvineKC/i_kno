@@ -498,6 +498,7 @@ defmodule IKno.Knowledge do
       on q.id = s.question_id
       where (s.user_id <> $2 or s.user_id is null)
       and q.subject_id = $1
+      order by random()
       limit 1"
       {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
       result = splice_rows_cols(rows, cols)
