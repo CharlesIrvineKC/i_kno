@@ -4,7 +4,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  alias IKnoWeb.Components.PrereqEditor
   alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
 
@@ -19,7 +18,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
     unknown_topic_id = Knowledge.get_next_unknown_topic_by_topic(subject_id, learning_topic.id, user.id)
     unknown_topic =if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: nil
-    prereqs = if unknown_topic, do: Knowledge.get_topic_prereqs(unknown_topic.id), else: []
 
     socket =
       assign(
@@ -30,7 +28,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         learning_topic: learning_topic,
         unknown_topic: unknown_topic,
         visited_topics: [unknown_topic],
-        prereqs: prereqs,
         page_title: "Learn: " <> unknown_topic.name
       )
 
@@ -49,26 +46,22 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
     if next_unknown_topic_id != nil do
       next_unknown_topic = Knowledge.get_topic!(next_unknown_topic_id)
-      prereqs = Knowledge.get_topic_prereqs(next_unknown_topic.id)
 
       socket =
         assign(socket,
           unknown_topic: next_unknown_topic,
-          visited_topics: [next_unknown_topic],
-          prereqs: prereqs
+          visited_topics: [next_unknown_topic]
         )
 
       {:noreply, socket}
     else
       learning_topic = Knowledge.get_topic!(socket.assigns.learning_topic.id)
       next_topic_ids = []
-      prereqs = Knowledge.get_topic_prereqs(learning_topic.id)
 
       {:noreply,
        assign(socket,
          unknown_topic: learning_topic,
          visited_topics: [learning_topic],
-         prereqs: prereqs,
          next_topic_ids: next_topic_ids
        )}
     end
@@ -88,11 +81,10 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       socket.assigns.user.id
     )
     unknown_topic = if next_topic_id, do: Knowledge.get_topic!(next_topic_id)
-    prereqs = if unknown_topic, do: Knowledge.get_topic_prereqs(unknown_topic.id), else: []
     visited_topics = socket.assigns.visited_topics
     visited_topics = if unknown_topic, do: visited_topics ++ [unknown_topic], else: visited_topics
 
-    {:noreply, assign(socket, unknown_topic: unknown_topic, prereqs: prereqs, visited_topics: visited_topics)}
+    {:noreply, assign(socket, unknown_topic: unknown_topic, visited_topics: visited_topics)}
   end
 
   def handle_event("search", _, socket) do
