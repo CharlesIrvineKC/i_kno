@@ -31,7 +31,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         unknown_topic: unknown_topic,
         visited_topics: [unknown_topic],
         prereqs: prereqs,
-        mode: :learn_topic,
         page_title: "Learn: " <> unknown_topic.name
       )
 
@@ -286,9 +285,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         user_id={@user.id}
       />
       <.render_buttons is_admin={@is_admin} />
-      <%= if @is_admin do %>
-        <.live_component module={PrereqEditor} id={:prereq_editor} topic={@unknown_topic} subject={@subject} />
-      <% end %>
     <% end %>
     """
   end
