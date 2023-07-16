@@ -19,8 +19,7 @@ defmodule IKno.Knowledge do
   end
 
   def find_topics(search_string, subject_id) do
-    query =
-      "select id, name, subject_id,
+    query = "select id, name, subject_id,
                 substr(
                         description,
                         greatest(
@@ -53,7 +52,8 @@ defmodule IKno.Knowledge do
     where t.subject_id = $1
     order by t.name"
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id])
-    topics = (splice_rows_cols(rows, cols))
+    topics = splice_rows_cols(rows, cols)
+
     if user_id do
       Enum.map(topics, fn topic -> Map.put(topic, :known, is_known(topic.id, user_id)) end)
     else
@@ -103,7 +103,7 @@ defmodule IKno.Knowledge do
 
   def get_topic_name(id), do: get_topic!(id).name
 
-  def get_next_unknown_topic_topics(subject_id, topic_id, user_id) do
+  def get_next_unknown_topic_by_topic(subject_id, topic_id, user_id) do
     query = "with recursive prereqs as
       (select topic_id,
           prereq_id
@@ -133,14 +133,16 @@ defmodule IKno.Knowledge do
         (select kt.topic_id
           from known_topics as kt
           where kt.user_id = $3 )
-    group by prereq_id"
+    group by prereq_id
+    limit 1"
 
     {:ok, result} = SQL.query(Repo, query, [subject_id, topic_id, user_id])
 
-    if length(result.rows) > 0 do
+    if length(result.rows) == 1 do
       Enum.map(result.rows, &hd(&1))
+      hd(hd(result.rows))
     else
-      []
+      nil
     end
   end
 
@@ -175,6 +177,49 @@ defmodule IKno.Knowledge do
         where kt.user_id = $2
     )
     group by t.id"
+
+    {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
+
+    if length(result.rows) > 0 do
+      Enum.map(result.rows, &hd(&1))
+    else
+      []
+    end
+  end
+
+  def get_next_unknown_subject_topic(subject_id, user_id) do
+    query = " -- topics in subject
+    select t.id
+    from topics as t
+    where t.subject_id = $1
+    and t.id not in
+    (  -- topics with unknown prereqs
+        select t.id
+        from topics as t
+        left join prereq_topics as pt
+        on t.id = pt.topic_id
+        where pt.prereq_id = any
+        (   -- subject topics
+            select t.id
+            from topics t
+            where t.subject_id = $1
+            and t.id not in
+            (   -- known topics
+                select kt.topic_id
+                from known_topics as kt
+                where kt.user_id = $2
+            )
+        )
+    )
+    and t.id not in
+    (   -- known topics
+        select kt.topic_id
+        from known_topics as kt
+        where kt.user_id = $2
+    )
+    group by t.id
+    order by random()
+    limit 1"
 
     {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
 
@@ -334,15 +379,16 @@ defmodule IKno.Knowledge do
 
   def suggest_prereqs(substring, subject_id) do
     pattern = "%" <> substring <> "%"
-      if subject_id == :all do
-        query = "select id, name from topics where name ilike $1"
-        {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [pattern])
-        Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
-      else
-        query = "select id, name from topics where subject_id = $1 and name ilike $2"
-        {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, pattern])
-        Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
-      end
+
+    if subject_id == :all do
+      query = "select id, name from topics where name ilike $1"
+      {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [pattern])
+      Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
+    else
+      query = "select id, name from topics where subject_id = $1 and name ilike $2"
+      {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, pattern])
+      Enum.map(rows, fn [topic_id, name] -> {name, topic_id} end) |> Map.new()
+    end
   end
 
   def get_topic_prereqs(topic_id) do
@@ -385,7 +431,8 @@ defmodule IKno.Knowledge do
   def get_issues_by_subject_id(subject_id) do
     query =
       from Issue,
-      where: [subject_id: ^subject_id]
+        where: [subject_id: ^subject_id]
+
     Repo.all(query)
   end
 
@@ -500,9 +547,24 @@ defmodule IKno.Knowledge do
       and q.subject_id = $1
       order by random()
       limit 1"
-      {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
-      result = splice_rows_cols(rows, cols)
-      if length(result) == 0, do: nil, else: hd(result)
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [subject_id, user_id])
+    result = splice_rows_cols(rows, cols)
+    if length(result) == 0, do: nil, else: hd(result)
+  end
+
+  def get_unanswered_topic_question(topic_id, user_id) do
+    query = "
+      select q.id, q.question, q.type, q.is_correct, q.topic_id
+      from questions q
+      left join user_question_statuses s
+      on q.id = s.question_id
+      where (s.user_id <> $2 or s.user_id is null)
+      and q.topic_id = $1
+      order by random()
+      limit 1"
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [topic_id, user_id])
+    result = splice_rows_cols(rows, cols)
+    if length(result) == 0, do: nil, else: hd(result)
   end
 
   @doc """
@@ -731,9 +793,28 @@ defmodule IKno.Knowledge do
 
   """
   def create_user_question_status(attrs \\ %{}) do
-    %UserQuestionStatus{}
-    |> UserQuestionStatus.changeset(attrs)
-    |> Repo.insert()
+    {:ok, question_status} =
+      %UserQuestionStatus{}
+      |> UserQuestionStatus.changeset(attrs)
+      |> Repo.insert()
+
+    if question_status.status == :passed do
+      topic_questions = list_questions(question_status.topic_id)
+
+      if Enum.all?(topic_questions, fn topic_question ->
+           passes_all_tests(topic_question, question_status.user_id)
+         end) do
+        update_known_topic(question_status)
+      end
+    end
+
+    {:ok, question_status}
+  end
+
+  def passes_all_tests(_question, _user_id) do
+  end
+
+  def update_known_topic(_question_status) do
   end
 
   @doc """

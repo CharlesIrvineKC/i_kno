@@ -29,6 +29,7 @@ defmodule IKnoWeb.Router do
     live "/subjects/:subject_id/topics/new", TopicLive.Edit, :new
     live "/subjects/:subject_id/topics/:topic_id/learn", TopicLive.LearnTopic
     live "/subjects/:subject_id/topics/:topic_id/edit", TopicLive.Edit, :edit
+    live "/subjects/:subject_id/topics/:topic_id/test", TopicLive.TestTopic
   end
 
   scope "/", IKnoWeb do

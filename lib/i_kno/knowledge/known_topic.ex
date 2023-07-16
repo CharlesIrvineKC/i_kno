@@ -8,6 +8,7 @@ defmodule IKno.Knowledge.KnownTopic do
 
     field :user_id, :id
     field :topic_id, :id
+    field :is_tested, :boolean, default: false
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule IKno.Knowledge.KnownTopic do
   @doc false
   def changeset(known_topic, attrs) do
     known_topic
-    |> cast(attrs, [:user_id, :topic_id])
+    |> cast(attrs, [:user_id, :topic_id, :is_tested])
     |> validate_required([:user_id, :topic_id])
   end
 end
