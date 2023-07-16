@@ -20,7 +20,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     unknown_topic_id = Knowledge.get_next_unknown_topic_by_topic(subject_id, learning_topic.id, user.id)
     unknown_topic =if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: nil
     prereqs = if unknown_topic, do: Knowledge.get_topic_prereqs(unknown_topic.id), else: []
-    is_known = if unknown_topic, do: Knowledge.get_known(unknown_topic.id, user.id), else: nil
 
     socket =
       assign(
@@ -31,7 +30,6 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         learning_topic: learning_topic,
         unknown_topic: unknown_topic,
         visited_topics: [unknown_topic],
-        is_known: is_known,
         prereqs: prereqs,
         mode: :learn_topic,
         page_title: "Learn: " <> unknown_topic.name
@@ -222,18 +220,10 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     ~H"""
     <div class="mt-8">
       <button
-        :if={!@is_known}
         phx-click="understood"
         class="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         Understood
-      </button>
-      <button
-        :if={!@is_known}
-        phx-click="test"
-        class="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      >
-        Test
       </button>
     </div>
     """
@@ -295,7 +285,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
         subject_id={@subject.id}
         user_id={@user.id}
       />
-      <.render_buttons is_known={@is_known} is_admin={@is_admin} />
+      <.render_buttons is_admin={@is_admin} />
       <%= if @is_admin do %>
         <.live_component module={PrereqEditor} id={:prereq_editor} topic={@unknown_topic} subject={@subject} />
       <% end %>
