@@ -9,7 +9,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
     testing_topic = Knowledge.get_topic!(String.to_integer(topic_id))
-    IO.inspect(testing_topic, label: "testing_topic")
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
@@ -18,9 +17,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     unknown_topic =
       if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: testing_topic
 
-    IO.inspect(unknown_topic, label: "unknown_topic")
     unanswered_question = Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
-    IO.inspect(unanswered_question, label: "unanswered_question")
 
     answers =
       if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -28,8 +25,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       else
         nil
       end
-
-    IO.inspect(answers, label: "answers")
 
     socket =
       assign(
@@ -81,7 +76,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
-    IO.inspect(socket.assigns)
     %{unanswered_question: question, user: user, subject: subject} = socket.assigns
     true? = String.to_atom(true?)
     status = if true? == question.is_correct, do: :passed, else: :failed
