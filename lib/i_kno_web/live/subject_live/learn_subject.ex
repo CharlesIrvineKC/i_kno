@@ -57,7 +57,10 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
   end
 
   def handle_event("understood", _, socket) do
-    Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user.id)
+    %{topic: topic, user: user} = socket.assigns
+
+    attrs = %{topic_id: topic.id, subject_id: topic.subject_id, user_id: user.id, visit_status: :known}
+    Knowledge.set_known(attrs)
 
     next_topic_ids = get_next_topics(socket)
     next_topic_id = List.first(next_topic_ids)

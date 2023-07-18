@@ -46,7 +46,11 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   end
 
   def handle_event("understood", _, socket) do
-    Knowledge.set_known(socket.assigns.topic.id, socket.assigns.user_id)
+    
+    %{unknown_topic: topic, user: user} = socket.assigns
+    attrs = %{topic_id: topic.id, subject_id: topic.subject_id, user_id: user.id, visit_status: :known}
+    Knowledge.set_known(attrs)
+
     {:noreply, assign(socket, is_known: true)}
   end
 
@@ -203,6 +207,29 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       >
         <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
           <h3 class="font-semibold text-gray-900 dark:text-white">Learn Subject</h3>
+        </div>
+        <div class="px-3 py-2">
+          <p>
+            Review all of this topic's prerequisite material.
+          </p>
+        </div>
+        <div data-popper-arrow></div>
+      </div>
+      <button
+        :if={!@is_known}
+        data-popover-target="popover-learn"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <a href={"/subjects/#{@topic.subject_id}/topics/#{@topic.id}/test"}>Test</a>
+      </button>
+      <div
+        data-popover
+        id="popover-learn"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+      >
+        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
         </div>
         <div class="px-3 py-2">
           <p>
@@ -440,7 +467,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
     <%= if @topic == nil do %>
       <.render_learn_complete subject={@subject} />
     <% else %>
-      <.render_topic topic={@topic} subject={@subject} is_admin={@is_admin}/>
+      <.render_topic topic={@topic} subject={@subject} is_admin={@is_admin} />
       <%= if @user_id do %>
         <.live_component
           module={TopicIssue}

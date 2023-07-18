@@ -17,7 +17,9 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     is_admin = Accounts.is_admin(subject_id, user.id)
 
     unknown_topic_id = Knowledge.get_next_unknown_topic_by_topic(subject_id, learning_topic.id, user.id)
-    unknown_topic =if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: nil
+
+    unknown_topic =
+      if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: learning_topic
 
     socket =
       assign(
@@ -73,18 +75,33 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
   end
 
   def handle_event("understood", _, socket) do
-    Knowledge.set_known(socket.assigns.unknown_topic.id, socket.assigns.user.id)
+     %{unknown_topic: topic, user: user}= socket.assigns
 
-    next_topic_id = Knowledge.get_next_unknown_topic_by_topic(
-      socket.assigns.subject.id,
-      socket.assigns.learning_topic.id,
-      socket.assigns.user.id
-    )
-    unknown_topic = if next_topic_id, do: Knowledge.get_topic!(next_topic_id)
-    visited_topics = socket.assigns.visited_topics
-    visited_topics = if unknown_topic, do: visited_topics ++ [unknown_topic], else: visited_topics
+    attrs = %{topic_id: topic.id, subject_id: topic.subject_id, user_id: user.id, visit_status: :known}
 
-    {:noreply, assign(socket, unknown_topic: unknown_topic, visited_topics: visited_topics)}
+    Knowledge.set_known(attrs)
+    learning_topic = socket.assigns.learning_topic
+    next_unknown_topic = socket.assigns.unknown_topic
+
+    if next_unknown_topic != learning_topic do
+
+      next_topic_id =
+        Knowledge.get_next_unknown_topic_by_topic(
+          socket.assigns.subject.id,
+          socket.assigns.learning_topic.id,
+          socket.assigns.user.id
+        )
+
+      unknown_topic =
+        if next_topic_id, do: Knowledge.get_topic!(next_topic_id), else: socket.assigns.learning_topic
+
+      visited_topics = socket.assigns.visited_topics
+      visited_topics = if unknown_topic, do: visited_topics ++ [unknown_topic], else: visited_topics
+
+      {:noreply, assign(socket, unknown_topic: unknown_topic, visited_topics: visited_topics)}
+    else
+      {:noreply, assign(socket, unknown_topic: nil)}
+    end
   end
 
   def handle_event("search", _, socket) do

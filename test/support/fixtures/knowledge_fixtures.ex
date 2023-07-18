@@ -93,4 +93,19 @@ defmodule IKno.KnowledgeFixtures do
 
     user_question_status
   end
+
+  @doc """
+  Generate a topic_record.
+  """
+  def topic_record_fixture(attrs \\ %{}) do
+    {:ok, topic_record} =
+      attrs
+      |> Enum.into(%{
+        visit_status: "some visit_status",
+        test_status: "some test_status"
+      })
+      |> IKno.Knowledge.create_topic_record()
+
+    topic_record
+  end
 end

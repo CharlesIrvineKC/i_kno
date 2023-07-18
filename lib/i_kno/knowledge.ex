@@ -7,7 +7,7 @@ defmodule IKno.Knowledge do
   alias IKno.Repo
 
   alias IKno.Knowledge.Topic
-  alias IKno.Knowledge.KnownTopic
+  alias IKno.Knowledge.TopicRecord
   alias IKno.Knowledge.LearningGoal
   alias IKno.Knowledge.PrereqTopic
   alias Ecto.Adapters.SQL
@@ -40,7 +40,7 @@ defmodule IKno.Knowledge do
   end
 
   def is_known(topic_id, user_id) do
-    query = "select topic_id from known_topics where topic_id = $1 and user_id = $2"
+    query = "select topic_id from topic_records where topic_id = $1 and user_id = $2"
     {:ok, %{rows: rows}} = SQL.query(Repo, query, [topic_id, user_id])
     length(rows) > 0
   end
@@ -68,17 +68,16 @@ defmodule IKno.Knowledge do
 
   def get_known(topic_id, user_id) do
     query =
-      from KnownTopic,
+      from TopicRecord,
         where: [topic_id: ^topic_id, user_id: ^user_id]
 
     length(Repo.all(query)) == 1
   end
 
-  def set_known(topic_id, user_id) do
-    attrs = %{"topic_id" => topic_id, "user_id" => user_id}
+  def set_known(attrs) do
 
-    %KnownTopic{}
-    |> KnownTopic.changeset(attrs)
+    %TopicRecord{}
+    |> TopicRecord.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -127,11 +126,11 @@ defmodule IKno.Knowledge do
                 -- not in known topics
                   and t.id not in
                     (select kt.topic_id
-                      from known_topics as kt
+                      from topic_records as kt
                       where kt.user_id = $3 ) ) )
       and prereq_id not in
         (select kt.topic_id
-          from known_topics as kt
+          from topic_records as kt
           where kt.user_id = $3 )
     group by prereq_id
     limit 1"
@@ -165,7 +164,7 @@ defmodule IKno.Knowledge do
             and t.id not in
             (   -- known topics
                 select kt.topic_id
-                from known_topics as kt
+                from topic_records as kt
                 where kt.user_id = $2
             )
         )
@@ -173,7 +172,7 @@ defmodule IKno.Knowledge do
     and t.id not in
     (   -- known topics
         select kt.topic_id
-        from known_topics as kt
+        from topic_records as kt
         where kt.user_id = $2
     )
     group by t.id"
@@ -206,7 +205,7 @@ defmodule IKno.Knowledge do
             and t.id not in
             (   -- known topics
                 select kt.topic_id
-                from known_topics as kt
+                from topic_records as kt
                 where kt.user_id = $2
             )
         )
@@ -214,7 +213,7 @@ defmodule IKno.Knowledge do
     and t.id not in
     (   -- known topics
         select kt.topic_id
-        from known_topics as kt
+        from topic_records as kt
         where kt.user_id = $2
     )
     group by t.id
@@ -231,7 +230,7 @@ defmodule IKno.Knowledge do
   end
 
   def reset_learn_subject_progress(subject_id, user_id) do
-    query = "delete from known_topics
+    query = "delete from topic_records
              where topic_id in (select id from topics where subject_id = $1)
              and user_id = $2"
     SQL.query(Repo, query, [subject_id, user_id])
@@ -239,7 +238,7 @@ defmodule IKno.Knowledge do
 
   def reset_learn_topic_progress(topic_id, user_id) do
     query = "
-      delete from known_topics where user_id = $2
+      delete from topic_records where user_id = $2
       and topic_id in
       (
       select #{topic_id} as prereq
@@ -368,7 +367,7 @@ defmodule IKno.Knowledge do
        and prt.id not in
        (
            select kt.topic_id
-           from users as u, known_topics as kt, topics as t
+           from users as u, topic_records as kt, topics as t
            where u.id = kt.user_id
            and t.id = kt.topic_id
            and u.id = $2
@@ -862,5 +861,101 @@ defmodule IKno.Knowledge do
   """
   def change_user_question_status(%UserQuestionStatus{} = user_question_status, attrs \\ %{}) do
     UserQuestionStatus.changeset(user_question_status, attrs)
+  end
+
+  alias IKno.Knowledge.TopicRecord
+
+  @doc """
+  Returns the list of topic_records.
+
+  ## Examples
+
+      iex> list_topic_records()
+      [%TopicRecord{}, ...]
+
+  """
+  def list_topic_records do
+    Repo.all(TopicRecord)
+  end
+
+  @doc """
+  Gets a single topic_record.
+
+  Raises `Ecto.NoResultsError` if the Topic record does not exist.
+
+  ## Examples
+
+      iex> get_topic_record!(123)
+      %TopicRecord{}
+
+      iex> get_topic_record!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_topic_record!(id), do: Repo.get!(TopicRecord, id)
+
+  @doc """
+  Creates a topic_record.
+
+  ## Examples
+
+      iex> create_topic_record(%{field: value})
+      {:ok, %TopicRecord{}}
+
+      iex> create_topic_record(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_topic_record(attrs \\ %{}) do
+    %TopicRecord{}
+    |> TopicRecord.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a topic_record.
+
+  ## Examples
+
+      iex> update_topic_record(topic_record, %{field: new_value})
+      {:ok, %TopicRecord{}}
+
+      iex> update_topic_record(topic_record, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_topic_record(%TopicRecord{} = topic_record, attrs) do
+    topic_record
+    |> TopicRecord.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a topic_record.
+
+  ## Examples
+
+      iex> delete_topic_record(topic_record)
+      {:ok, %TopicRecord{}}
+
+      iex> delete_topic_record(topic_record)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_topic_record(%TopicRecord{} = topic_record) do
+    Repo.delete(topic_record)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking topic_record changes.
+
+  ## Examples
+
+      iex> change_topic_record(topic_record)
+      %Ecto.Changeset{data: %TopicRecord{}}
+
+  """
+  def change_topic_record(%TopicRecord{} = topic_record, attrs \\ %{}) do
+    TopicRecord.changeset(topic_record, attrs)
   end
 end

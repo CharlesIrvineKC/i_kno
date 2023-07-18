@@ -338,4 +338,60 @@ defmodule IKno.KnowledgeTest do
       assert %Ecto.Changeset{} = Knowledge.change_user_question_status(user_question_status)
     end
   end
+
+  describe "topic_records" do
+    alias IKno.Knowledge.TopicRecord
+
+    import IKno.KnowledgeFixtures
+
+    @invalid_attrs %{visit_status: nil, test_status: nil}
+
+    test "list_topic_records/0 returns all topic_records" do
+      topic_record = topic_record_fixture()
+      assert Knowledge.list_topic_records() == [topic_record]
+    end
+
+    test "get_topic_record!/1 returns the topic_record with given id" do
+      topic_record = topic_record_fixture()
+      assert Knowledge.get_topic_record!(topic_record.id) == topic_record
+    end
+
+    test "create_topic_record/1 with valid data creates a topic_record" do
+      valid_attrs = %{visit_status: "some visit_status", test_status: "some test_status"}
+
+      assert {:ok, %TopicRecord{} = topic_record} = Knowledge.create_topic_record(valid_attrs)
+      assert topic_record.visit_status == "some visit_status"
+      assert topic_record.test_status == "some test_status"
+    end
+
+    test "create_topic_record/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Knowledge.create_topic_record(@invalid_attrs)
+    end
+
+    test "update_topic_record/2 with valid data updates the topic_record" do
+      topic_record = topic_record_fixture()
+      update_attrs = %{visit_status: "some updated visit_status", test_status: "some updated test_status"}
+
+      assert {:ok, %TopicRecord{} = topic_record} = Knowledge.update_topic_record(topic_record, update_attrs)
+      assert topic_record.visit_status == "some updated visit_status"
+      assert topic_record.test_status == "some updated test_status"
+    end
+
+    test "update_topic_record/2 with invalid data returns error changeset" do
+      topic_record = topic_record_fixture()
+      assert {:error, %Ecto.Changeset{}} = Knowledge.update_topic_record(topic_record, @invalid_attrs)
+      assert topic_record == Knowledge.get_topic_record!(topic_record.id)
+    end
+
+    test "delete_topic_record/1 deletes the topic_record" do
+      topic_record = topic_record_fixture()
+      assert {:ok, %TopicRecord{}} = Knowledge.delete_topic_record(topic_record)
+      assert_raise Ecto.NoResultsError, fn -> Knowledge.get_topic_record!(topic_record.id) end
+    end
+
+    test "change_topic_record/1 returns a topic_record changeset" do
+      topic_record = topic_record_fixture()
+      assert %Ecto.Changeset{} = Knowledge.change_topic_record(topic_record)
+    end
+  end
 end

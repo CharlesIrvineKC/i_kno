@@ -10,7 +10,7 @@ defmodule IKno.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
-    many_to_many :known_topics, Topic, join_through: "known_topics"
+    many_to_many :topic_records, Topic, join_through: "topic_records"
 
     timestamps()
   end
