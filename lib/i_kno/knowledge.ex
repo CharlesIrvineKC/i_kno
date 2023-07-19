@@ -75,7 +75,7 @@ defmodule IKno.Knowledge do
   end
 
   def set_known(attrs) do
-
+    result =
     %TopicRecord{}
     |> TopicRecord.changeset(attrs)
     |> Repo.insert()
@@ -142,6 +142,27 @@ defmodule IKno.Knowledge do
       hd(hd(result.rows))
     else
       nil
+    end
+  end
+
+  def get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id) do
+    unknown_topic_id = get_next_unknown_topic_by_topic(subject_id, testing_topic_id, user_id)
+
+    if unknown_topic_id do
+      unanswered_question = get_unanswered_topic_question(unknown_topic_id, user_id)
+
+      if unanswered_question do
+        get_topic!(unknown_topic_id)
+      else
+        attrs = %{
+          topic_id: unknown_topic_id,
+          subject_id: subject_id,
+          user_id: user_id,
+          visit_status: :no_questions
+        }
+        set_known(attrs)
+        get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id)
+      end
     end
   end
 
@@ -813,7 +834,8 @@ defmodule IKno.Knowledge do
   def passes_all_tests(_question, _user_id) do
   end
 
-  def update_known_topic(_question_status) do
+  def update_known_topic(question_status) do
+    IO.inspect(question_status, label: "question status")
   end
 
   @doc """

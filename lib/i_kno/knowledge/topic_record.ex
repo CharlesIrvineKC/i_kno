@@ -3,7 +3,7 @@ defmodule IKno.Knowledge.TopicRecord do
   import Ecto.Changeset
 
   schema "topic_records" do
-    field :visit_status, Ecto.Enum, values: [:known, :skip]
+    field :visit_status, Ecto.Enum, values: [:known, :skip, :no_questions]
     field :test_status, Ecto.Enum, values: [:passed, :failed]
     field :topic_id, :id
     field :subject_id, :id

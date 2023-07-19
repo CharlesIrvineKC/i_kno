@@ -12,12 +12,12 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
-    unknown_topic_id = Knowledge.get_next_unknown_topic_by_topic(subject_id, testing_topic.id, user.id)
-
     unknown_topic =
-      if unknown_topic_id != nil, do: Knowledge.get_topic!(unknown_topic_id), else: testing_topic
+      Knowledge.get_unknown_topic_with_unanswered_question(subject_id, testing_topic.id, user.id) ||
+        testing_topic
 
-    unanswered_question = Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
+    unanswered_question =
+      Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
 
     answers =
       if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -76,7 +76,9 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
-    %{unanswered_question: question, user: user, subject: subject} = socket.assigns
+    %{unanswered_question: question, user: user, subject: subject, testing_topic: testing_topic} =
+      socket.assigns
+
     true? = String.to_atom(true?)
     status = if true? == question.is_correct, do: :passed, else: :failed
 
@@ -89,9 +91,23 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     })
 
     question = Knowledge.get_unanswered_topic_question(socket.assigns.unknown_topic.id, user.id)
-    socket = assign(socket, unanswered_question: question)
 
-    {:noreply, socket}
+    IO.inspect(question, label: "question")
+
+    if question do
+      socket = assign(socket, unanswered_question: question)
+      {:noreply, socket}
+    else
+      IO.inspect(socket.assigns.testing_topic, label: "testing topic")
+      unknown_topic =
+        Knowledge.get_unknown_topic_with_unanswered_question(subject.id, testing_topic.id, user.id) ||
+          socket.assigns.testing_topic
+      IO.inspect(unknown_topic, label: "unknown_topic")
+      question = Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
+      IO.inspect(question, label: "question")
+      socket = assign(socket, unanswered_question: question)
+      {:noreply, socket}
+    end
   end
 
   def render_subject_test_complete(assigns) do
