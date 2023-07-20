@@ -9,12 +9,11 @@ defmodule IKnoWeb.AnswerQuestion do
     ~H"""
     <div>
       <div>
-        <.render_multiple_choice
-          :if={@question.type == "multiple_choice"}
-          question={@question}
-          answers={@answers}
-        />
-        <.render_true_false :if={@question.type == "true_false"} question={@question} answers={@answers} />
+        <%= if @question.type == "multiple_choice" do %>
+          <.render_multiple_choice question={@question} answers={@answers} />
+        <% else %>
+          <.render_true_false :if={@question.type == "true_false"} question={@question} answers={@answers} />
+        <% end %>
       </div>
     </div>
     """
@@ -112,5 +111,4 @@ defmodule IKnoWeb.AnswerQuestion do
     </form>
     """
   end
-
 end

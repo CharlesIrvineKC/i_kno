@@ -76,9 +76,9 @@ defmodule IKno.Knowledge do
 
   def set_known(attrs) do
     result =
-    %TopicRecord{}
-    |> TopicRecord.changeset(attrs)
-    |> Repo.insert()
+      %TopicRecord{}
+      |> TopicRecord.changeset(attrs)
+      |> Repo.insert()
   end
 
   def get_learning(topic_id, user_id) do
@@ -160,6 +160,7 @@ defmodule IKno.Knowledge do
           user_id: user_id,
           visit_status: :no_questions
         }
+
         set_known(attrs)
         get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id)
       end
@@ -784,6 +785,10 @@ defmodule IKno.Knowledge do
     Repo.all(UserQuestionStatus)
   end
 
+  def list_user_question_statuses(question_id, user_id) do
+    [1,2]
+  end
+
   @doc """
   Gets a single user_question_status.
 
@@ -818,20 +823,21 @@ defmodule IKno.Knowledge do
       |> UserQuestionStatus.changeset(attrs)
       |> Repo.insert()
 
-    if question_status.status == :passed do
-      topic_questions = list_questions(question_status.topic_id)
-
-      if Enum.all?(topic_questions, fn topic_question ->
-           passes_all_tests(topic_question, question_status.user_id)
-         end) do
-        update_known_topic(question_status)
-      end
+    if questions_complete(question_status) do
+      record_topic_status(question_status)
     end
 
     {:ok, question_status}
   end
 
-  def passes_all_tests(_question, _user_id) do
+  def questions_complete(question_status) do
+    questions = list_questions(question_status.topic_id)
+    statuses = list_user_question_statuses(question_status.topic_id, question_status.user_id)
+    length(questions) == length(statuses)
+  end
+
+  def record_topic_status(question_status) do
+
   end
 
   def update_known_topic(question_status) do
