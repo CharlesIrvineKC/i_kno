@@ -4,6 +4,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
   alias IKno.Knowledge
   alias IKno.Accounts
   alias IKnoWeb.Highlighter
+  alias IKnoWeb.AnswerQuestion
 
   def mount(%{"subject_id" => subject_id}, %{"user_token" => user_token}, socket) do
     subject_id = String.to_integer(subject_id)
@@ -191,7 +192,12 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
   def render(assigns) do
     ~H"""
     <%= if @question do %>
-      <.render_topic_question question={@question} answers={@answers} />
+      <.live_component
+        module={AnswerQuestion}
+        id="test-subject-answer-question"
+        question={@question}
+        answers={@answers}
+      />
     <% else %>
       <.render_subject_test_complete />
     <% end %>

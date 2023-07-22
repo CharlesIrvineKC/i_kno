@@ -3,7 +3,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
   alias IKno.Knowledge
   alias IKno.Accounts
-
   alias IKnoWeb.AnswerQuestion
 
   def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, %{"user_token" => user_token}, socket) do
@@ -47,7 +46,13 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   end
 
   def handle_event("submit-mc-answers", params, socket) do
-    %{answers: answers, unanswered_question: question, user: user, subject: subject} = socket.assigns
+    %{
+      answers: answers,
+      unanswered_question: question,
+      user: user,
+      subject: subject,
+      testing_topic: testing_topic
+    } = socket.assigns
 
     passed? =
       answers
@@ -64,9 +69,18 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       subject_id: subject.id
     })
 
-    question = Knowledge.get_unanswered_question(subject.id, user.id)
+    question =
+      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id) ||
+        Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
-    socket = assign(socket, unanswered_question: question)
+    answers =
+      if question && question.type == "multiple_choice" do
+        Knowledge.list_answers(question.id)
+      else
+        nil
+      end
+
+    socket = assign(socket, unanswered_question: question, answers: answers)
     {:noreply, socket}
   end
 
@@ -87,9 +101,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     question =
       Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id) ||
-      Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
-
-    IO.inspect(question, label: "question")
+        Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
     answers =
       if question && question.type == "multiple_choice" do
