@@ -75,10 +75,9 @@ defmodule IKno.Knowledge do
   end
 
   def set_known(attrs) do
-    result =
-      %TopicRecord{}
-      |> TopicRecord.changeset(attrs)
-      |> Repo.insert()
+    %TopicRecord{}
+    |> TopicRecord.changeset(attrs)
+    |> Repo.insert()
   end
 
   def get_learning(topic_id, user_id) do
@@ -104,16 +103,16 @@ defmodule IKno.Knowledge do
 
   def get_next_unknown_topic_by_topic(subject_id, topic_id, user_id) do
     query = "with recursive prereqs as
-      (select topic_id,
-          prereq_id
-        from prereq_topics
+	(select topic_id,
+			prereq_id
+		from prereq_topics
         where topic_id = $2
-        union select p.topic_id,
-          p.prereq_id
-        from prereq_topics p
-        inner join prereqs c on c.prereq_id = p.topic_id)
+		union select p.topic_id,
+			p.prereq_id
+		from prereq_topics p
+		inner join prereqs c on c.prereq_id = p.topic_id)
     select prereq_id
-    from prereqs
+  from prereqs
     where prereq_id not in
     -- where there are no unknown prereqs
         (select t.id
@@ -133,7 +132,7 @@ defmodule IKno.Knowledge do
           from topic_records as kt
           where kt.user_id = $3 )
     group by prereq_id
-    limit 1"
+  limit 1"
 
     {:ok, result} = SQL.query(Repo, query, [subject_id, topic_id, user_id])
 
@@ -149,7 +148,7 @@ defmodule IKno.Knowledge do
     unknown_topic_id = get_next_unknown_topic_by_topic(subject_id, testing_topic_id, user_id)
 
     if unknown_topic_id do
-      unanswered_question = get_unanswered_topic_question(unknown_topic_id, user_id)
+      unanswered_question = get_unanswered_topic_prereq_question(unknown_topic_id, user_id)
 
       if unanswered_question do
         get_topic!(unknown_topic_id)
@@ -165,6 +164,46 @@ defmodule IKno.Knowledge do
         get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id)
       end
     end
+  end
+
+  def get_unanswered_topic_prereq_question(testing_topic_id, user_id) do
+    query = "
+    with recursive prereqs as
+      (select topic_id, prereq_id
+        from prereq_topics
+        where topic_id = $1
+        union select p.topic_id, p.prereq_id
+        from prereq_topics p
+        inner join prereqs c on c.prereq_id = p.topic_id)
+    select q.id, q.topic_id, q.type, q.question, q.is_correct
+    from prereqs
+    left join questions q
+    on prereqs.prereq_id = q.topic_id
+    left join user_question_statuses s
+    on q.id = s.question_id
+    where (s.id is null or s.user_id <> $2)
+    limit 1"
+
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [testing_topic_id, user_id])
+    result = splice_rows_cols(rows, cols)
+    if length(result) == 0, do: nil, else: hd(result)
+  end
+
+  def get_unanswered_topic_question(testing_topic_id, user_id) do
+    query = "
+    select q.id, q.topic_id, q.type, q.question, q.is_correct
+    from topics t
+    left join questions q
+    on t.id = q.topic_id
+    left join user_question_statuses s
+    on q.id = s.question_id
+    where t.id = $1
+    and (s.topic_id is null or s.user_id <> $2)
+    limit 1"
+
+    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [testing_topic_id, user_id])
+    result = splice_rows_cols(rows, cols)
+    if length(result) == 0, do: nil, else: hd(result)
   end
 
   def get_next_unknown_subject_topics(subject_id, user_id) do
@@ -573,21 +612,6 @@ defmodule IKno.Knowledge do
     if length(result) == 0, do: nil, else: hd(result)
   end
 
-  def get_unanswered_topic_question(topic_id, user_id) do
-    query = "
-      select q.id, q.question, q.type, q.is_correct, q.topic_id
-      from questions q
-      left join user_question_statuses s
-      on q.id = s.question_id
-      where (s.user_id <> $2 or s.user_id is null)
-      and q.topic_id = $1
-      order by random()
-      limit 1"
-    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [topic_id, user_id])
-    result = splice_rows_cols(rows, cols)
-    if length(result) == 0, do: nil, else: hd(result)
-  end
-
   @doc """
   Gets a single question.
 
@@ -785,10 +809,6 @@ defmodule IKno.Knowledge do
     Repo.all(UserQuestionStatus)
   end
 
-  def list_user_question_statuses(question_id, user_id) do
-    [1,2]
-  end
-
   @doc """
   Gets a single user_question_status.
 
@@ -818,30 +838,9 @@ defmodule IKno.Knowledge do
 
   """
   def create_user_question_status(attrs \\ %{}) do
-    {:ok, question_status} =
-      %UserQuestionStatus{}
-      |> UserQuestionStatus.changeset(attrs)
-      |> Repo.insert()
-
-    if questions_complete(question_status) do
-      record_topic_status(question_status)
-    end
-
-    {:ok, question_status}
-  end
-
-  def questions_complete(question_status) do
-    questions = list_questions(question_status.topic_id)
-    statuses = list_user_question_statuses(question_status.topic_id, question_status.user_id)
-    length(questions) == length(statuses)
-  end
-
-  def record_topic_status(question_status) do
-
-  end
-
-  def update_known_topic(question_status) do
-    IO.inspect(question_status, label: "question status")
+    %UserQuestionStatus{}
+    |> UserQuestionStatus.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """

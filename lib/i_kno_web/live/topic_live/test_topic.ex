@@ -12,12 +12,8 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     subject = Knowledge.get_subject!(subject_id)
     user = Accounts.get_user_by_session_token(user_token)
 
-    unknown_topic =
-      Knowledge.get_unknown_topic_with_unanswered_question(subject_id, testing_topic.id, user.id) ||
-        testing_topic
-
     unanswered_question =
-      Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
+      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
 
     answers =
       if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -32,7 +28,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
         subject: subject,
         user: user,
         testing_topic: testing_topic,
-        unknown_topic: unknown_topic,
         unanswered_question: unanswered_question,
         answers: answers,
         page_title: "Test: " <> testing_topic.name
@@ -71,7 +66,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     question = Knowledge.get_unanswered_question(subject.id, user.id)
 
-    socket = assign(socket, question: question)
+    socket = assign(socket, unanswered_question: question)
     {:noreply, socket}
   end
 
@@ -90,33 +85,21 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       subject_id: subject.id
     })
 
-    question = Knowledge.get_unanswered_topic_question(socket.assigns.unknown_topic.id, user.id)
+    question =
+      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id) ||
+      Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
-    if question do
-      answers =
-        if question && question.type == "multiple_choice" do
-          Knowledge.list_answers(question.id)
-        else
-          nil
-        end
+    IO.inspect(question, label: "question")
 
-      socket = assign(socket, unanswered_question: question, answers: answers)
-      {:noreply, socket}
-    else
-      unknown_topic =
-        Knowledge.get_unknown_topic_with_unanswered_question(subject.id, testing_topic.id, user.id) ||
-          socket.assigns.testing_topic
+    answers =
+      if question && question.type == "multiple_choice" do
+        Knowledge.list_answers(question.id)
+      else
+        nil
+      end
 
-      question = Knowledge.get_unanswered_topic_question(unknown_topic.id, user.id)
-      answers =
-        if question && question.type == "multiple_choice" do
-          Knowledge.list_answers(question.id)
-        else
-          nil
-        end
-      socket = assign(socket, unanswered_question: question, answers: answers)
-      {:noreply, socket}
-    end
+    socket = assign(socket, unanswered_question: question, answers: answers)
+    {:noreply, socket}
   end
 
   def render_subject_test_complete(assigns) do
@@ -127,12 +110,12 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
   def render(assigns) do
     ~H"""
-    <%= if IO.inspect(@unanswered_question) do %>
+    <%= if @unanswered_question do %>
       <.live_component
         module={AnswerQuestion}
         id="test-topic-answer-question"
         question={@unanswered_question}
-        answers={IO.inspect(@answers)}
+        answers={@answers}
       />
     <% else %>
       <.render_subject_test_complete />
