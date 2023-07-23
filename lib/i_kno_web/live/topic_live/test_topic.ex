@@ -82,7 +82,8 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       unanswered_question: question,
       user: user,
       subject: subject,
-      testing_topic: testing_topic
+      testing_topic: testing_topic,
+      prereq_test_complete: prereq_test_complete
     } = socket.assigns
 
     passed? =
@@ -92,6 +93,26 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     status = if passed?, do: :passed, else: :failed
 
+    process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket)
+  end
+
+  def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
+    %{
+      unanswered_question: question,
+      user: user,
+      subject: subject,
+      testing_topic: testing_topic,
+      prereq_test_complete: prereq_test_complete
+    } =
+      socket.assigns
+
+    true? = String.to_atom(true?)
+    status = if true? == question.is_correct, do: :passed, else: :failed
+
+    process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket)
+  end
+
+  def process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket) do
     Knowledge.create_user_question_status(%{
       status: status,
       question_id: question.id,
@@ -100,9 +121,14 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       subject_id: subject.id
     })
 
-    question =
-      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id) ||
-        Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
+    question = Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
+
+    {question, prereq_test_complete} =
+      if question do
+        {question, prereq_test_complete}
+      else
+        {Knowledge.get_unanswered_topic_question(testing_topic.id, user.id), true}
+      end
 
     answers =
       if question && question.type == "multiple_choice" do
@@ -111,51 +137,14 @@ defmodule IKnoWeb.TopicLive.TestTopic do
         nil
       end
 
-    socket = assign(socket, unanswered_question: question, answers: answers)
+    socket =
+      assign(socket,
+        unanswered_question: question,
+        answers: answers,
+        prereq_test_complete: prereq_test_complete
+      )
+
     {:noreply, socket}
-  end
-
-  def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
-    %{unanswered_question: question, user: user, subject: subject, testing_topic: testing_topic} =
-      socket.assigns
-
-    true? = String.to_atom(true?)
-    status = if true? == question.is_correct, do: :passed, else: :failed
-
-    Knowledge.create_user_question_status(%{
-      status: status,
-      question_id: question.id,
-      user_id: user.id,
-      topic_id: question.topic_id,
-      subject_id: subject.id
-    })
-
-    if socket.assigns.prereq_test_complete do
-      question = Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
-
-      answers =
-        if question && question.type == "multiple_choice" do
-          Knowledge.list_answers(question.id)
-        else
-          nil
-        end
-
-      socket = assign(socket, unanswered_question: question, answers: answers, prereq_test_complete: true)
-      {:noreply, socket}
-    else
-      question =
-        Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
-
-      answers =
-        if question && question.type == "multiple_choice" do
-          Knowledge.list_answers(question.id)
-        else
-          nil
-        end
-
-      socket = assign(socket, unanswered_question: question, answers: answers, prereq_test_complete: true)
-      {:noreply, socket}
-    end
   end
 
   def render_subject_test_complete(assigns) do

@@ -605,6 +605,8 @@ defmodule IKno.Knowledge do
       from questions q
       left join user_question_statuses s
       on q.id = s.question_id
+      join topic_records tr
+      on q.topic_id = tr.topic_id
       where (s.user_id <> $2 or s.user_id is null)
       and q.subject_id = $1
       order by random()
