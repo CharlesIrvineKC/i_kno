@@ -177,6 +177,8 @@ defmodule IKno.Knowledge do
         inner join prereqs c on c.prereq_id = p.topic_id)
     select q.id, q.topic_id, q.type, q.question, q.is_correct
     from prereqs
+    join topic_records tr
+    on prereqs.prereq_id = tr.topic_id
     left join questions q
     on prereqs.prereq_id = q.topic_id
     left join user_question_statuses s
