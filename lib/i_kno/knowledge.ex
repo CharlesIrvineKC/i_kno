@@ -184,6 +184,7 @@ defmodule IKno.Knowledge do
     left join user_question_statuses s
     on q.id = s.question_id
     where (s.id is null or s.user_id <> $2)
+    and q.id is not null
     limit 1"
 
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [testing_topic_id, user_id])
