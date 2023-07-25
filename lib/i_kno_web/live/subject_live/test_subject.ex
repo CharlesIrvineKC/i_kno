@@ -94,7 +94,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     ~H"""
     <form phx-submit="submit-mc-answers">
       <div class="border rounded border-grey-900 p-5">
-        <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
+        <section class="markdown mb-5" id="topic-discription" phx-hook="MountAndUpdate">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
         </section>
         <div>
@@ -110,7 +110,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
               for="default-checkbox"
               class="markdown ml-2 text-sm font-medium text-center text-gray-900 dark:text-gray-300"
               id={"answer-#{answer.id}"}
-              phx-hook="Mount"
+              phx-hook="MountAndUpdate"
             >
               <%= Highlighter.highlight(Earmark.as_html!(answer.answer)) |> Phoenix.HTML.raw() %>
             </label>
@@ -137,7 +137,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     ~H"""
     <form phx-submit="submit-tf-answer">
       <div class="border rounded border-grey-900 p-5">
-        <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
+        <section class="markdown mb-5" id="topic-discription" phx-hook="MountAndUpdate">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
         </section>
         <div class="flex items-center mb-4">

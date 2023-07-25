@@ -46,7 +46,6 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   end
 
   def handle_event("understood", _, socket) do
-
     %{unknown_topic: topic, user: user} = socket.assigns
     attrs = %{topic_id: topic.id, subject_id: topic.subject_id, user_id: user.id, visit_status: :known}
     Knowledge.set_known(attrs)
@@ -380,7 +379,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       </div>
       <div id="topic-description" class="border rounded border-grey-900 p-3">
         <p>
-          <section class="markdown" id="topic-discription" phx-hook="Mount">
+          <section class="markdown" id="topic-discription" phx-hook="MountAndUpdate">
             <%= Highlighter.highlight(Earmark.as_html!(@topic.description)) |> Phoenix.HTML.raw() %>
           </section>
         </p>

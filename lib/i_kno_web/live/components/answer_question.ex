@@ -129,7 +129,7 @@ defmodule IKnoWeb.AnswerQuestion do
     ~H"""
     <form phx-submit="submit-mc-answers">
       <div class="border rounded border-grey-900 p-5">
-        <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
+        <section class="markdown mb-5" id="topic-discription" phx-hook="MountAndUpdate">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
         </section>
         <div>
@@ -172,7 +172,7 @@ defmodule IKnoWeb.AnswerQuestion do
     ~H"""
     <form phx-submit="submit-tf-answer">
       <div class="border rounded border-grey-900 p-5">
-        <section class="markdown mb-5" id="topic-discription" phx-hook="Mount">
+        <section class="markdown mb-5" id="topic-discription" phx-hook="MountAndUpdate">
           <%= Highlighter.highlight(Earmark.as_html!(@question.question)) |> Phoenix.HTML.raw() %>
         </section>
         <div class="flex items-center mb-4">
