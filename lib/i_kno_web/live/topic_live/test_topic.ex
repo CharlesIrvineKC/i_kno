@@ -15,7 +15,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
 
     if unanswered_question do
-      # IO.inspect(unanswered_question, label: "** unanswered_question **")
 
       answers =
         if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -40,8 +39,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     else
       unanswered_question =
         Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
-
-      # IO.inspect(unanswered_question, label: "** unanswered_question **")
 
       answers =
         if unanswered_question && unanswered_question.type == "multiple_choice" do
