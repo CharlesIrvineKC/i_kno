@@ -14,53 +14,33 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     unanswered_question =
       Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
 
-    if unanswered_question do
+    {unanswered_question, prereq_test_complete} =
+      if unanswered_question do
+        {unanswered_question, false}
+      else
+        {Knowledge.get_unanswered_topic_question(testing_topic.id, user.id), true}
+      end
 
-      answers =
-        if unanswered_question && unanswered_question.type == "multiple_choice" do
-          Knowledge.list_answers(unanswered_question.id)
-        else
-          nil
-        end
+    answers =
+      if unanswered_question && unanswered_question.type == "multiple_choice" do
+        Knowledge.list_answers(unanswered_question.id)
+      else
+        nil
+      end
 
-      socket =
-        assign(
-          socket,
-          subject: subject,
-          user: user,
-          testing_topic: testing_topic,
-          unanswered_question: unanswered_question,
-          answers: answers,
-          prereq_test_complete: false,
-          page_title: "Test: " <> testing_topic.name
-        )
+    socket =
+      assign(
+        socket,
+        subject: subject,
+        user: user,
+        testing_topic: testing_topic,
+        unanswered_question: unanswered_question,
+        answers: answers,
+        prereq_test_complete: prereq_test_complete,
+        page_title: "Test: " <> testing_topic.name
+      )
 
-      {:ok, socket}
-    else
-      unanswered_question =
-        Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
-
-      answers =
-        if unanswered_question && unanswered_question.type == "multiple_choice" do
-          Knowledge.list_answers(unanswered_question.id)
-        else
-          nil
-        end
-
-      socket =
-        assign(
-          socket,
-          subject: subject,
-          user: user,
-          testing_topic: testing_topic,
-          unanswered_question: unanswered_question,
-          answers: answers,
-          prereq_test_complete: true,
-          page_title: "Test: " <> testing_topic.name
-        )
-
-      {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   def is_correct(answer, params) do
