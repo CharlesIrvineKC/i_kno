@@ -75,8 +75,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
         nil
       end
 
-    IO.inspect([unanswered_question, answers, prereq_test_complete], label: "*******************")
-
     socket =
       assign(
         socket,
