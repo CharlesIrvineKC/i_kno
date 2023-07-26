@@ -978,6 +978,34 @@ defmodule IKno.Knowledge do
     Repo.delete(topic_record)
   end
 
+  def delete_incorrect_question_records(topic_id, user_id) do
+    query = "
+    delete from user_question_statuses
+    where user_id = $2
+    and topic_id in(
+    WITH RECURSIVE prereqs AS (
+      SELECT
+        topic_id,
+        prereq_id
+      FROM
+        prereq_topics
+      WHERE
+        topic_id = $1
+      UNION
+        SELECT
+          d.topic_id,
+          d.prereq_id
+        FROM
+          prereq_topics d
+        INNER JOIN prereqs s ON s.prereq_id = d.topic_id
+    ) SELECT
+      prereq_id
+    FROM prereqs
+    union values($1))
+    "
+    {:ok, _result} = SQL.query(Repo, query, [topic_id, user_id])
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking topic_record changes.
 
