@@ -74,6 +74,10 @@ defmodule IKno.Knowledge do
     length(Repo.all(query)) == 1
   end
 
+  def is_tested(_topic_id, _user_id) do
+
+  end
+
   def set_known(attrs) do
     %TopicRecord{}
     |> TopicRecord.changeset(attrs)

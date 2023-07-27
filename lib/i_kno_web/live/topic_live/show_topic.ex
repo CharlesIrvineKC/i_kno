@@ -21,6 +21,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         user_id = user.id
         is_admin = Accounts.is_admin(subject_id, user.id)
         is_known = Knowledge.get_known(topic.id, user.id)
+        _is_tested = Knowledge.is_tested(topic.id, user.id)
         {user_id, is_admin, is_known}
       else
         {nil, false, false}
