@@ -75,7 +75,6 @@ defmodule IKno.Knowledge do
   end
 
   def is_tested(_topic_id, _user_id) do
-
   end
 
   def set_known(attrs) do
@@ -148,34 +147,13 @@ defmodule IKno.Knowledge do
     end
   end
 
-  def get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id) do
-    unknown_topic_id = get_next_unknown_topic_by_topic(subject_id, testing_topic_id, user_id)
-
-    if unknown_topic_id do
-      unanswered_question = get_unanswered_topic_prereq_question(unknown_topic_id, user_id)
-
-      if unanswered_question do
-        get_topic!(unknown_topic_id)
-      else
-        attrs = %{
-          topic_id: unknown_topic_id,
-          subject_id: subject_id,
-          user_id: user_id,
-          visit_status: :no_questions
-        }
-
-        set_known(attrs)
-        get_unknown_topic_with_unanswered_question(subject_id, testing_topic_id, user_id)
-      end
-    end
-  end
-
-  def get_unanswered_topic_prereq_question(testing_topic_id, user_id) do
+  def get_unanswered_topic_question(testing_topic_id, user_id) do
     query = "
     with recursive prereqs as
       (select topic_id, prereq_id
         from prereq_topics
         where topic_id = $1
+        union values (0, 222)
         union select p.topic_id, p.prereq_id
         from prereq_topics p
         inner join prereqs c on c.prereq_id = p.topic_id)
@@ -189,23 +167,6 @@ defmodule IKno.Knowledge do
     on q.id = s.question_id
     where (s.id is null or s.user_id <> $2)
     and q.id is not null
-    limit 1"
-
-    {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [testing_topic_id, user_id])
-    result = splice_rows_cols(rows, cols)
-    if length(result) == 0, do: nil, else: hd(result)
-  end
-
-  def get_unanswered_topic_question(testing_topic_id, user_id) do
-    query = "
-    select q.id, q.topic_id, q.type, q.question, q.is_correct
-    from topics t
-    left join questions q
-    on t.id = q.topic_id
-    left join user_question_statuses s
-    on q.id = s.question_id
-    where t.id = $1
-    and (s.topic_id is null or s.user_id <> $2)
     limit 1"
 
     {:ok, %{rows: rows, columns: cols}} = SQL.query(Repo, query, [testing_topic_id, user_id])

@@ -12,14 +12,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     user = Accounts.get_user_by_session_token(user_token)
 
     unanswered_question =
-      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
-
-    {unanswered_question, prereq_test_complete} =
-      if unanswered_question do
-        {unanswered_question, false}
-      else
-        {Knowledge.get_unanswered_topic_question(testing_topic.id, user.id), true}
-      end
+      Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
     answers =
       if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -36,7 +29,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
         testing_topic: testing_topic,
         unanswered_question: unanswered_question,
         answers: answers,
-        prereq_test_complete: prereq_test_complete,
         page_title: "Test: " <> testing_topic.name
       )
 
@@ -59,14 +51,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     Knowledge.delete_incorrect_question_records(testing_topic.id, user.id)
 
     unanswered_question =
-      Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
-
-    {unanswered_question, prereq_test_complete} =
-      if unanswered_question do
-        {unanswered_question, false}
-      else
-        {Knowledge.get_unanswered_topic_question(testing_topic.id, user.id), true}
-      end
+      Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
     answers =
       if unanswered_question && unanswered_question.type == "multiple_choice" do
@@ -80,7 +65,6 @@ defmodule IKnoWeb.TopicLive.TestTopic do
         socket,
         unanswered_question: unanswered_question,
         answers: answers,
-        prereq_test_complete: prereq_test_complete,
         page_title: "Test: " <> testing_topic.name
       )
 
@@ -93,8 +77,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       unanswered_question: question,
       user: user,
       subject: subject,
-      testing_topic: testing_topic,
-      prereq_test_complete: prereq_test_complete
+      testing_topic: testing_topic
     } = socket.assigns
 
     passed? =
@@ -104,7 +87,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     status = if passed?, do: :passed, else: :failed
 
-    process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket)
+    process_event(status, question, user, subject, testing_topic, socket)
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
@@ -112,18 +95,17 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       unanswered_question: question,
       user: user,
       subject: subject,
-      testing_topic: testing_topic,
-      prereq_test_complete: prereq_test_complete
+      testing_topic: testing_topic
     } =
       socket.assigns
 
     true? = String.to_atom(true?)
     status = if true? == question.is_correct, do: :passed, else: :failed
 
-    process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket)
+    process_event(status, question, user, subject, testing_topic, socket)
   end
 
-  def process_event(status, question, user, subject, testing_topic, prereq_test_complete, socket) do
+  def process_event(status, question, user, subject, testing_topic, socket) do
     Knowledge.create_user_question_status(%{
       status: status,
       question_id: question.id,
@@ -132,14 +114,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
       subject_id: subject.id
     })
 
-    question = Knowledge.get_unanswered_topic_prereq_question(testing_topic.id, user.id)
-
-    {question, prereq_test_complete} =
-      if question do
-        {question, prereq_test_complete}
-      else
-        {Knowledge.get_unanswered_topic_question(testing_topic.id, user.id), true}
-      end
+    question = Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
     answers =
       if question && question.type == "multiple_choice" do
@@ -151,8 +126,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     socket =
       assign(socket,
         unanswered_question: question,
-        answers: answers,
-        prereq_test_complete: prereq_test_complete
+        answers: answers
       )
 
     {:noreply, socket}
