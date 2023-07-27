@@ -215,49 +215,6 @@ defmodule IKno.Knowledge do
     end
   end
 
-  def get_next_unknown_subject_topic(subject_id, user_id) do
-    query = " -- topics in subject
-    select t.id
-    from topics as t
-    where t.subject_id = $1
-    and t.id not in
-    (  -- topics with unknown prereqs
-        select t.id
-        from topics as t
-        left join prereq_topics as pt
-        on t.id = pt.topic_id
-        where pt.prereq_id = any
-        (   -- subject topics
-            select t.id
-            from topics t
-            where t.subject_id = $1
-            and t.id not in
-            (   -- known topics
-                select kt.topic_id
-                from topic_records as kt
-                where kt.user_id = $2
-            )
-        )
-    )
-    and t.id not in
-    (   -- known topics
-        select kt.topic_id
-        from topic_records as kt
-        where kt.user_id = $2
-    )
-    group by t.id
-    order by random()
-    limit 1"
-
-    {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
-
-    if length(result.rows) > 0 do
-      Enum.map(result.rows, &hd(&1))
-    else
-      []
-    end
-  end
-
   def reset_learn_subject_progress(subject_id, user_id) do
     query = "delete from topic_records
              where topic_id in (select id from topics where subject_id = $1)
