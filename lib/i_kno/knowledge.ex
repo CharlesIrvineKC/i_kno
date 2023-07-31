@@ -105,7 +105,8 @@ defmodule IKno.Knowledge do
   def get_topic_name(id), do: get_topic!(id).name
 
   def get_next_unknown_topic_by_topic(subject_id, topic_id, user_id) do
-    query = "with recursive prereqs as
+    query = "
+  with recursive prereqs as
 	(select topic_id,
 			prereq_id
 		from prereq_topics
@@ -174,7 +175,7 @@ defmodule IKno.Knowledge do
     if length(result) == 0, do: nil, else: hd(result)
   end
 
-  def get_next_unknown_subject_topics(subject_id, user_id) do
+  def get_next_unknown_subject_topic(subject_id, user_id) do
     query = " -- topics in subject
     select t.id
     from topics as t
@@ -204,15 +205,12 @@ defmodule IKno.Knowledge do
         from topic_records as kt
         where kt.user_id = $2
     )
-    group by t.id"
+    group by t.id
+    limit 1"
 
     {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
 
-    if length(result.rows) > 0 do
-      Enum.map(result.rows, &hd(&1))
-    else
-      []
-    end
+    if result.rows != [], do: hd(hd(result.rows)), else: nil
   end
 
   def reset_learn_subject_progress(subject_id, user_id) do
