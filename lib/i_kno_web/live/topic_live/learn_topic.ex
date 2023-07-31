@@ -58,13 +58,11 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
       {:noreply, socket}
     else
       learning_topic = Knowledge.get_topic!(socket.assigns.learning_topic.id)
-      next_topic_ids = []
 
       {:noreply,
        assign(socket,
          unknown_topic: learning_topic,
-         visited_topics: [learning_topic],
-         next_topic_ids: next_topic_ids
+         visited_topics: [learning_topic]
        )}
     end
   end
