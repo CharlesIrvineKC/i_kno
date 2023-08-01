@@ -154,7 +154,7 @@ defmodule IKno.Knowledge do
       (select topic_id, prereq_id
         from prereq_topics
         where topic_id = $1
-        union values (0, 222)
+        union values (0, #{testing_topic_id})
         union select p.topic_id, p.prereq_id
         from prereq_topics p
         inner join prereqs c on c.prereq_id = p.topic_id)
