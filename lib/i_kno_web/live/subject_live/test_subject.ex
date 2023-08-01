@@ -55,7 +55,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     question = Knowledge.get_unanswered_question(subject_id, user.id)
     answers = get_answers(question)
 
-    socket = assign(socket, question: question)
+    socket = assign(socket, question: question, answers: answers)
     {:noreply, socket}
   end
 
