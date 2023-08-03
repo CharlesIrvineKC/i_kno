@@ -21,16 +21,29 @@ defmodule IKnoWeb.TopicLive.Topics do
 
     subject = Knowledge.get_subject!(subject_id)
 
+    test_progress = Knowledge.get_test_progress(subject_id, user_id)
+
     socket =
       assign(socket,
         topics: topics,
         subject: subject,
         user_id: user_id,
         is_admin: is_admin,
-        page_title: subject.name <> " Topics"
+        page_title: subject.name <> " Topics",
+        test_progress: test_progress
       )
 
     {:ok, socket}
+  end
+
+  # returns {total, num_answered, num_correct}
+  def get_test_summary([]), do: {0, 0, 0}
+
+  def get_test_summary([[_question_id, _topic_id, status] | rest]) do
+    answered = if status != nil, do: 1, else: 0
+    correct = if status == "passed", do: 1, else: 0
+    {t, a, c} = get_test_summary(rest)
+    {t + 1, a + answered, c + correct}
   end
 
   def handle_event("refresh-topic", %{"topic-id" => topic_id}, socket) do
@@ -144,9 +157,7 @@ defmodule IKnoWeb.TopicLive.Topics do
       <h4 class="text-2xl font-bold dark:text-white">Topics</h4>
       <ul class="mt-1 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
         <%= for topic <- @topics do %>
-          <li
-            class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-          >
+          <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
             <a
               href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
               class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
@@ -162,25 +173,40 @@ defmodule IKnoWeb.TopicLive.Topics do
 
   def render_buttons(assigns) do
     ~H"""
-    <div>
+    <div class="mt-4">
       <button
         :if={@is_admin}
         type="button"
-        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href={~p"/subjects/#{@subject.id}/topics/new"}>New</a>
       </button>
       <button
         type="button"
         data-popover-target="popover-learn"
-        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href={~p"/subjects/#{@subject.id}/learn"}>Learn</a>
       </button>
       <button
+        :if={@user_id}
+        type="button"
+        phx-click="reset-subject"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <a href="#">Reset Subject</a>
+      </button>
+    </div>
+    """
+  end
+
+  def render_progress_buttons(assigns) do
+    ~H"""
+    <div class="mt-4">
+      <button
         type="button"
         data-popover-target="popover-learn"
-        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href={~p"/subjects/#{@subject.id}/test"}>Test</a>
       </button>
@@ -199,13 +225,74 @@ defmodule IKnoWeb.TopicLive.Topics do
         <div data-popper-arrow></div>
       </div>
       <button
-        :if={@user_id}
         type="button"
-        phx-click="reset-subject"
-        class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        data-popover-target="popover-learn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <a href="#">Reset Subject</a>
+        <a href={~p"/subjects/#{@subject.id}/test"}>Re-test Incorrect</a>
       </button>
+      <div
+        data-popover
+        id="popover-learn"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+      >
+        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
+        </div>
+        <div class="px-3 py-2">
+          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
+        </div>
+        <div data-popper-arrow></div>
+      </div>
+      <button
+        type="button"
+        data-popover-target="popover-learn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <a href={~p"/subjects/#{@subject.id}/test"}>Re-test All</a>
+      </button>
+      <div
+        data-popover
+        id="popover-learn"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+      >
+        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
+        </div>
+        <div class="px-3 py-2">
+          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
+        </div>
+        <div data-popper-arrow></div>
+      </div>
+    </div>
+    """
+  end
+
+  def render_progress(assigns) do
+    {total, num_answered, num_correct} = get_test_summary(assigns.test_progress)
+
+    assigns =
+      assigns
+      |> Map.put(:total, total)
+      |> Map.put(:num_answered, num_answered)
+      |> Map.put(:num_correct, num_correct)
+
+    ~H"""
+    <div :if={@user_id}>
+      <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
+      <div class="border rounded border-grey-900 p-3">
+        <ul class="max-w-md space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
+          <li>
+            <%= "Questions Answered: #{@num_answered} of #{@total}" %>
+          </li>
+          <li>
+            <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
+          </li>
+        </ul>
+      </div>
+      <.render_progress_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
     </div>
     """
   end
@@ -218,6 +305,7 @@ defmodule IKnoWeb.TopicLive.Topics do
     </div>
     <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} />
     <.render_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
+    <.render_progress is_admin={@is_admin} subject={@subject} user_id={@user_id} test_progress={@test_progress} />
     """
   end
 end

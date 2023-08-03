@@ -750,6 +750,20 @@ defmodule IKno.Knowledge do
   """
   def get_user_question_status!(id), do: Repo.get!(UserQuestionStatus, id)
 
+  def get_test_progress(subject_id, user_id) do
+    query = "
+    select q.id, q.topic_id, s.status
+    from questions q
+    left join user_question_statuses s
+    on q.id = s.question_id
+    where (s.user_id = $2 or s.user_id is null)
+    and q.subject_id = $1
+    "
+
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, user_id])
+    rows
+  end
+
   @doc """
   Creates a user_question_status.
 
