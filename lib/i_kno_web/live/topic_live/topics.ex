@@ -39,7 +39,7 @@ defmodule IKnoWeb.TopicLive.Topics do
   # returns {total, num_answered, num_correct}
   def get_test_summary([]), do: {0, 0, 0}
 
-  def get_test_summary([[_question_id, _topic_id, status] | rest]) do
+  def get_test_summary([[_question_id, _topic_id, status, _] | rest]) do
     answered = if status != nil, do: 1, else: 0
     correct = if status == "passed", do: 1, else: 0
     {t, a, c} = get_test_summary(rest)
@@ -57,6 +57,18 @@ defmodule IKnoWeb.TopicLive.Topics do
     topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user_id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
+  end
+
+  def handle_event("retest-incorrect", _, socket) do
+    test_progress = socket.assigns.test_progress
+
+    incorrect_questions =
+      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status == "failed" end)
+    question_ids = Enum.map(incorrect_questions, fn q -> Enum.at(q, 3) end)
+
+    Knowledge.delete_question_statuses(question_ids)
+    
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
   end
 
   def handle_event("delete", %{"topic-id" => topic_id}, socket) do
@@ -226,10 +238,11 @@ defmodule IKnoWeb.TopicLive.Topics do
       </div>
       <button
         type="button"
+        phx-click="retest-incorrect"
         data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <a href={~p"/subjects/#{@subject.id}/test"}>Re-test Incorrect</a>
+        Re-test Incorrect
       </button>
       <div
         data-popover

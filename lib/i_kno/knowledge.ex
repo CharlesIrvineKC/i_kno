@@ -752,7 +752,7 @@ defmodule IKno.Knowledge do
 
   def get_test_progress(subject_id, user_id) do
     query = "
-    select q.id, q.topic_id, s.status
+    select q.id, q.topic_id, s.status, s.id
     from questions q
     left join user_question_statuses s
     on q.id = s.question_id
@@ -814,6 +814,10 @@ defmodule IKno.Knowledge do
   """
   def delete_user_question_status(%UserQuestionStatus{} = user_question_status) do
     Repo.delete(user_question_status)
+  end
+
+  def delete_question_statuses(status_ids) do
+    from(s in UserQuestionStatus, where: s.id in ^status_ids ) |> Repo.delete_all()
   end
 
   @doc """
