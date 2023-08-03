@@ -59,6 +59,18 @@ defmodule IKnoWeb.TopicLive.Topics do
     {:noreply, socket}
   end
 
+  def handle_event("retest-all", _, socket) do
+    test_progress = socket.assigns.test_progress
+
+    answered_questions =
+      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status != nil end)
+    question_ids = Enum.map(answered_questions, fn q -> Enum.at(q, 3) end)
+
+    Knowledge.delete_question_statuses(question_ids)
+
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
+  end
+
   def handle_event("retest-incorrect", _, socket) do
     test_progress = socket.assigns.test_progress
 
@@ -67,7 +79,7 @@ defmodule IKnoWeb.TopicLive.Topics do
     question_ids = Enum.map(incorrect_questions, fn q -> Enum.at(q, 3) end)
 
     Knowledge.delete_question_statuses(question_ids)
-    
+
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
   end
 
@@ -260,10 +272,11 @@ defmodule IKnoWeb.TopicLive.Topics do
       </div>
       <button
         type="button"
+        phx-click="retest-all"
         data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <a href={~p"/subjects/#{@subject.id}/test"}>Re-test All</a>
+        Re-test All
       </button>
       <div
         data-popover

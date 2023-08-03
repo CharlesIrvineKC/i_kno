@@ -10,10 +10,14 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     user = Accounts.get_user_by_session_token(user_token)
     question = Knowledge.get_unanswered_question(subject_id, user.id)
 
-    answers = get_answers(question)
+    if question do
+      answers = get_answers(question)
 
-    socket = assign(socket, question: question, answers: answers, subject_id: subject_id, user: user)
-    {:ok, socket}
+      socket = assign(socket, question: question, answers: answers, subject_id: subject_id, user: user)
+      {:ok, socket}
+    else
+      {:ok, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+    end
   end
 
   defp get_answers(question) do
@@ -53,10 +57,15 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     })
 
     question = Knowledge.get_unanswered_question(subject_id, user.id)
-    answers = get_answers(question)
 
-    socket = assign(socket, question: question, answers: answers)
-    {:noreply, socket}
+    if question do
+      answers = get_answers(question)
+
+      socket = assign(socket, question: question, answers: answers)
+      {:noreply, socket}
+    else
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+    end
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
@@ -73,31 +82,25 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
     })
 
     question = Knowledge.get_unanswered_question(subject_id, user.id)
-    answers = get_answers(question)
 
-    socket = assign(socket, question: question, answers: answers)
+    if question do
+      answers = get_answers(question)
 
-    {:noreply, socket}
-  end
-
-  def render_subject_test_complete(assigns) do
-    ~H"""
-    <h1>Subject Test Complete</h1>
-    """
+      socket = assign(socket, question: question, answers: answers)
+      {:noreply, socket}
+    else
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+    end
   end
 
   def render(assigns) do
     ~H"""
-    <%= if @question do %>
       <.live_component
         module={AnswerQuestion}
         id="test-subject-answer-question"
         question={@question}
         answers={@answers}
       />
-    <% else %>
-      <.render_subject_test_complete />
-    <% end %>
     """
   end
 end
