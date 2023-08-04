@@ -14,25 +14,29 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     unanswered_question =
       Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
-    answers =
-      if unanswered_question && unanswered_question.type == "multiple_choice" do
-        Knowledge.list_answers(unanswered_question.id)
-      else
-        nil
-      end
+    if unanswered_question do
+      answers =
+        if unanswered_question && unanswered_question.type == "multiple_choice" do
+          Knowledge.list_answers(unanswered_question.id)
+        else
+          nil
+        end
 
-    socket =
-      assign(
-        socket,
-        subject: subject,
-        user: user,
-        testing_topic: testing_topic,
-        unanswered_question: unanswered_question,
-        answers: answers,
-        page_title: "Test: " <> testing_topic.name
-      )
+      socket =
+        assign(
+          socket,
+          subject: subject,
+          user: user,
+          testing_topic: testing_topic,
+          unanswered_question: unanswered_question,
+          answers: answers,
+          page_title: "Test: " <> testing_topic.name
+        )
 
-    {:ok, socket}
+      {:ok, socket}
+    else
+      {:ok, redirect(socket, to: ~p"/subjects/#{subject.id}/topics")}
+    end
   end
 
   def is_correct(answer, params) do
@@ -122,20 +126,25 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     question = Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
 
-    answers =
-      if question && question.type == "multiple_choice" do
-        Knowledge.list_answers(question.id)
+    if question do
+
+      answers =
+        if question && question.type == "multiple_choice" do
+          Knowledge.list_answers(question.id)
       else
-        nil
+          nil
       end
 
-    socket =
-      assign(socket,
-        unanswered_question: question,
-        answers: answers
-      )
+      socket =
+        assign(socket,
+          unanswered_question: question,
+          answers: answers
+        )
 
-    {:noreply, socket}
+      {:noreply, socket}
+    else
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+    end
   end
 
   def render_subject_test_complete(assigns) do
@@ -271,16 +280,12 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   def render(assigns) do
     ~H"""
     <.render_breadcrumb subject={@subject} topic={@testing_topic} />
-    <%= if @unanswered_question do %>
-      <.live_component
-        module={AnswerQuestion}
-        id="test-topic-answer-question"
-        question={@unanswered_question}
-        answers={@answers}
-      />
-    <% else %>
-      <.render_subject_test_complete topic={@testing_topic} />
-    <% end %>
+    <.live_component
+      module={AnswerQuestion}
+      id="test-topic-answer-question"
+      question={@unanswered_question}
+      answers={@answers}
+    />
     """
   end
 end

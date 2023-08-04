@@ -331,7 +331,8 @@ defmodule IKnoWeb.TopicLive.Topics do
     </div>
     <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} />
     <.render_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
-    <.render_progress is_admin={@is_admin} subject={@subject} user_id={@user_id} test_progress={@test_progress} />
+    <.render_progress
+      is_admin={@is_admin} subject={@subject} user_id={@user_id} test_progress={@test_progress} />
     """
   end
 end

@@ -16,7 +16,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
       socket = assign(socket, question: question, answers: answers, subject_id: subject_id, user: user)
       {:ok, socket}
     else
-      {:ok, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+      {:ok, redirect(socket, to: ~p"/subjects/#{subject_id}/topics")}
     end
   end
 
