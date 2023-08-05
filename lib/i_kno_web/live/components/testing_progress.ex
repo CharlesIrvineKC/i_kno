@@ -59,6 +59,10 @@ defmodule IKnoWeb.Components.TestingProgress do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
   end
 
+  def percent_tested(total, num_correct) do
+    round((num_correct / total) * 100)
+  end
+
   def render(assigns) do
     ~H"""
     <div>
@@ -73,6 +77,10 @@ defmodule IKnoWeb.Components.TestingProgress do
               <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
             </li>
           </ul>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
+          <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
+               style={"width: #{percent_tested(@total, @num_correct)}%"}></div>
         </div>
         <.render_progress_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} myself={@myself} />
       </div>

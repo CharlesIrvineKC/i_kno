@@ -20,6 +20,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
+    learning_progress = Knowledge.get_learning_progress(subject_id)
 
     is_admin =
       if user do
@@ -40,6 +41,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         is_super_user: is_super_user,
         edit_admins: edit_admins,
         display_message: false,
+        learning_progress: learning_progress,
         message: ""
       )
 
@@ -435,6 +437,10 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <%= if @is_super_user do %>
       <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
+    <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
+      <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500" style={"width: #{@learning_progress}%"}>
+      </div>
+    </div>
     <.render_buttons subject={@subject} is_admin={@is_admin} is_superuser={@is_super_user} />
     <.live_component
       module={TestingProgress}
