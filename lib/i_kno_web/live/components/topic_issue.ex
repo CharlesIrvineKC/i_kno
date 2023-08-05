@@ -1,8 +1,9 @@
 defmodule IKnoWeb.Components.TopicIssue do
-  alias IKno.Knowledge
   use IKnoWeb, :live_component
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
+
+  alias IKno.Knowledge
 
   def mount(socket) do
     {:ok, socket}

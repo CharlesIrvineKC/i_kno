@@ -3,6 +3,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   alias IKno.Knowledge
   alias IKno.Accounts
+  alias IKnoWeb.Components.TestingProgress
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     user_token = Map.get(session, "user_token")
@@ -35,6 +36,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         page_title: subject.name,
         is_admin: is_admin,
         admins: admins,
+        user_id: user.id,
         is_super_user: is_super_user,
         edit_admins: edit_admins,
         display_message: false,
@@ -198,31 +200,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       <div class="px-3 py-2">
         <p>
           Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know.
-          <strong>Requires login.</strong>
-        </p>
-      </div>
-      <div data-popper-arrow></div>
-    </div>
-
-    <button
-      data-popover-target="test-popover"
-      type="button"
-      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    >
-      <a href={~p"/subjects/#{@subject.id}/test"}>Test</a>
-    </button>
-    <div
-      data-popover
-      id="test-popover"
-      role="tooltip"
-      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-    >
-      <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-        <h3 class="font-semibold text-gray-900 dark:text-white">Test your knowledge of this subject</h3>
-      </div>
-      <div class="px-3 py-2">
-        <p>
-          Press this button and will start testing your knowledge of this subject.
           <strong>Requires login.</strong>
         </p>
       </div>
@@ -458,6 +435,13 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
     <.render_buttons subject={@subject} is_admin={@is_admin} is_superuser={@is_super_user} />
+    <.live_component
+      module={TestingProgress}
+      id={:subject_progress}
+      is_admin={@is_admin}
+      subject={@subject}
+      user_id={@user_id}
+    />
     """
   end
 end

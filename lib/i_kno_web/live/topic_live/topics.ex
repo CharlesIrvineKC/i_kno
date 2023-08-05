@@ -3,6 +3,7 @@ defmodule IKnoWeb.TopicLive.Topics do
 
   alias IKno.Knowledge
   alias IKno.Accounts
+  alias IKnoWeb.Components.TestingProgress
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     subject_id = String.to_integer(subject_id)
@@ -21,35 +22,16 @@ defmodule IKnoWeb.TopicLive.Topics do
 
     subject = Knowledge.get_subject!(subject_id)
 
-    test_progress = Knowledge.get_test_progress(subject_id, user_id)
-
     socket =
       assign(socket,
         topics: topics,
         subject: subject,
         user_id: user_id,
         is_admin: is_admin,
-        page_title: subject.name <> " Topics",
-        test_progress: test_progress
+        page_title: subject.name <> " Topics"
       )
 
     {:ok, socket}
-  end
-
-  # returns {total, num_answered, num_correct}
-  def get_test_summary([]), do: {0, 0, 0}
-
-  def get_test_summary([[_question_id, _topic_id, status, _] | rest]) do
-    answered = if status != nil, do: 1, else: 0
-    correct = if status == "passed", do: 1, else: 0
-    {t, a, c} = get_test_summary(rest)
-    {t + 1, a + answered, c + correct}
-  end
-
-  def handle_event("refresh-topic", %{"topic-id" => topic_id}, socket) do
-    topic_id = String.to_integer(topic_id)
-    Knowledge.reset_learn_topic_progress(topic_id, socket.assigns.user_id)
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{topic_id}/learn")}
   end
 
   def handle_event("reset-subject", _, socket) do
@@ -57,30 +39,6 @@ defmodule IKnoWeb.TopicLive.Topics do
     topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user_id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
-  end
-
-  def handle_event("retest-all", _, socket) do
-    test_progress = socket.assigns.test_progress
-
-    answered_questions =
-      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status != nil end)
-    question_ids = Enum.map(answered_questions, fn q -> Enum.at(q, 3) end)
-
-    Knowledge.delete_question_statuses(question_ids)
-
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
-  end
-
-  def handle_event("retest-incorrect", _, socket) do
-    test_progress = socket.assigns.test_progress
-
-    incorrect_questions =
-      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status == "failed" end)
-    question_ids = Enum.map(incorrect_questions, fn q -> Enum.at(q, 3) end)
-
-    Knowledge.delete_question_statuses(question_ids)
-
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
   end
 
   def handle_event("delete", %{"topic-id" => topic_id}, socket) do
@@ -296,33 +254,6 @@ defmodule IKnoWeb.TopicLive.Topics do
     """
   end
 
-  def render_progress(assigns) do
-    {total, num_answered, num_correct} = get_test_summary(assigns.test_progress)
-
-    assigns =
-      assigns
-      |> Map.put(:total, total)
-      |> Map.put(:num_answered, num_answered)
-      |> Map.put(:num_correct, num_correct)
-
-    ~H"""
-    <div :if={@user_id}>
-      <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
-      <div class="border rounded border-grey-900 p-3">
-        <ul class="max-w-md space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
-          <li>
-            <%= "Questions Answered: #{@num_answered} of #{@total}" %>
-          </li>
-          <li>
-            <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
-          </li>
-        </ul>
-      </div>
-      <.render_progress_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
-    </div>
-    """
-  end
-
   def render(assigns) do
     ~H"""
     <div class="h-14">
@@ -331,8 +262,13 @@ defmodule IKnoWeb.TopicLive.Topics do
     </div>
     <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} />
     <.render_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
-    <.render_progress
-      is_admin={@is_admin} subject={@subject} user_id={@user_id} test_progress={@test_progress} />
+    <.live_component
+      module={TestingProgress}
+      id={:topics_progress}
+      is_admin={@is_admin}
+      subject={@subject}
+      user_id={@user_id}
+    />
     """
   end
 end
