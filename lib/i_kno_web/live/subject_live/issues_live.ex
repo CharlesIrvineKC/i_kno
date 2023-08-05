@@ -28,7 +28,7 @@ defmodule IKnoWeb.IssuesLive do
     {:noreply, socket}
   end
 
-  def handle_event("toggle-status",  %{"status" => status}, socket) do
+  def handle_event("toggle-status", %{"status" => status}, socket) do
     socket = assign(socket, status: String.to_atom(status))
     {:noreply, socket}
   end
@@ -48,7 +48,7 @@ defmodule IKnoWeb.IssuesLive do
           type="radio"
           value=""
           name="inline-radio-group"
-          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
         />
         <label for="inline-radio" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
           Open
@@ -56,14 +56,14 @@ defmodule IKnoWeb.IssuesLive do
       </div>
       <div class="flex items-center mr-4">
         <input
-        checked={@status == :closed}
+          checked={@status == :closed}
           phx-click="toggle-status"
           phx-value-status="closed"
           id="inline-2-radio"
           type="radio"
           value=""
           name="inline-radio-group"
-          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
         />
         <label for="inline-2-radio" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
           Closed
@@ -92,7 +92,7 @@ defmodule IKnoWeb.IssuesLive do
       </p>
       <a
         href={~p"/subjects/#{@issue.subject_id}/topics/#{@issue.topic_id}"}
-        class="inline-flex items-center text-blue-600 hover:underline"
+        class="inline-flex items-center text-green-600 hover:underline"
       >
         Topic Name: <%= Knowledge.get_topic_name(@issue.topic_id) %>
         <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -108,22 +108,22 @@ defmodule IKnoWeb.IssuesLive do
             name="resolution"
             rows="4"
             required
-            class="p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
             placeholder="Describe resolution..."
           ><%= @issue.resolution %></textarea>
           <input type="hidden" id="issue_id" name="issue_id" value={@issue.id} />
           <button
             type="submit"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mt-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mt-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
           >
             <%= if @issue.status == :open, do: "Close", else: "Re-Open" %>
           </button>
         </form>
         <div :if={@issue.status == :closed}>
-        <label class="text-gray-500 mb-1">Resolution:</label>
-        <div class="border border-gray-300 rounded p-2">
-          <p><%= @issue.resolution %></p>
-        </div>
+          <label class="text-gray-500 mb-1">Resolution:</label>
+          <div class="border border-gray-300 rounded p-2">
+            <p><%= @issue.resolution %></p>
+          </div>
         </div>
       </div>
     </div>

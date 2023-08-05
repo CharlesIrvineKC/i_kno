@@ -87,7 +87,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <button
       type="submit"
       phx-click="search"
-      class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <svg
         class="w-5 h-5"
@@ -116,7 +116,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         <li class="inline-flex items-center">
           <a
             href={~p"/subjects"}
-            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600 dark:text-gray-400 dark:hover:text-white"
           >
             <svg
               aria-hidden="true"
@@ -162,7 +162,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <button
       data-popover-target="topics-popover"
       type="button"
-      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/topics"}>Topics</a>
     </button>
@@ -184,7 +184,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <button
       data-popover-target="learn-popover"
       type="button"
-      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/learn"}>Learn</a>
     </button>
@@ -208,14 +208,14 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <button
       :if={@is_admin}
       type="button"
-      class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      class="mt-12 text-white bg-green-700 hover:bg-green-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/issues"}>Issues</a>
     </button>
     <button
       :if={@is_admin}
       type="button"
-      class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      class="mt-12 text-white bg-green-700 hover:bg-green-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/edit"}>Edit</a>
     </button>
@@ -224,7 +224,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       :if={@is_superuser}
       type="button"
       phx-click="publish-subject"
-      class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      class="mt-12 text-white bg-green-700 hover:bg-green-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <%= if @subject.is_published, do: "Un-Publish", else: "Publish" %>
     </button>
@@ -235,9 +235,10 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     ~H"""
     <button
       :if={@is_superuser}
-      data-modal-target="popup-modal" data-modal-toggle="popup-modal"
+      data-modal-target="popup-modal"
+      data-modal-toggle="popup-modal"
       type="button"
-      class="mt-12 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      class="mt-12 text-white bg-green-700 hover:bg-green-800 focus:outline-none text-white focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       Delete
     </button>
@@ -336,7 +337,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       <a
         href="#"
         phx-click="edit-admins"
-        class="inline-flex items-center text-sm font-medium text-lime-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+        class="inline-flex items-center text-sm font-medium text-lime-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-white"
       >
         <%= if @edit_admins, do: "Close Admins", else: "Edit Admins" %>
       </a>
@@ -355,13 +356,13 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
             type="text"
             id="admin_email_id"
             name="admin_email_id"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
             required
           />
         </div>
         <button
           type="submit"
-          class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="mt-2 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
         >
           Submit
         </button>

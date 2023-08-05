@@ -97,6 +97,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
   def render_breadcrumb(assigns) do
     topic = Knowledge.get_topic!(assigns.topic_id)
     assigns = Map.put(assigns, :topic, topic)
+
     ~H"""
     <div class="h-14">
       <nav class="pt-3 inline-block " aria-label="Breadcrumb">
@@ -104,7 +105,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
           <li class="inline-flex items-center">
             <a
               href={~p"/subjects"}
-              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600 dark:text-gray-400 dark:hover:text-white"
             >
               <svg
                 aria-hidden="true"
@@ -137,7 +138,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
               </svg>
               <a
                 href={~p"/subjects/#{@subject.id}/topics"}
-                class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+                class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
               >
                 <%= @subject.name %>
               </a>
@@ -173,7 +174,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
       <button
         type="submit"
         phx-click="search"
-        class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <svg
           class="w-5 h-5"

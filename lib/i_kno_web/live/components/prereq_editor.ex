@@ -23,7 +23,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
   end
 
   def handle_event("toggle-search-all-subjects", _, socket) do
-    socket = assign(socket,search_all_subjects: !socket.assigns.search_all_subjects)
+    socket = assign(socket, search_all_subjects: !socket.assigns.search_all_subjects)
 
     {:noreply, socket}
   end
@@ -37,7 +37,6 @@ defmodule IKnoWeb.Components.PrereqEditor do
   end
 
   def handle_event("suggest", %{"prefix" => prefix}, socket) do
-
     matches =
       if socket.assigns.search_all_subjects do
         Knowledge.suggest_prereqs(prefix, :all)
@@ -89,7 +88,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
             <td scope="row" class="px-6 py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               <a
                 href={~p"/subjects/#{@topic.subject_id}/topics/#{prereq.topic_id}"}
-                class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                class="font-medium text-green-600 dark:text-green-500 hover:underline"
               >
                 <%= prereq.name %>
               </a>
@@ -100,7 +99,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
                 phx-click="delete-prereq"
                 phx-target={@myself}
                 phx-value-prereq-topic-id={prereq.topic_id}
-                class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                class="font-medium text-green-600 dark:text-green-500 hover:underline"
               >
                 Delete
               </a>
@@ -142,7 +141,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
           phx-debounce="1000"
           required
           placeholder="Search for New Prerequisite Topics"
-          class="mt-4 mb-2 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          class="mt-4 mb-2 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
         />
 
         <datalist id="matches">
@@ -151,7 +150,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
 
         <button
           type="submit"
-          class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="text-white absolute right-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-1 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
         >
           Add Prerequisite
         </button>
@@ -166,7 +165,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
         id="checked-checkbox"
         type="checkbox"
         value=""
-        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
       />
       <label for="checked-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
         Search All Subjects
@@ -183,7 +182,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
       class="flex items-center w-full max-w-xl p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
       role="alert"
     >
-      <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+      <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
         <svg
           aria-hidden="true"
           class="w-5 h-5"
@@ -239,7 +238,7 @@ defmodule IKnoWeb.Components.PrereqEditor do
         keys={@keys}
         search_all_subjects={@search_all_subjects}
       />
-      <.render_cycle_alert cycle={@cycle} myself={@myself}/>
+      <.render_cycle_alert cycle={@cycle} myself={@myself} />
     </div>
     """
   end

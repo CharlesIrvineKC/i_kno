@@ -60,7 +60,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
     attrs = %{topic_id: topic.id, subject_id: topic.subject_id, user_id: user.id, visit_status: :known}
     Knowledge.set_known(attrs)
 
-    next_topic_id =Knowledge.get_next_unknown_subject_topic(subject.id, user.id)
+    next_topic_id = Knowledge.get_next_unknown_subject_topic(subject.id, user.id)
 
     if next_topic_id do
       topic = Knowledge.get_topic!(next_topic_id)
@@ -90,7 +90,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
           <li class="inline-flex items-center">
             <a
               href={~p"/subjects"}
-              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600 dark:text-gray-400 dark:hover:text-white"
             >
               <svg
                 aria-hidden="true"
@@ -123,7 +123,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
               </svg>
               <a
                 href={~p"/subjects/#{@subject.id}/topics"}
-                class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+                class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
               >
                 <%= @subject.name %>
               </a>
@@ -147,7 +147,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
               </svg>
               <a
                 href={~p"/subjects/#{@subject.id}/topics/#{@topic.id}"}
-                class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+                class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
               >
                 <%= @topic.name %>
               </a>
@@ -158,7 +158,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
       <button
         type="submit"
         phx-click="search"
-        class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        class="float-right p-2.5 ml-2 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <svg
           class="w-5 h-5"
@@ -192,7 +192,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
     <a
       phx-click="reset-subject"
       href="#"
-      class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+      class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900"
     >
       Review
     </a>
@@ -205,7 +205,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
       <button
         :if={!@is_known}
         phx-click="understood"
-        class="mb-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        class="mb-5 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         Understood
       </button>

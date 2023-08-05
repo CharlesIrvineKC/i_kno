@@ -30,7 +30,7 @@ defmodule IKnoWeb.TopicLive.Search do
         <li class="inline-flex items-center">
           <a
             href={~p"/subjects"}
-            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600 dark:text-gray-400 dark:hover:text-white"
           >
             <svg
               aria-hidden="true"
@@ -63,7 +63,7 @@ defmodule IKnoWeb.TopicLive.Search do
             </svg>
             <a
               href={~p"/subjects/#{@subject.id}/topics"}
-              class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+              class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
             >
               <%= @subject.name %>
             </a>
@@ -121,14 +121,14 @@ defmodule IKnoWeb.TopicLive.Search do
           id="topic-search"
           name="topic-search"
           autofocus
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
           placeholder="Topic Search"
           required
         />
       </div>
       <button
         type="submit"
-        class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        class="p-2.5 ml-2 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <svg
           class="w-5 h-5"
@@ -154,7 +154,7 @@ defmodule IKnoWeb.TopicLive.Search do
   def render_search_item(assigns) do
     ~H"""
     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        <%= @topic.name %>
+      <%= @topic.name %>
     </h5>
     <p class="text-black dark:text-gray-400">
       <section class="markdown">
@@ -166,7 +166,7 @@ defmodule IKnoWeb.TopicLive.Search do
         type="button"
         phx-click="view"
         phx-value-topic-id={@topic.id}
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
       >
         View
       </button>
@@ -174,7 +174,7 @@ defmodule IKnoWeb.TopicLive.Search do
         type="button"
         phx-click="learn"
         phx-value-topic-id={@topic.id}
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
       >
         Learn
       </button>
