@@ -142,7 +142,7 @@ defmodule IKnoWeb.TopicLive.Topics do
           <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
             <a
               href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}"}
-              class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-green-600'} dark:text-green-500 hover:underline"}
+              class={"font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
             >
               <%= topic.name %>
             </a>
