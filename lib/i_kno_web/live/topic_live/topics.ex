@@ -165,7 +165,6 @@ defmodule IKnoWeb.TopicLive.Topics do
       </button>
       <button
         type="button"
-        data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href={~p"/subjects/#{@subject.id}/learn"}>Learn</a>
@@ -178,78 +177,6 @@ defmodule IKnoWeb.TopicLive.Topics do
       >
         <a href="#">Reset Subject</a>
       </button>
-    </div>
-    """
-  end
-
-  def render_progress_buttons(assigns) do
-    ~H"""
-    <div class="mt-4">
-      <button
-        type="button"
-        data-popover-target="popover-learn"
-        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        <a href={~p"/subjects/#{@subject.id}/test"}>Test</a>
-      </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
-      <button
-        type="button"
-        phx-click="retest-incorrect"
-        data-popover-target="popover-learn"
-        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Re-test Incorrect
-      </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
-      <button
-        type="button"
-        phx-click="retest-all"
-        data-popover-target="popover-learn"
-        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Re-test All
-      </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
     </div>
     """
   end
