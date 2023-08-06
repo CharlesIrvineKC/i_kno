@@ -66,7 +66,7 @@ defmodule IKnoWeb.Components.TestingProgress do
   def render(assigns) do
     ~H"""
     <div>
-      <div :if={@user_id}>
+      <div :if={@user_id && @total > 0}>
         <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
         <div class="border rounded border-grey-900 p-3">
           <ul class="max-w-md space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
