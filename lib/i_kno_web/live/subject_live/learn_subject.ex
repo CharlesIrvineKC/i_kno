@@ -4,7 +4,6 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
   alias IKno.Knowledge
   alias IKno.Accounts
 
-  alias IKnoWeb.Components.PrereqEditor
   alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
 
@@ -266,9 +265,6 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
         user_id={@user.id}
       />
       <.render_buttons is_known={@is_known} is_admin={@is_admin} />
-      <%= if @is_admin do %>
-        <.live_component module={PrereqEditor} id={:prereq_editor} topic={@topic} subject={@subject} />
-      <% end %>
     <% end %>
     """
   end

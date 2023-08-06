@@ -391,7 +391,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
 
   def render_admin_panels(assigns) do
     ~H"""
-    <div class="mt-5" id="accordion-collapse" data-accordion="open">
+    <div class="mt-5 mb-16" id="accordion-collapse" data-accordion="open">
       <h2 id="preq-heading">
         <button
           type="button"

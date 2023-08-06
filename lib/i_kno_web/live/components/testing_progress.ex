@@ -78,7 +78,7 @@ defmodule IKnoWeb.Components.TestingProgress do
             </li>
           </ul>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
+        <div :if={@total > 0} class="w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
           <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
                style={"width: #{percent_tested(@total, @num_correct)}%"}></div>
         </div>
