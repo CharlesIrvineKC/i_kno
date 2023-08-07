@@ -214,9 +214,7 @@ defmodule IKno.Knowledge do
   end
 
   def reset_learn_subject_progress(subject_id, user_id) do
-    query = "delete from topic_records
-             where topic_id in (select id from topics where subject_id = $1)
-             and user_id = $2"
+    query = "delete from topic_records where subject_id = $1 and user_id = $2"
     SQL.query(Repo, query, [subject_id, user_id])
   end
 
@@ -271,9 +269,9 @@ defmodule IKno.Knowledge do
     Repo.all(query)
   end
 
-  def get_learning_progress(subject_id) do
+  def get_learning_progress(subject_id, user_id) do
     query = "
-    select t.id, tr.id
+    select t.id, tr.id, tr.user_id
     from topics t
     left join topic_records tr
     on t.id = tr.topic_id
@@ -281,9 +279,11 @@ defmodule IKno.Knowledge do
     "
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id])
 
-    num_learned = length(Enum.filter(rows, fn [_id, known_record_id] -> known_record_id != nil end))
+    num_learned =
+      length(Enum.filter(rows, fn [_id, known_record_id, known_user_id] -> known_user_id == user_id end))
     num_topics = length(rows)
-    if num_topics > 0, do: round((num_learned / num_topics) * 100)
+
+    if num_topics > 0, do: round(num_learned / num_topics * 100)
   end
 
   def get_subject!(id), do: Repo.get!(Subject, id)
@@ -832,7 +832,7 @@ defmodule IKno.Knowledge do
   end
 
   def delete_question_statuses(status_ids) do
-    from(s in UserQuestionStatus, where: s.id in ^status_ids ) |> Repo.delete_all()
+    from(s in UserQuestionStatus, where: s.id in ^status_ids) |> Repo.delete_all()
   end
 
   @doc """

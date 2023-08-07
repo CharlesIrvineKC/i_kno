@@ -81,14 +81,13 @@ defmodule IKnoWeb.TopicLive.TestTopic do
     {:noreply, socket}
   end
 
+  def handle_event("stop-testing", _, socket) do
+    {:noreply,
+     redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{socket.assigns.testing_topic}")}
+  end
+
   def handle_event("submit-mc-answers", params, socket) do
-    %{
-      answers: answers,
-      unanswered_question: question,
-      user: user,
-      subject: subject,
-      testing_topic: testing_topic
-    } = socket.assigns
+    answers = socket.assigns.answers
 
     passed? =
       answers
@@ -97,34 +96,29 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
     status = if passed?, do: :passed, else: :failed
 
-    process_event(status, question, user, subject, testing_topic, socket)
+    process_event(status, socket)
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
-    %{
-      unanswered_question: question,
-      user: user,
-      subject: subject,
-      testing_topic: testing_topic
-    } =
-      socket.assigns
+    question = socket.assigns.question
 
     true? = String.to_atom(true?)
     status = if true? == question.is_correct, do: :passed, else: :failed
 
-    process_event(status, question, user, subject, testing_topic, socket)
+    process_event(status, socket)
   end
 
-  def process_event(status, question, user, subject, testing_topic, socket) do
+  def process_event(status, socket) do
     Knowledge.create_user_question_status(%{
       status: status,
-      question_id: question.id,
-      user_id: user.id,
-      topic_id: question.topic_id,
-      subject_id: subject.id
+      question_id: socket.assigns.unanswered_question.id,
+      user_id: socket.assigns.user.id,
+      topic_id: socket.assigns.unanswered_question.topic_id,
+      subject_id: socket.assigns.subject.id
     })
 
-    question = Knowledge.get_unanswered_topic_question(testing_topic.id, user.id)
+    question =
+      Knowledge.get_unanswered_topic_question(socket.assigns.testing_topic.id, socket.assigns.user.id)
 
     if question do
       answers =
@@ -142,7 +136,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
 
       {:noreply, socket}
     else
-      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject_id}/topics")}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics")}
     end
   end
 

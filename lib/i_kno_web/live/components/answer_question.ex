@@ -26,6 +26,24 @@ defmodule IKnoWeb.AnswerQuestion do
     """
   end
 
+  def render_question_buttons(assigns) do
+    ~H"""
+    <button
+      type="submit"
+      class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >
+      Submit
+    </button>
+    <button
+      type="button"
+      phx-click="stop-testing"
+      class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >
+      Stop Testing
+    </button>
+    """
+  end
+
   def render_multiple_choice(assigns) do
     ~H"""
     <form phx-submit="submit-mc-answers">
@@ -53,18 +71,7 @@ defmodule IKnoWeb.AnswerQuestion do
           </div>
         </div>
       </div>
-      <button
-        type="submit"
-        class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Submit
-      </button>
-      <button
-        type="button"
-        class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Stop Testing
-      </button>
+      <.render_question_buttons />
     </form>
     """
   end
@@ -103,18 +110,7 @@ defmodule IKnoWeb.AnswerQuestion do
           </label>
         </div>
       </div>
-      <button
-        type="submit"
-        class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Submit
-      </button>
-      <button
-        type="button"
-        class="mt-3 px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Stop Testing
-      </button>
+      <.render_question_buttons />
     </form>
     """
   end
