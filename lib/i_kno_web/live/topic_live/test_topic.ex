@@ -100,7 +100,7 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   end
 
   def handle_event("submit-tf-answer", %{"true?" => true?}, socket) do
-    question = socket.assigns.question
+    question = socket.assigns.unanswered_question
 
     true? = String.to_atom(true?)
     status = if true? == question.is_correct, do: :passed, else: :failed

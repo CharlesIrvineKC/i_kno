@@ -73,7 +73,7 @@ defmodule IKnoWeb.SubjectLive.LearnSubject do
          prereqs: prereqs
        )}
     else
-      {:noreply, assign(socket, topic: nil, prereqs: [])}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}")}
     end
   end
 

@@ -172,8 +172,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       data-popover
       id="topics-popover"
       role="tooltip"
-      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-    >
+      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
       <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
         <h3 class="font-semibold text-gray-900 dark:text-white">List of topics</h3>
       </div>
@@ -194,8 +193,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       data-popover
       id="learn-popover"
       role="tooltip"
-      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-    >
+      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
       <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
         <h3 class="font-semibold text-gray-900 dark:text-white">Learn this subject</h3>
       </div>
@@ -441,7 +439,12 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     <%= if @is_super_user do %>
       <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
-    <.render_buttons subject={@subject} is_admin={@is_admin} is_superuser={@is_super_user} />
+    <.render_buttons
+      subject={@subject}
+      is_admin={@is_admin}
+      learning_progress={@learning_progress}
+      is_superuser={@is_super_user}
+    />
     <.live_component
       module={TestingProgress}
       id={:subject_progress}
