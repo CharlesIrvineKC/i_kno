@@ -286,8 +286,6 @@ defmodule IKno.Knowledge do
       length(Enum.filter(rows, fn [topic_id, known_topic_id] -> topic_id == known_topic_id end))
     num_topics = length(rows)
 
-    IO.inspect([rows, num_learned, num_topics])
-
     if num_topics > 0, do: round(num_learned / num_topics * 100)
   end
 
