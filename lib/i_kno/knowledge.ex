@@ -542,13 +542,9 @@ defmodule IKno.Knowledge do
 
   def get_unanswered_question(subject_id, user_id) do
     query = "
-      select q.id, q.question, q.type, q.is_correct, q.topic_id
-      from questions q
-      left join user_question_statuses s
-      on q.id = s.question_id
-      join topic_records tr
-      on q.topic_id = tr.topic_id
-      where (s.user_id <> $2 or s.user_id is null)
+      select q.id, q.question, q.type, q.is_correct, q.topic_id from questions q
+      where q.id not in (select s.question_id from user_question_statuses s where s.user_id = $2)
+      and q.topic_id in (select tr.topic_id from topic_records tr where tr.user_id = $2)
       and q.subject_id = $1
       order by random()
       limit 1"
