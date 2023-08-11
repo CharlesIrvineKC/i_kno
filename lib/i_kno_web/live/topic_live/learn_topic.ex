@@ -206,11 +206,18 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
     <h1 class="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Congradulations!
     </h1>
-    <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-      You should now have a good understanding of the topic <i><b><%= @learning_topic.name %></b></i>. Click the
-      <strong>Review</strong>
-      button below if you would like to review this topic again.
-    </p>
+    <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+      You should now have a good understanding of the topic <i><b><%= @learning_topic.name %></b></i>.
+    </h2>
+    <ul class="mb-6 space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
+      <li>
+        Click the <strong>Review</strong> button below if you would like to review this topic again.
+      </li>
+      <li>
+        Click the <strong>Test</strong>
+        button if you would like to test your understanding by answering some questions.
+      </li>
+    </ul>
     <a
       phx-click="reset-progress"
       href="#"
