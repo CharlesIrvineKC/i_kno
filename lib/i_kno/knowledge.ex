@@ -648,7 +648,7 @@ defmodule IKno.Knowledge do
   end
 
   def list_answers(question_id) do
-    query = from Answer, where: [question_id: ^question_id]
+    query = from a in Answer, order_by: a.id, where: [question_id: ^question_id]
     Repo.all(query)
   end
 
