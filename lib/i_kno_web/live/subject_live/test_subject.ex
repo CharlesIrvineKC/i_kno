@@ -40,7 +40,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
   end
 
   def handle_event("stop-testing", _, socket) do
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}")}
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics")}
   end
 
   def handle_event("submit-mc-answers", params, socket) do
@@ -69,7 +69,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
       socket = assign(socket, question: question, answers: answers)
       {:noreply, socket}
     else
-      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}")}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics")}
     end
   end
 
