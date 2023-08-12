@@ -3,7 +3,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   alias IKno.Knowledge
   alias IKno.Accounts
-  alias IKnoWeb.Components.TestingProgress
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     user_token = Map.get(session, "user_token")
@@ -84,6 +83,13 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/search")}
   end
 
+  def handle_event("learn", _, socket) do
+    if socket.assigns.learning_progress == 100 do
+      Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
+    end
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/learn")}
+  end
+
   def render_searchbox(assigns) do
     ~H"""
     <button
@@ -162,32 +168,17 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
   def render_buttons(assigns) do
     ~H"""
     <button
-      data-popover-target="topics-popover"
       type="button"
       class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
       <a href={~p"/subjects/#{@subject.id}/topics"}>Topics</a>
     </button>
-    <div
-      data-popover
-      id="topics-popover"
-      role="tooltip"
-      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
-      <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-        <h3 class="font-semibold text-gray-900 dark:text-white">List of topics</h3>
-      </div>
-      <div class="px-3 py-2">
-        <p>Press this button and IKno display all of the topics in this subject.</p>
-      </div>
-      <div data-popper-arrow></div>
-    </div>
-
     <button
-      data-popover-target="learn-popover"
       type="button"
+      phx-click="learn"
       class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
-      <a href={~p"/subjects/#{@subject.id}/learn"}>Learn</a>
+      <%= if @learning_progress < 100, do: "Learn", else: "Review" %>
     </button>
     <div
       data-popover
@@ -444,13 +435,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       is_admin={@is_admin}
       learning_progress={@learning_progress}
       is_superuser={@is_super_user}
-    />
-    <.live_component
-      module={TestingProgress}
-      id={:subject_progress}
-      is_admin={@is_admin}
-      subject={@subject}
-      user_id={@user_id}
     />
     """
   end

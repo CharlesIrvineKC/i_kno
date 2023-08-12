@@ -21,6 +21,7 @@ defmodule IKnoWeb.TopicLive.Topics do
       end
 
     subject = Knowledge.get_subject!(subject_id)
+    learning_progress = Knowledge.get_learning_progress(subject_id, user_id)
 
     socket =
       assign(socket,
@@ -28,6 +29,7 @@ defmodule IKnoWeb.TopicLive.Topics do
         subject: subject,
         user_id: user_id,
         is_admin: is_admin,
+        learning_progress: learning_progress,
         page_title: subject.name <> " Topics"
       )
 
@@ -39,6 +41,13 @@ defmodule IKnoWeb.TopicLive.Topics do
     topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user_id)
     socket = assign(socket, topics: topics)
     {:noreply, socket}
+  end
+
+  def handle_event("learn", _, socket) do
+    if socket.assigns.learning_progress == 100 do
+      Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
+    end
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/learn")}
   end
 
   def handle_event("delete", %{"topic-id" => topic_id}, socket) do
@@ -165,17 +174,10 @@ defmodule IKnoWeb.TopicLive.Topics do
       </button>
       <button
         type="button"
+        phx-click="learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <a href={~p"/subjects/#{@subject.id}/learn"}>Learn</a>
-      </button>
-      <button
-        :if={@user_id}
-        type="button"
-        phx-click="reset-subject"
-        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        <a href="#">Reset Subject</a>
+        <%= if @learning_progress < 100, do: "Learn", else: "Review" %>
       </button>
     </div>
     """
@@ -188,7 +190,15 @@ defmodule IKnoWeb.TopicLive.Topics do
       <.render_searchbox />
     </div>
     <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} />
-    <.render_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} />
+    <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
+      <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500" style={"width: #{@learning_progress}%"}>
+      </div>
+    </div>
+    <.render_buttons
+      is_admin={@is_admin}
+      subject={@subject}
+      user_id={@user_id}
+      learning_progress={@learning_progress}/>
     <.live_component
       module={TestingProgress}
       id={:topics_progress}
