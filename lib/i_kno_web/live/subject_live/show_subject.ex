@@ -19,7 +19,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
-    learning_progress = Knowledge.get_learning_progress(subject_id, user.id)
 
     is_admin =
       if user do
@@ -40,7 +39,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         is_super_user: is_super_user,
         edit_admins: edit_admins,
         display_message: false,
-        learning_progress: learning_progress,
         message: ""
       )
 
@@ -81,13 +79,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
 
   def handle_event("search", _, socket) do
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/search")}
-  end
-
-  def handle_event("learn", _, socket) do
-    if socket.assigns.learning_progress == 100 do
-      Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
-    end
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/learn")}
   end
 
   def render_searchbox(assigns) do
@@ -173,29 +164,6 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     >
       <a href={~p"/subjects/#{@subject.id}/topics"}>Topics</a>
     </button>
-    <button
-      type="button"
-      phx-click="learn"
-      class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-    >
-      <%= if @learning_progress < 100, do: "Learn", else: "Review" %>
-    </button>
-    <div
-      data-popover
-      id="learn-popover"
-      role="tooltip"
-      class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
-      <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-        <h3 class="font-semibold text-gray-900 dark:text-white">Learn this subject</h3>
-      </div>
-      <div class="px-3 py-2">
-        <p>
-          Press this button and IKno will start presenting topics in an optimal oder, depending on what you already know.
-          <strong>Requires login.</strong>
-        </p>
-      </div>
-      <div data-popper-arrow></div>
-    </div>
     <button
       :if={@is_admin}
       type="button"
@@ -423,17 +391,12 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       <.render_searchbox />
     </div>
     <.render_subject subject={@subject} />
-    <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
-      <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500" style={"width: #{@learning_progress}%"}>
-      </div>
-    </div>
     <%= if @is_super_user do %>
       <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
     <.render_buttons
       subject={@subject}
       is_admin={@is_admin}
-      learning_progress={@learning_progress}
       is_superuser={@is_super_user}
     />
     """
