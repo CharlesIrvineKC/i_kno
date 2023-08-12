@@ -143,8 +143,6 @@ defmodule IKno.Knowledge do
     if length(result.rows) == 1 do
       Enum.map(result.rows, &hd(&1))
       hd(hd(result.rows))
-    else
-      nil
     end
   end
 
@@ -210,7 +208,7 @@ defmodule IKno.Knowledge do
 
     {:ok, result} = SQL.query(Repo, query, [subject_id, user_id])
 
-    if result.rows != [], do: hd(hd(result.rows)), else: nil
+    if result.rows != [], do: hd(hd(result.rows))
   end
 
   def reset_learn_subject_progress(subject_id, user_id) do

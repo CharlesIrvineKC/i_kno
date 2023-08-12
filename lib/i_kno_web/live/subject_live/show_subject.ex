@@ -12,20 +12,13 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       if user_token do
         user = Accounts.get_user_by_session_token(user_token)
         user.id == 2
-      else
-        false
       end
 
     subject_id = String.to_integer(subject_id)
     subject = Knowledge.get_subject!(subject_id)
     admins = Accounts.get_admins(subject_id)
 
-    is_admin =
-      if user do
-        Enum.any?(admins, fn admin -> elem(admin, 1) == user.id end)
-      else
-        false
-      end
+    is_admin = if user, do: Enum.any?(admins, fn admin -> elem(admin, 1) == user.id end)
 
     edit_admins = false
 
