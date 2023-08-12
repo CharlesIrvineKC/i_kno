@@ -10,7 +10,10 @@ defmodule IKnoWeb.Components.TestingProgress do
   def update(assigns, socket) do
     socket = assign(socket, assigns)
     test_progress = Knowledge.get_test_progress(socket.assigns.subject.id, socket.assigns.user_id)
+    IO.inspect(test_progress)
     {total, num_answered, num_correct} = get_test_summary(test_progress)
+
+    IO.inspect([total, num_answered, num_correct])
 
     socket =
       assign(socket,
@@ -60,14 +63,14 @@ defmodule IKnoWeb.Components.TestingProgress do
   end
 
   def percent_tested(total, num_correct) do
-    round((num_correct / total) * 100)
+    round(num_correct / total * 100)
   end
 
   def render(assigns) do
     ~H"""
     <div>
       <div :if={@user_id && @total > 0}>
-        <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
+        <!-- h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
         <div class="border rounded border-grey-900 p-3">
           <ul class="max-w-md space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
             <li>
@@ -77,12 +80,22 @@ defmodule IKnoWeb.Components.TestingProgress do
               <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
             </li>
           </ul>
+        </div -->
+        <div class="mt-20 w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
+          <div
+            class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
+            style={"width: #{percent_tested(@total, @num_correct)}%"}
+          >
+          </div>
         </div>
-        <div :if={@total > 0} class="w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
-          <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
-               style={"width: #{percent_tested(@total, @num_correct)}%"}></div>
-        </div>
-        <.render_progress_buttons is_admin={@is_admin} subject={@subject} user_id={@user_id} myself={@myself} />
+        <.render_progress_buttons
+          is_admin={@is_admin}
+          subject={@subject}
+          user_id={@user_id}
+          myself={@myself}
+          total={@total}
+          num_answered={@num_answered}
+          num_correct={@num_correct} />
       </div>
     </div>
     """
@@ -92,72 +105,30 @@ defmodule IKnoWeb.Components.TestingProgress do
     ~H"""
     <div class="mt-4">
       <button
+        :if={@num_answered < @total}
         type="button"
-        data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
         <a href={~p"/subjects/#{@subject.id}/test"}>Test</a>
       </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
       <button
+        :if={@num_correct < @num_answered}
         type="button"
         phx-click="retest-incorrect"
         phx-target={@myself}
-        data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        Re-test Incorrect
+        Retest Incorrect
       </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
       <button
+        :if={@num_answered > 0}
         type="button"
         phx-click="retest-all"
         phx-target={@myself}
-        data-popover-target="popover-learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        Re-test All
+        Retest
       </button>
-      <div
-        data-popover
-        id="popover-learn"
-        role="tooltip"
-        class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity transition-opacity duration-5000 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
-      >
-        <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Test Subject</h3>
-        </div>
-        <div class="px-3 py-2">
-          <p>Let IKno test you on your knowledge of this subject. <strong>Requires login.</strong></p>
-        </div>
-        <div data-popper-arrow></div>
-      </div>
     </div>
     """
   end
