@@ -271,13 +271,10 @@ defmodule IKno.Knowledge do
 
   def get_learning_progress(subject_id, user_id) do
     query = "
-    with tr as (
-      select topic_id from topic_records where user_id = $2
-    )
     select t.id, tr.topic_id
     from topics t
-    left join tr
-    on t.id = tr.topic_id
+    left join topic_records tr
+    on t.id = tr.topic_id and tr.user_id = $2
     where t.subject_id = $1
     "
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, user_id])
@@ -769,9 +766,8 @@ defmodule IKno.Knowledge do
     select q.id, q.topic_id, s.status, s.id
     from questions q
     left join user_question_statuses s
-    on q.id = s.question_id
-    where (s.user_id = $2 or s.user_id is null)
-    and q.subject_id = $1
+    on q.id = s.question_id and (s.user_id = $2 or s.user_id is null)
+    where q.subject_id = $1
     "
 
     {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [subject_id, user_id])
