@@ -16,7 +16,11 @@ defmodule IKnoWeb.AnswerQuestion do
   def render(assigns) do
     ~H"""
     <div>
-      <h3 class="mb-2 text-3xl font-bold dark:text-white"><%= @topic.name %></h3>
+      <h3 class="mb-2 text-3xl font-bold dark:text-white">
+        <a href={~p"/subjects/#{@subject.id}/topics/#{@topic.id}"}>
+          <%= @topic.name %>
+        </a>
+      </h3>
       <%= if @question.type == "multiple_choice" do %>
         <.render_multiple_choice question={@question} answers={@answers} />
       <% else %>
