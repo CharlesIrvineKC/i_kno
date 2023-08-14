@@ -94,7 +94,7 @@ defmodule IKnoWeb.SubjectLive.TestSubject do
       socket = assign(socket, question: question, answers: answers)
       {:noreply, socket}
     else
-      {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}")}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}/topics")}
     end
   end
 
