@@ -10,10 +10,7 @@ defmodule IKnoWeb.Components.TestingProgress do
   def update(assigns, socket) do
     socket = assign(socket, assigns)
     test_progress = Knowledge.get_test_progress(socket.assigns.subject.id, socket.assigns.user_id)
-    IO.inspect(test_progress)
     {total, num_answered, num_correct} = get_test_summary(test_progress)
-
-    IO.inspect([total, num_answered, num_correct])
 
     socket =
       assign(socket,
