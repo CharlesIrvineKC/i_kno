@@ -92,6 +92,7 @@ defmodule IKnoWeb.Components.TestingProgress do
           myself={@myself}
           total={@total}
           num_answered={@num_answered}
+          questions_available={@questions_available}
           num_correct={@num_correct} />
       </div>
     </div>
@@ -102,7 +103,7 @@ defmodule IKnoWeb.Components.TestingProgress do
     ~H"""
     <div class="mt-4">
       <button
-        :if={@num_answered < @total}
+        :if={@num_answered < @total && @questions_available}
         type="button"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >

@@ -22,6 +22,7 @@ defmodule IKnoWeb.TopicLive.Topics do
 
     subject = Knowledge.get_subject!(subject_id)
     learning_progress = Knowledge.get_learning_progress(subject_id, user_id)
+    questions_available = Knowledge.get_unanswered_question(subject.id, user_id)
 
     socket =
       assign(socket,
@@ -30,6 +31,7 @@ defmodule IKnoWeb.TopicLive.Topics do
         user_id: user_id,
         is_admin: is_admin,
         learning_progress: learning_progress,
+        questions_available: questions_available,
         page_title: subject.name <> " Topics"
       )
 
@@ -202,6 +204,7 @@ defmodule IKnoWeb.TopicLive.Topics do
     <.live_component
       module={TestingProgress}
       id={:topics_progress}
+      questions_available={@questions_available}
       is_admin={@is_admin}
       subject={@subject}
       user_id={@user_id}
