@@ -15,16 +15,16 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
 
     user_token = Map.get(session, "user_token")
 
-    {user_id, is_admin, is_known} =
+    {user_id, is_admin, is_known, unanswered_question} =
       if user_token do
         user = Accounts.get_user_by_session_token(user_token)
         user_id = user.id
         is_admin = Accounts.is_admin(subject_id, user.id)
         is_known = Knowledge.get_known(topic.id, user.id)
-        _is_tested = Knowledge.is_tested(topic.id, user.id)
-        {user_id, is_admin, is_known}
+        unanswered_question = Knowledge.get_unanswered_topic_question(topic.id, user.id)
+        {user_id, is_admin, is_known, unanswered_question}
       else
-        {nil, false, false}
+        {nil, false, false, false}
       end
 
     subject = Knowledge.get_subject!(subject_id)
@@ -40,6 +40,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         is_known: is_known,
         prereqs: prereqs,
         mode: :show,
+        unanswered_question: unanswered_question,
         page_title: topic.name
       )
 
@@ -216,6 +217,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
         <div data-popper-arrow></div>
       </div>
       <button
+        :if={@unanswered_question}
         data-popover-target="popover-learn"
         class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
@@ -476,7 +478,12 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
           user_id={@user_id}
         />
       <% end %>
-      <.render_buttons is_known={@is_known} is_admin={@is_admin} user_id={@user_id} topic={@topic} />
+      <.render_buttons
+        is_known={@is_known}
+        is_admin={@is_admin}
+        user_id={@user_id}
+        topic={@topic}
+        unanswered_question={@unanswered_question} />
       <%= if @is_admin do %>
         <.render_admin_panels topic={@topic} subject={@subject} />
       <% end %>
