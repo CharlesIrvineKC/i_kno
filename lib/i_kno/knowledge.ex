@@ -828,6 +828,14 @@ defmodule IKno.Knowledge do
     from(s in UserQuestionStatus, where: s.id in ^status_ids) |> Repo.delete_all()
   end
 
+  def delete_question_statuses(subject_id, user_id) do
+    query = "
+      delete from user_question_statuses s
+      where s.subject_id = $1 and s.user_id = $2
+    "
+    {:ok, _result} = SQL.query(Repo, query, [subject_id, user_id])
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user_question_status changes.
 

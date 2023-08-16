@@ -39,16 +39,19 @@ defmodule IKnoWeb.TopicLive.Topics do
   end
 
   def handle_event("reset-subject", _, socket) do
-    Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
-    topics = Knowledge.list_subject_topics(socket.assigns.subject.id, socket.assigns.user_id)
-    socket = assign(socket, topics: topics)
-    {:noreply, socket}
+    subject = socket.assigns.subject
+    user_id = socket.assigns.user_id
+    Knowledge.reset_learn_subject_progress(subject.id, user_id)
+    Knowledge.delete_question_statuses(subject.id, user_id)
+
+    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics")}
   end
 
   def handle_event("learn", _, socket) do
     if socket.assigns.learning_progress == 100 do
       Knowledge.reset_learn_subject_progress(socket.assigns.subject.id, socket.assigns.user_id)
     end
+
     {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/learn")}
   end
 
@@ -168,6 +171,13 @@ defmodule IKnoWeb.TopicLive.Topics do
     ~H"""
     <div class="mt-4">
       <button
+        type="button"
+        phx-click="learn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
+        <%= if @learning_progress < 100, do: "Learn", else: "Review" %>
+      </button>
+      <button
         :if={@is_admin}
         type="button"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
@@ -175,11 +185,12 @@ defmodule IKnoWeb.TopicLive.Topics do
         <a href={~p"/subjects/#{@subject.id}/topics/new"}>New</a>
       </button>
       <button
+        :if={@is_admin}
+        phx-click="reset-subject"
         type="button"
-        phx-click="learn"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <%= if @learning_progress < 100, do: "Learn", else: "Review" %>
+        Reset Subject
       </button>
     </div>
     """
@@ -200,7 +211,8 @@ defmodule IKnoWeb.TopicLive.Topics do
       is_admin={@is_admin}
       subject={@subject}
       user_id={@user_id}
-      learning_progress={@learning_progress}/>
+      learning_progress={@learning_progress}
+    />
     <.live_component
       module={TestingProgress}
       id={:topics_progress}
