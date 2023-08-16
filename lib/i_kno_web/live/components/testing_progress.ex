@@ -67,18 +67,21 @@ defmodule IKnoWeb.Components.TestingProgress do
     ~H"""
     <div>
       <div :if={@user_id && @total > 0}>
-        <!-- h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
+        <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
         <div class="border rounded border-grey-900 p-3">
-          <ul class="max-w-md space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
+          <ul class="max-w space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
             <li>
               <%= "Questions Answered: #{@num_answered} of #{@total}" %>
             </li>
             <li>
               <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
             </li>
+            <li :if={!@questions_available}>
+              No questions currently available. You need to learn more topics.
+            </li>
           </ul>
-        </div -->
-        <div class="mt-20 w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
+        </div>
+        <div class="mt-16 w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
           <div
             class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
             style={"width: #{percent_tested(@total, @num_correct)}%"}
@@ -93,7 +96,8 @@ defmodule IKnoWeb.Components.TestingProgress do
           total={@total}
           num_answered={@num_answered}
           questions_available={@questions_available}
-          num_correct={@num_correct} />
+          num_correct={@num_correct}
+        />
       </div>
     </div>
     """
