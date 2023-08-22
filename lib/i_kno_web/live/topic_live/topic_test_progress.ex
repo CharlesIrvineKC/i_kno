@@ -1,11 +1,11 @@
-defmodule IKnoWeb.Components.TestingProgress do
+defmodule IKnoWeb.TopicLive.TopicTestProgress do
   use IKnoWeb, :live_component
 
   alias IKno.Knowledge
 
   def update(assigns, socket) do
     socket = assign(socket, assigns)
-    test_progress = Knowledge.get_test_progress(socket.assigns.subject.id, socket.assigns.user_id)
+    test_progress = Knowledge.get_topic_test_progress(socket.assigns.topic.id, socket.assigns.user_id)
     {total, num_answered, num_correct} = get_test_summary(test_progress)
 
     socket =
@@ -29,8 +29,13 @@ defmodule IKnoWeb.Components.TestingProgress do
     {t + 1, a + answered, c + correct}
   end
 
+  def percent_tested(total, num_correct) do
+    round(num_correct / total * 100)
+  end
+
   def handle_event("retest-all", _, socket) do
     test_progress = socket.assigns.test_progress
+    topic = socket.assigns.topic
 
     answered_questions =
       Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status != nil end)
@@ -39,11 +44,12 @@ defmodule IKnoWeb.Components.TestingProgress do
 
     Knowledge.delete_question_statuses(question_ids)
 
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
+    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/test")}
   end
 
   def handle_event("retest-incorrect", _, socket) do
     test_progress = socket.assigns.test_progress
+    topic = socket.assigns.topic
 
     incorrect_questions =
       Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status == "failed" end)
@@ -52,11 +58,7 @@ defmodule IKnoWeb.Components.TestingProgress do
 
     Knowledge.delete_question_statuses(question_ids)
 
-    {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/test")}
-  end
-
-  def percent_tested(total, num_correct) do
-    round(num_correct / total * 100)
+    {:noreply, redirect(socket, to: ~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/test")}
   end
 
   def render(assigns) do
@@ -86,7 +88,7 @@ defmodule IKnoWeb.Components.TestingProgress do
         </div>
         <.render_progress_buttons
           is_admin={@is_admin}
-          subject={@subject}
+          topic={@topic}
           user_id={@user_id}
           myself={@myself}
           total={@total}
@@ -107,7 +109,7 @@ defmodule IKnoWeb.Components.TestingProgress do
         type="button"
         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
       >
-        <a href={~p"/subjects/#{@subject.id}/test"}>Test</a>
+        <a href={~p"/subjects/#{@topic.subject_id}/topics/#{@topic.id}/test"}>Test</a>
       </button>
       <button
         :if={@num_correct < @num_answered}

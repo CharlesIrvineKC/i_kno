@@ -8,6 +8,7 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
   alias IKnoWeb.Components.QuestionEditor
   alias IKnoWeb.Components.TopicIssue
   alias IKnoWeb.Highlighter
+  alias IKnoWeb.TopicLive.TopicTestProgress
 
   def mount(%{"subject_id" => subject_id, "topic_id" => topic_id}, session, socket) do
     topic = Knowledge.get_topic!(String.to_integer(topic_id))
@@ -487,6 +488,14 @@ defmodule IKnoWeb.TopicLive.ShowTopic do
       <%= if @is_admin do %>
         <.render_admin_panels topic={@topic} subject={@subject} />
       <% end %>
+      <.live_component
+        module={TopicTestProgress}
+        id={:topic_test_progress}
+        questions_available={@unanswered_question}
+        is_admin={@is_admin}
+        topic={@topic}
+        user_id={@user_id}
+      />
     <% end %>
     """
   end

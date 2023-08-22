@@ -772,6 +772,28 @@ defmodule IKno.Knowledge do
     rows
   end
 
+  def get_topic_test_progress(topic_id, user_id) do
+    query = "
+    with recursive prereqs as
+      (select topic_id, prereq_id
+      from prereq_topics
+      where topic_id = $1
+      union values (0, #{topic_id})
+      union select p.topic_id, p.prereq_id
+      from prereq_topics p
+      inner join prereqs c on c.prereq_id = p.topic_id)
+    select q.id question_id, p.prereq_id, s.status, s.id
+    from prereqs p
+    left join questions q
+    on p.prereq_id = q.topic_id
+    left join user_question_statuses s
+    on q.id = s.question_id and (s.user_id = $2 or s.user_id is null)
+    "
+
+    {:ok, %Postgrex.Result{:rows => rows}} = SQL.query(Repo, query, [topic_id, user_id])
+    rows
+  end
+
   @doc """
   Creates a user_question_status.
 
@@ -785,9 +807,9 @@ defmodule IKno.Knowledge do
 
   """
   def create_user_question_status(attrs \\ %{}) do
-    %UserQuestionStatus{}
+    IO.inspect(%UserQuestionStatus{}
     |> UserQuestionStatus.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert())
   end
 
   @doc """

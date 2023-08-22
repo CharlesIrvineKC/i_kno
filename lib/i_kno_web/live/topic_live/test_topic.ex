@@ -109,16 +109,19 @@ defmodule IKnoWeb.TopicLive.TestTopic do
   end
 
   def process_event(status, socket) do
-    Knowledge.create_user_question_status(%{
-      status: status,
-      question_id: socket.assigns.unanswered_question.id,
-      user_id: socket.assigns.user.id,
-      topic_id: socket.assigns.unanswered_question.topic_id,
-      subject_id: socket.assigns.subject.id
-    })
+    {:ok, result} =
+      Knowledge.create_user_question_status(%{
+        status: status,
+        question_id: socket.assigns.unanswered_question.id,
+        user_id: socket.assigns.user.id,
+        topic_id: socket.assigns.unanswered_question.topic_id,
+        subject_id: socket.assigns.subject.id
+      })
 
     question =
-      Knowledge.get_unanswered_topic_question(socket.assigns.testing_topic.id, socket.assigns.user.id)
+      if result do
+        Knowledge.get_unanswered_topic_question(socket.assigns.testing_topic.id, socket.assigns.user.id)
+      end
 
     if question do
       answers =
