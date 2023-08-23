@@ -22,7 +22,7 @@ defmodule IKnoWeb.TopicLive.TopicTestingProgress do
   # returns {total, num_answered, num_correct}
   def get_test_summary([]), do: {0, 0, 0}
 
-  def get_test_summary([[_question_id, _topic_id, status, _] | rest]) do
+  def get_test_summary([[_question_id, status, _] | rest]) do
     answered = if status != nil, do: 1, else: 0
     correct = if status == "passed", do: 1, else: 0
     {t, a, c} = get_test_summary(rest)
@@ -38,9 +38,9 @@ defmodule IKnoWeb.TopicLive.TopicTestingProgress do
     topic = socket.assigns.topic
 
     answered_questions =
-      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status != nil end)
+      Enum.filter(test_progress, fn [_id, status, _status_id] -> status != nil end)
 
-    question_ids = Enum.map(answered_questions, fn q -> Enum.at(q, 3) end)
+    question_ids = Enum.map(answered_questions, fn q -> Enum.at(q, 2) end)
 
     Knowledge.delete_question_statuses(question_ids)
 
@@ -52,9 +52,9 @@ defmodule IKnoWeb.TopicLive.TopicTestingProgress do
     topic = socket.assigns.topic
 
     incorrect_questions =
-      Enum.filter(test_progress, fn [_id, _topic_id, status, _status_id] -> status == "failed" end)
+      Enum.filter(test_progress, fn [_id, status, _status_id] -> status == "failed" end)
 
-    question_ids = Enum.map(incorrect_questions, fn q -> Enum.at(q, 3) end)
+    question_ids = Enum.map(incorrect_questions, fn q -> Enum.at(q, 2) end)
 
     Knowledge.delete_question_statuses(question_ids)
 
@@ -74,7 +74,7 @@ defmodule IKnoWeb.TopicLive.TopicTestingProgress do
             <li>
               <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
             </li>
-            <li :if={!@questions_available}>
+            <li :if={!@questions_available && (@num_answered != @total)}>
               No questions currently available. You need to learn more topics.
             </li>
           </ul>

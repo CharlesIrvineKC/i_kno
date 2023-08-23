@@ -774,17 +774,17 @@ defmodule IKno.Knowledge do
 
   def get_topic_test_progress(topic_id, user_id) do
     query = "
-    with recursive prereqs as
-      (select prereq_id
+    with recursive prereqs as (
+      select prereq_id
       from prereq_topics
       where topic_id = $1
       union values (#{topic_id})
       union select p.prereq_id
       from prereq_topics p
       inner join prereqs c on c.prereq_id = p.topic_id)
-    select q.id question_id, p.prereq_id, s.status, s.id
+    select q.id question_id, s.status, s.id
     from prereqs p
-    left join questions q
+    join questions q
     on p.prereq_id = q.topic_id
     left join user_question_statuses s
     on q.id = s.question_id and (s.user_id = $2 or s.user_id is null)
