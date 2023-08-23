@@ -58,7 +58,8 @@ defmodule IKnoWeb.WelcomeLive do
           Information in IKno is organized into <b>subjects</b> and <b>topics</b>. A <b>subject</b> is composed of a set of <b>topics</b>.
         </p>
         <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
-          Importantly, IKno knows how topics depend on each other. Specifically, it knows the order in which topics should be presented 
+          IKno knows how topics depend on each other, allowing topics to presented in a sequence that
+          optimizes learning effectiveness.
         </p>
       </a>
       <a
