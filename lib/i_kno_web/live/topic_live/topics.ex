@@ -3,7 +3,7 @@ defmodule IKnoWeb.TopicLive.Topics do
 
   alias IKno.Knowledge
   alias IKno.Accounts
-  alias IKnoWeb.Components.TestingProgress
+  alias IKnoWeb.Components.SubjectTestingProgress
 
   def mount(%{"subject_id" => subject_id}, session, socket) do
     subject_id = String.to_integer(subject_id)
@@ -214,7 +214,7 @@ defmodule IKnoWeb.TopicLive.Topics do
       learning_progress={@learning_progress}
     />
     <.live_component
-      module={TestingProgress}
+      module={SubjectTestingProgress}
       id={:topics_progress}
       questions_available={@questions_available}
       is_admin={@is_admin}

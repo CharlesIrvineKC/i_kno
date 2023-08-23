@@ -1,4 +1,4 @@
-defmodule IKnoWeb.Components.TestingProgress do
+defmodule IKnoWeb.Components.SubjectTestingProgress do
   use IKnoWeb, :live_component
 
   alias IKno.Knowledge
