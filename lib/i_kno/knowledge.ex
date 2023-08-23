@@ -775,11 +775,11 @@ defmodule IKno.Knowledge do
   def get_topic_test_progress(topic_id, user_id) do
     query = "
     with recursive prereqs as
-      (select topic_id, prereq_id
+      (select prereq_id
       from prereq_topics
       where topic_id = $1
-      union values (0, #{topic_id})
-      union select p.topic_id, p.prereq_id
+      union values (#{topic_id})
+      union select p.prereq_id
       from prereq_topics p
       inner join prereqs c on c.prereq_id = p.topic_id)
     select q.id question_id, p.prereq_id, s.status, s.id
@@ -807,9 +807,9 @@ defmodule IKno.Knowledge do
 
   """
   def create_user_question_status(attrs \\ %{}) do
-    IO.inspect(%UserQuestionStatus{}
+    %UserQuestionStatus{}
     |> UserQuestionStatus.changeset(attrs)
-    |> Repo.insert())
+    |> Repo.insert()
   end
 
   @doc """
