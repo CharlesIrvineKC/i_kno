@@ -97,7 +97,7 @@ defmodule IKnoWeb.TopicLive.LearnTopic do
 
       {:noreply, assign(socket, unknown_topic: unknown_topic, visited_topics: visited_topics)}
     else
-      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics/#{learning_topic.id}")}
+      {:noreply, redirect(socket, to: ~p"/subjects/#{socket.assigns.subject.id}/topics")}
     end
   end
 
