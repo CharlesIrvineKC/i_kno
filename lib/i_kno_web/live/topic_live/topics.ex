@@ -173,14 +173,14 @@ defmodule IKnoWeb.TopicLive.Topics do
               Test
             </a>
             <a
-              :if={!Knowledge.is_known(topic.id, @user_id)}
+              :if={!topic.known}
               href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
               class={"float-right font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
             >
               Learn
             </a>
             <a
-              :if={Knowledge.is_known(topic.id, @user_id)}
+              :if={topic.known}
               phx-click="review-topic"
               phx-value-topic-id={topic.id}
               href="#"
@@ -231,8 +231,8 @@ defmodule IKnoWeb.TopicLive.Topics do
       <.render_searchbox />
     </div>
     <.render_topics subject={@subject} topics={@topics} is_admin={@is_admin} user_id={@user_id}/>
-    <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700">
-      <div class="bg-green-600 h-1.5 rounded-full dark:bg-green-500" style={"width: #{@learning_progress}%"}>
+    <div class="mt-2 w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
+      <div class="bg-green-600 h-2.5 rounded-full dark:bg-green-500" style={"width: #{@learning_progress}%"}>
       </div>
     </div>
     <.render_buttons

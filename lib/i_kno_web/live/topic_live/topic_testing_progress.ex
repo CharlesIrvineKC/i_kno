@@ -66,23 +66,15 @@ defmodule IKnoWeb.TopicLive.TopicTestingProgress do
     <div>
       <div :if={@user_id && @total > 0}>
         <h4 class="text-2xl  mt-10 mb-1 font-bold dark:text-white">Testing Progress</h4>
-        <div class="border rounded border-grey-900 p-3">
-          <ul class="max-w space-y-1 text-gray-800 list-disc list-inside dark:text-gray-400">
-            <li>
-              <%= "Questions Answered: #{@num_answered} of #{@total}" %>
-            </li>
-            <li>
-              <%= "Questions Answered Correctly: #{@num_correct} of #{@num_answered}" %>
-            </li>
-            <li :if={!@questions_available && (@num_answered != @total)}>
-              No questions currently available. You need to learn more topics.
-            </li>
-          </ul>
-        </div>
-        <div class="mt-16 w-full bg-gray-200 rounded-full h-1.5 mb-4 mt-4 dark:bg-gray-700">
+        <div class="flex flex-row mt-16 w-full bg-gray-200 h-2.5 mb-4 mt-4 dark:bg-gray-700">
           <div
-            class="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
+            class="bg-green-600 h-2.5 dark:bg-green-500"
             style={"width: #{percent_tested(@total, @num_correct)}%"}
+          >
+          </div>
+          <div
+            class="bg-red-600 h-2.5 dark:bg-green-500"
+            style={"width: #{percent_tested(@total, @num_answered - @num_correct)}%"}
           >
           </div>
         </div>
