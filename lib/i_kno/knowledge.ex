@@ -47,7 +47,7 @@ defmodule IKno.Knowledge do
 
   def list_subject_topics(subject_id, user_id) do
     query = "
-    select t.id, t.name, t.description, t.subject_id, t.is_task
+    select t.id, t.name, t.subject_id
     from topics t
     where t.subject_id = $1
     order by t.name"
