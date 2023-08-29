@@ -37,6 +37,8 @@ defmodule IKnoWeb.Router do
 
     live "/", WelcomeLive
 
+    live "/users", Users
+
     live "/subjects", SubjectLive.Subjects
     live "/subjects/:subject_id", SubjectLive.ShowSubject
 
