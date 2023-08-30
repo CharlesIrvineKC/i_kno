@@ -28,7 +28,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
         page_title: subject.name,
         is_admin: is_admin,
         admins: admins,
-        user_id: user.id,
+        user_id: (if user, do: user.id),
         is_super_user: is_super_user,
         edit_admins: edit_admins,
         display_message: false,

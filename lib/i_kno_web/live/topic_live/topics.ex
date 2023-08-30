@@ -166,28 +166,6 @@ defmodule IKnoWeb.TopicLive.Topics do
             >
               <%= topic.name %>
             </a>
-            <a
-              href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/test"}
-              class={"float-right mx-2 font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-            >
-              Test
-            </a>
-            <a
-              :if={!topic.known}
-              href={~p"/subjects/#{topic.subject_id}/topics/#{topic.id}/learn"}
-              class={"float-right font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-            >
-              Learn
-            </a>
-            <a
-              :if={topic.known}
-              phx-click="review-topic"
-              phx-value-topic-id={topic.id}
-              href="#"
-              class={"float-right font-medium #{if topic.known, do: 'text-lime-600', else: 'text-blue-600'} dark:text-blue-500 hover:underline"}
-            >
-              Review
-            </a>
           </li>
         <% end %>
       </ul>

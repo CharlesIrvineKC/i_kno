@@ -44,7 +44,10 @@ defmodule IKnoWeb.WelcomeLive do
           Or Register Later
         </h5>
         <p class="font-normal text-gray-700 dark:text-gray-400">
-          If you would prefer not to register just yet, you can still explore our subjects. Just press the button below.
+          If you would prefer not to register just yet, you can still explore our subjects. Just press the <b>List of Subjects</b> button below.
+        </p>
+        <p class="mt-2 font-normal text-gray-700 dark:text-gray-400">
+          However, you definitely won't <b>get it</b> until you register and sign in.
         </p>
       </a>
       <a
