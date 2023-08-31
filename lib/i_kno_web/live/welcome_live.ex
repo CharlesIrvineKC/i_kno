@@ -104,6 +104,9 @@ defmodule IKnoWeb.WelcomeLive do
         <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
           At the <b>topic</b> level, IKno will present only those questions required relevant to a selected topic.
         </p>
+        <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
+          <b>Note:</b> If the author of an IKno subject hasn't written any questions, testing mode won't be available or visible.
+        </p>
       </a>
       <a
         href="#"
@@ -116,7 +119,7 @@ defmodule IKnoWeb.WelcomeLive do
           Every effort has been made to make IKno as <b>simple as possible</b>, so you will likely be able to surmise, for the most part, how things work.
         </p>
         <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
-          However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the <b>List of Subjects</b> below and then clicking in the IKno subject.
+          However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the <b>List of Subjects</b> button below and then clicking in the IKno subject.
         </p>
       </a>
     </div>
