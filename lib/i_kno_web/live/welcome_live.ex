@@ -105,6 +105,20 @@ defmodule IKnoWeb.WelcomeLive do
           At the <b>topic</b> level, IKno will present only those questions required relevant to a selected topic.
         </p>
       </a>
+      <a
+        href="#"
+        class="mb-5 mr-5 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+      >
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          Using IKno
+        </h5>
+        <p class="font-normal text-gray-700 dark:text-gray-400">
+          Every effort has been made to make IKno as <b>simple as possible</b>, so you will likely be able to surmise, for the most part, how things work.
+        </p>
+        <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
+          However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the <b>List of Subjects</b> below and then clicking in the IKno subject.
+        </p>
+      </a>
     </div>
     <button
       phx-click="list-subjects"
