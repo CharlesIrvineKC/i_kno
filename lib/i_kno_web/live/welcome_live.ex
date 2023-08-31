@@ -64,6 +64,9 @@ defmodule IKnoWeb.WelcomeLive do
           IKno knows how topics depend on each other, allowing topics to presented in a sequence that
           optimizes learning effectiveness.
         </p>
+        <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
+          Currently, IKno subjects are incomplete and have been authored solely for the purpose of testing IKno. The most complete subject and one that will be expanded upon is <b>Business Process Management</b>. There is also a subject describing <b>IKno</b> itself that you may find of interest.
+        </p>
       </a>
       <a
         href="#"
