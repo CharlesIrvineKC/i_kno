@@ -281,7 +281,7 @@ defmodule IKno.Knowledge do
       length(Enum.filter(rows, fn [topic_id, known_topic_id] -> topic_id == known_topic_id end))
     num_topics = length(rows)
 
-    if num_topics > 0, do: round(num_learned / num_topics * 100)
+    if num_topics > 0, do: round(num_learned / num_topics * 100), else: 0
   end
 
   def get_subject!(id), do: Repo.get!(Subject, id)
