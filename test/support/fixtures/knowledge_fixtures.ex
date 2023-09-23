@@ -101,8 +101,7 @@ defmodule IKno.KnowledgeFixtures do
     {:ok, topic_record} =
       attrs
       |> Enum.into(%{
-        visit_status: "some visit_status",
-        test_status: "some test_status"
+        visit_status: "some visit_status"
       })
       |> IKno.Knowledge.create_topic_record()
 

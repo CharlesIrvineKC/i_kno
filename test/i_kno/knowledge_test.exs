@@ -344,7 +344,7 @@ defmodule IKno.KnowledgeTest do
 
     import IKno.KnowledgeFixtures
 
-    @invalid_attrs %{visit_status: nil, test_status: nil}
+    @invalid_attrs %{visit_status: nil}
 
     test "list_topic_records/0 returns all topic_records" do
       topic_record = topic_record_fixture()
@@ -357,11 +357,10 @@ defmodule IKno.KnowledgeTest do
     end
 
     test "create_topic_record/1 with valid data creates a topic_record" do
-      valid_attrs = %{visit_status: "some visit_status", test_status: "some test_status"}
+      valid_attrs = %{visit_status: "some visit_status"}
 
       assert {:ok, %TopicRecord{} = topic_record} = Knowledge.create_topic_record(valid_attrs)
       assert topic_record.visit_status == "some visit_status"
-      assert topic_record.test_status == "some test_status"
     end
 
     test "create_topic_record/1 with invalid data returns error changeset" do
@@ -370,11 +369,10 @@ defmodule IKno.KnowledgeTest do
 
     test "update_topic_record/2 with valid data updates the topic_record" do
       topic_record = topic_record_fixture()
-      update_attrs = %{visit_status: "some updated visit_status", test_status: "some updated test_status"}
+      update_attrs = %{visit_status: "some updated visit_status"}
 
       assert {:ok, %TopicRecord{} = topic_record} = Knowledge.update_topic_record(topic_record, update_attrs)
       assert topic_record.visit_status == "some updated visit_status"
-      assert topic_record.test_status == "some updated test_status"
     end
 
     test "update_topic_record/2 with invalid data returns error changeset" do
