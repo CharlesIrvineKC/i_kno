@@ -37,7 +37,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
   def render(assigns) do
     ~H"""
     <div>
-      <h2 class="mb-10 text-4xl font-extrabold dark:text-white">Learning</h2>
+      <h2 class="mb-10 text-4xl font-extrabold dark:text-white">Subjects</h2>
     </div>
     <div>
       <%= for subject <- @subjects do %>
