@@ -122,7 +122,7 @@ defmodule IKnoWeb.WelcomeLive do
           Every effort has been made to make IKno as <b>simple as possible</b>, so you will likely be able to surmise, for the most part, how things work.
         </p>
         <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
-          However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the <b>List of Subjects</b> button below and then clicking in the IKno subject.
+          However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the <b>Explore</b> button below and then clicking in the IKno subject.
         </p>
       </a>
     </div>
@@ -131,7 +131,7 @@ defmodule IKnoWeb.WelcomeLive do
       type="button"
       class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
     >
-      List of Subjects
+      Explore
     </button>
     """
   end

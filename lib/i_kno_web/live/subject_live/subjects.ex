@@ -6,6 +6,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
 
   def mount(_params, session, socket) do
     user_token = Map.get(session, "user_token")
+    user = if user_token, do: Accounts.get_user_by_session_token(user_token)
 
     is_super_user =
       if user_token do
@@ -18,7 +19,8 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     {:ok,
      assign(socket,
        is_super_user: is_super_user,
-       subjects: Knowledge.list_subjects(),
+       subjects: (if user, do: Knowledge.list_subjects_learning(user.id), else: []),
+       # subjects: Knowledge.list_subjects(),
        page_title: "IKno Subjects"
      )}
   end
@@ -36,7 +38,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
   def render(assigns) do
     ~H"""
     <div>
-      <h2 class="mb-10 text-4xl font-extrabold dark:text-white">IKno Subjects</h2>
+      <h2 class="mb-10 text-4xl font-extrabold dark:text-white">Learning</h2>
     </div>
     <div>
       <%= for subject <- @subjects do %>

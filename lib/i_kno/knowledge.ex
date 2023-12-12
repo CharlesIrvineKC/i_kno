@@ -267,6 +267,18 @@ defmodule IKno.Knowledge do
     Repo.all(query)
   end
 
+  def list_subjects_learning(user_id) do
+    query = "
+    select distinct s.id, s.name, s.summary
+    from topic_records tr
+    join subjects s
+    on s.id = tr.subject_id and tr.user_id = $1
+    "
+    {:ok, %Postgrex.Result{rows: rows, columns: columns}} = SQL.query(Repo, query, [user_id])
+    splice_rows_cols(rows, columns)
+
+  end
+
   def get_learning_progress(subject_id, user_id) do
     query = "
     select t.id, tr.topic_id
@@ -279,6 +291,7 @@ defmodule IKno.Knowledge do
 
     num_learned =
       length(Enum.filter(rows, fn [topic_id, known_topic_id] -> topic_id == known_topic_id end))
+
     num_topics = length(rows)
 
     if num_topics > 0, do: round(num_learned / num_topics * 100), else: 0
