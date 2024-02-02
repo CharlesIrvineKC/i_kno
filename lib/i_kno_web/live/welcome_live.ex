@@ -45,7 +45,7 @@ defmodule IKnoWeb.WelcomeLive do
         </h5>
         <p class="font-normal text-gray-700 dark:text-gray-400">
           If you would prefer not to register just yet, you can still explore our subjects. Just press the
-          <b>List of Subjects</b>
+          <b>Explore Subjects</b>
           button below.
         </p>
         <p class="mt-2 font-normal text-gray-700 dark:text-gray-400">
@@ -163,9 +163,9 @@ defmodule IKnoWeb.WelcomeLive do
     <button
       phx-click="list-subjects"
       type="button"
-      class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+      class="mb-14 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
     >
-      Explore
+      Explore Subjects
     </button>
     """
   end
