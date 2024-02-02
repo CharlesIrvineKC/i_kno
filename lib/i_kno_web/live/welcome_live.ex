@@ -107,7 +107,7 @@ defmodule IKnoWeb.WelcomeLive do
         </h5>
         <p class="font-normal text-gray-700 dark:text-gray-400">
           <b>Authoring mode</b>
-          is used by content authors to create and update subject content.
+          is used by content <b>authors</b> to create and update subject content.
         </p>
         <p class="mt-3 font-normal text-gray-700 dark:text-gray-400">
           One or more users can be configured as authors for a given subject. Subject authors own their content and can export it in MarkDown format at any time.
