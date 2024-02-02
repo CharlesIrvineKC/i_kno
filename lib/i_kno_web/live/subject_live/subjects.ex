@@ -18,7 +18,6 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     {:ok,
      assign(socket,
        is_super_user: is_super_user,
-       # subjects: (if user, do: Knowledge.list_subjects_learning(user.id), else: []),
        subjects: Knowledge.list_subjects(),
        page_title: "IKno Subjects"
      )}
