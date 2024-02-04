@@ -262,6 +262,12 @@ defmodule IKno.Knowledge do
 
   alias IKno.Knowledge.Subject
 
+  def is_admin(user_id, subject_id) do
+    query = "select user_id, subject_id from subject_admins admins where user_id = $1 and subject_id = $2"
+    {:ok, %Postgrex.Result{num_rows: num_rows}} = SQL.query(Repo, query, [user_id, subject_id])
+    num_rows > 0
+  end
+
   def list_subjects do
     query = from s in Subject, order_by: s.name
     Repo.all(query)

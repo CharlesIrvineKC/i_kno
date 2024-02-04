@@ -6,18 +6,14 @@ defmodule IKnoWeb.SubjectLive.Subjects do
 
   def mount(_params, session, socket) do
     user_token = Map.get(session, "user_token")
+    user = if user_token, do: Accounts.get_user_by_session_token(user_token)
 
-    is_super_user =
-      if user_token do
-        user = Accounts.get_user_by_session_token(user_token)
-        user.id == 2
-      else
-        false
-      end
+    is_super_user = if user, do: user.id == 2
 
     {:ok,
      assign(socket,
        is_super_user: is_super_user,
+       user: user,
        subjects: Knowledge.list_subjects(),
        page_title: "IKno Subjects"
      )}
@@ -40,11 +36,10 @@ defmodule IKnoWeb.SubjectLive.Subjects do
     </div>
     <div>
       <%= for subject <- @subjects do %>
-        <.render_subject subject={subject} is_super_user={@is_super_user} />
+        <.render_subject subject={subject} user={@user} is_super_user={@is_super_user} />
       <% end %>
     </div>
     <button
-      :if={@is_super_user}
       type="button"
       class="mt-12 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
     >
@@ -55,7 +50,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
 
   def render_subject(assigns) do
     ~H"""
-    <div :if={@is_super_user || @subject.is_published} class="border border-gray-300 rounded my-2 p-2">
+    <div :if={@is_super_user || @subject.is_published || Knowledge.is_admin(@user.id, @subject.id)} class="border border-gray-300 rounded my-2 p-2">
       <a href={~p"/subjects/#{@subject.id}"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
         <%= @subject.name %>
       </a>

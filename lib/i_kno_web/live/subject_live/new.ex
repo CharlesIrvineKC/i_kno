@@ -1,4 +1,5 @@
 defmodule IKnoWeb.SubjectLive.New do
+  alias IKno.Accounts
   use IKnoWeb, :live_view
 
   alias IKno.Knowledge
@@ -6,8 +7,10 @@ defmodule IKnoWeb.SubjectLive.New do
 
   on_mount {IKnoWeb.UserAuth, :ensure_authenticated}
 
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, subject: %Subject{})}
+  def mount(_params, session, socket) do
+    user_token = Map.get(session, "user_token")
+    user = if user_token, do: Accounts.get_user_by_session_token(user_token)
+    {:ok, assign(socket, subject: %Subject{}, user: user)}
   end
 
   def handle_event("cancel", _, socket) do
@@ -16,7 +19,8 @@ defmodule IKnoWeb.SubjectLive.New do
 
   def handle_event("save", subject_params, socket) do
     subject_params = Map.put(subject_params, "is_published", false)
-    {:ok, subject} = Knowledge.create_subject(subject_params)
+    {:ok, subject} = Knowledge.create_subject(IO.inspect(subject_params))
+    Accounts.create_subject_admin_by_email_id(subject.id, socket.assigns.user.email)
     {:noreply, redirect(socket, to: ~p"/subjects/#{subject.id}")}
   end
 

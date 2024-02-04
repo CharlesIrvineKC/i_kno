@@ -150,6 +150,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
   end
 
   def render_buttons(assigns) do
+
     ~H"""
     <button
       type="button"
@@ -171,7 +172,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
     >
       <a href={~p"/subjects/#{@subject.id}/edit"}>Edit</a>
     </button>
-    <.render_delete_button is_superuser={@is_superuser} />
+    <.render_delete_button is_superuser={@is_superuser} is_admin={@is_admin}/>
     <button
       :if={@is_superuser}
       type="button"
@@ -186,7 +187,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
   def render_delete_button(assigns) do
     ~H"""
     <button
-      :if={@is_superuser}
+      :if={@is_admin}
       data-modal-target="popup-modal"
       data-modal-toggle="popup-modal"
       type="button"
@@ -384,7 +385,7 @@ defmodule IKnoWeb.SubjectLive.ShowSubject do
       <.render_searchbox />
     </div>
     <.render_subject subject={@subject} />
-    <%= if @is_super_user do %>
+    <%= if @is_admin do %>
       <.render_admins admins={@admins} edit_admins={@edit_admins} />
     <% end %>
     <.render_buttons
