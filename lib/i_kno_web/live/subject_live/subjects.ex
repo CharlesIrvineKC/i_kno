@@ -50,7 +50,7 @@ defmodule IKnoWeb.SubjectLive.Subjects do
 
   def render_subject(assigns) do
     ~H"""
-    <div :if={@is_super_user || @subject.is_published || Knowledge.is_admin(@user.id, @subject.id)} class="border border-gray-300 rounded my-2 p-2">
+    <div :if={@is_super_user || @subject.is_published || @user && Knowledge.is_admin(@user.id, @subject.id)} class="border border-gray-300 rounded my-2 p-2">
       <a href={~p"/subjects/#{@subject.id}"} class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
         <%= @subject.name %>
       </a>
