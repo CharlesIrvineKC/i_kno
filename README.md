@@ -1,34 +1,39 @@
 # IKno
 
-## Copy Database to Fly.io 
+IKno is an prototype application for authoring and presenting educational subject matter. It aims to leverage conceptual structures inherent in language to to sequence information to the reader such that learning time is minimized.
 
-### Copy Local Database
-```
-cd priv/repo
-pg_dump -a -Fc -t subjects -t topics -t prereq_topics -t subject_admins -t questions -t answers i_kno_dev > ikno.db
-```
+## Subjects and Topics
 
-### Open Proxy to Database
-```
- fly proxy 15432:5432 -a irvine-i-kno-db
-```
+Information in IKno is organized into subjects and topics. A subject is composed of a set of topics.
 
-### Login to Fly.io DB and Set Replication Role
-```
-fly postgres connect -a irvine-i-kno-db
+IKno knows how topics depend on each other, allowing topics to presented in a sequence that optimizes learning effectiveness.
 
-\c irvine_i_kno
-SET session_replication_role = 'replica';
-delete from topics; delete from subjects; delete from prereq_topics; delete from subject_admins; delete from answers; delete from questions;
-```
+Currently, IKno subjects are incomplete and have been authored solely for the purpose of testing IKno. The most complete subject and one that will be expanded upon is Business Process Management. There is also a subject describing IKno itself that you may find of interest.
 
-### Copy Database to Fly.ikno
-```
-KiHg7zWMbiiUhvJ
-pg_restore -U postgres -h localhost -p 15432 -d irvine_i_kno < ikno.db
-```
+## Learning Mode
 
-### Set Replication Role Back to Origin
-```
-SET session_replication_role = 'origin';
-```
+Learning mode refers to having IKno step you through topics based on what you already know. Topics are ordered from the most fundamental to the most complex.
+
+There are two ways to use learning mode: at the subject level or at the topic level.
+
+At the subject level, IKno will present topics from the subject as a whole.
+
+At the topic level, IKno will present only those topics required for the understanding of the selected topic.
+
+## Testing Mode
+
+In Testing mode, IKno will present questions on the topics that you have learned.
+
+Again, there are two ways to use testing mode: at the subject level or at the topic level.
+
+At the subject level, IKno will present questions from the subject as a whole.
+
+At the topic level, IKno will present only those questions required relevant to a selected topic.
+
+Note: If the author of an IKno subject hasn't written any questions, testing mode won't be available or visible.
+
+## Using IKno
+
+Every effort has been made to make IKno as simple as possible, so you will likely be able to surmise, for the most part, how things work.
+
+However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the List of Subjects button below and then clicking in the IKno subject.
