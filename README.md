@@ -37,3 +37,7 @@ Note: If the author of an IKno subject hasn't written any questions, testing mod
 Every effort has been made to make IKno as simple as possible, so you will likely be able to surmise, for the most part, how things work.
 
 However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the List of Subjects button below and then clicking in the IKno subject.
+
+## Publically available
+
+IKno is deployed at [https://irvine-i-kno.fly.dev/](https://irvine-i-kno.fly.dev/). Feel free to take a look and try it out.
