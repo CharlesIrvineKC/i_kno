@@ -38,6 +38,22 @@ Every effort has been made to make IKno as simple as possible, so you will likel
 
 However, if you want a better understanding or are just curious, you can find detailed information describing IKno by clicking on the List of Subjects button below and then clicking in the IKno subject.
 
+## Running Locally
+
+````
+$ mix ecto.create
+````
+````
+$ mix ecto.migrate
+````
+````
+$ mix phx.server
+````
+
 ## Publically available
 
 IKno is deployed at [https://irvine-i-kno.fly.dev/](https://irvine-i-kno.fly.dev/). Feel free to take a look and try it out.
+
+## Comments, Question, Issues
+
+Please file an issue in GitHub.
