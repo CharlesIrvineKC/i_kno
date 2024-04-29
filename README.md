@@ -54,6 +54,6 @@ $ mix phx.server
 
 IKno is deployed at [https://irvine-i-kno.fly.dev/](https://irvine-i-kno.fly.dev/). Feel free to take a look and try it out.
 
-## Comments, Question, Issues
+## Comments, Questions, Issues
 
 Please file an issue in GitHub.
